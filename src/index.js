@@ -36,6 +36,7 @@ const ALLOWED_BLOCKS = [
 	'core/heading',
 	'core/paragraph',
 	'core/list',
+	'core/list-item',
 	'core/buttons',
 ];
 
@@ -73,8 +74,6 @@ const BLOCK_DROPDOWN_CONFIG = {
 		default: '',
 		options: [
 			{ label: 'Select one', value: 'none' },
-			{ label: 'Heading Option A', value: 'heading-a' },
-			{ label: 'Heading Option B', value: 'heading-b' },
 		],
 	},
 	'core/paragraph': {
@@ -83,8 +82,6 @@ const BLOCK_DROPDOWN_CONFIG = {
 		default: '',
 		options: [
 			{ label: 'Select one', value: 'none' },
-			{ label: 'Paragraph Style A', value: 'para-a' },
-			{ label: 'Paragraph Style B', value: 'para-b' },
 		],
 	},
 	'core/list': {
@@ -93,18 +90,22 @@ const BLOCK_DROPDOWN_CONFIG = {
 		default: '',
 		options: [
 			{ label: 'Select one', value: 'none' },
-			{ label: 'List Style A', value: 'list-a' },
-			{ label: 'List Style B', value: 'list-b' },
 		],
 	},
+	'core/list-item': {
+        attributeKey: 'listItemDropdownValue',
+        label: 'List Item Option',
+        default: '',
+        options: [
+            { label: 'Select one', value: 'none' },
+        ],
+    },
 	'core/buttons': {
 		attributeKey: 'buttonDropdownValue',
 		label: 'Button Option',
 		default: '',
 		options: [
 			{ label: 'Select one', value: 'none' },
-			{ label: 'Button Style A', value: 'btn-a' },
-			{ label: 'Button Style B', value: 'btn-b' },
 		],
 	},
 };
@@ -404,6 +405,19 @@ const BLOCK_VARIATIONS = {
 			scope: [ 'inserter' ],
 		},
 	],
+	'core/list-item': [
+        {
+            name: 'list-item-custom',
+            title: 'List Item (Custom)',
+            description: 'A list item variation that replaces the default.',
+            icon: 'editor-ul',
+            attributes: {
+                listItemDropdownValue: 'none',
+            },
+            isDefault: true,
+            scope: [ 'inserter' ],
+        },
+    ],
 	'core/buttons': [
 		{
 			name: 'buttons-custom',

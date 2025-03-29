@@ -11,6 +11,8 @@
  * the default in the block inserter (hiding the original).
  */
 
+import './formats/highlight-format.js';
+
 /**
  * ------------------------
  * WordPress dependencies

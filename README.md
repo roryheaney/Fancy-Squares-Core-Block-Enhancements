@@ -58,6 +58,11 @@ This plugin file (`extend-core-blocks-variations.js`) demonstrates how to:
 4. **Confirm Your Custom Default**  
    - By setting `isDefault: true`, the original block is hidden in the inserter, replaced by your custom version. If you want both the original core block and yours, remove `isDefault: true`.
 
+5. **Insert and Edit Blocks**
+   - When you insert a block (such as a heading or paragraph), your custom variation is the default.
+   - To apply inline styling, select some text and click the “Span” toolbar button. A modal will open where you can choose Bootstrap classes and set text/background colors.
+   - After applying, the `<span>` is saved with the chosen classes and inline styles. When you re-open the modal for that span, your previous selections are repopulated for editing.
+
 ## Key Files & Code Sections
 
 - **`ALLOWED_BLOCKS`** – The core blocks to extend.  
@@ -68,6 +73,10 @@ This plugin file (`extend-core-blocks-variations.js`) demonstrates how to:
   - `editor.BlockListBlock` – Applies classes in the editor preview.  
   - `blocks.getSaveContent.extraProps` – Applies classes to saved output.  
 - **`BLOCK_VARIATIONS`** – Defines and registers custom variations that become the new defaults in the inserter.
+- **`span-format.js`**
+  - Registers the custom RichText format (fs/span) that wraps text in an inline <span> with user-defined classes and inline styles.
+  - Uses a modal-based interface with multiple <FormTokenField> controls and two color pickers for text and background colors.
+  - Ensures attributes are properly registered so that saved content is parsed back into the modal for editing.
 
 ## Extensibility & Maintenance
 

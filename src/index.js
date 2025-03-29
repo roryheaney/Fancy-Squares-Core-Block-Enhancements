@@ -11,7 +11,7 @@
  * the default in the block inserter (hiding the original).
  */
 
-import './formats/highlight-format.js';
+import './formats/span-format.js';
 
 /**
  * ------------------------
@@ -20,7 +20,7 @@ import './formats/highlight-format.js';
  */
 import {
 	registerBlockVariation,
-	getBlockDefaultClassName
+	getBlockDefaultClassName,
 } from '@wordpress/blocks';
 
 const { addFilter } = wp.hooks;
@@ -57,12 +57,12 @@ import {
 } from '../data/bootstrap-classes/classes.js';
 
 // Convert them into arrays of string suggestions for FormTokenField
-const displaySuggestions   = displayOptions.map( (o) => o.value );
-const marginSuggestions    = marginOptions.map( (o) => o.value );
-const paddingSuggestions   = paddingOptions.map( (o) => o.value );
-const positionSuggestions  = positionOptions.map( (o) => o.value );
-const zindexSuggestions    = zindexOptions.map( (o) => o.value );
-const blendModeSuggestions = blendModeOptions.map( (o) => o.value );
+const displaySuggestions = displayOptions.map( ( o ) => o.value );
+const marginSuggestions = marginOptions.map( ( o ) => o.value );
+const paddingSuggestions = paddingOptions.map( ( o ) => o.value );
+const positionSuggestions = positionOptions.map( ( o ) => o.value );
+const zindexSuggestions = zindexOptions.map( ( o ) => o.value );
+const blendModeSuggestions = blendModeOptions.map( ( o ) => o.value );
 
 /**
  * ------------------------
@@ -74,41 +74,31 @@ const BLOCK_DROPDOWN_CONFIG = {
 		attributeKey: 'headingDropdownValue',
 		label: 'Heading Option',
 		default: '',
-		options: [
-			{ label: 'Select one', value: 'none' },
-		],
+		options: [ { label: 'Select one', value: 'none' } ],
 	},
 	'core/paragraph': {
 		attributeKey: 'paragraphDropdownValue',
 		label: 'Paragraph Option',
 		default: '',
-		options: [
-			{ label: 'Select one', value: 'none' },
-		],
+		options: [ { label: 'Select one', value: 'none' } ],
 	},
 	'core/list': {
 		attributeKey: 'listDropdownValue',
 		label: 'List Option',
 		default: '',
-		options: [
-			{ label: 'Select one', value: 'none' },
-		],
+		options: [ { label: 'Select one', value: 'none' } ],
 	},
 	'core/list-item': {
-        attributeKey: 'listItemDropdownValue',
-        label: 'List Item Option',
-        default: '',
-        options: [
-            { label: 'Select one', value: 'none' },
-        ],
-    },
+		attributeKey: 'listItemDropdownValue',
+		label: 'List Item Option',
+		default: '',
+		options: [ { label: 'Select one', value: 'none' } ],
+	},
 	'core/buttons': {
 		attributeKey: 'buttonDropdownValue',
 		label: 'Button Option',
 		default: '',
-		options: [
-			{ label: 'Select one', value: 'none' },
-		],
+		options: [ { label: 'Select one', value: 'none' } ],
 	},
 };
 
@@ -131,12 +121,36 @@ addFilter(
 		settings.attributes = {
 			...settings.attributes,
 
-			displayClasses:   { type: 'array', items: { type: 'string' }, default: [] },
-			marginClasses:    { type: 'array', items: { type: 'string' }, default: [] },
-			paddingClasses:   { type: 'array', items: { type: 'string' }, default: [] },
-			positionClasses:  { type: 'array', items: { type: 'string' }, default: [] },
-			zindexClasses:    { type: 'array', items: { type: 'string' }, default: [] },
-			blendModeClasses: { type: 'array', items: { type: 'string' }, default: [] },
+			displayClasses: {
+				type: 'array',
+				items: { type: 'string' },
+				default: [],
+			},
+			marginClasses: {
+				type: 'array',
+				items: { type: 'string' },
+				default: [],
+			},
+			paddingClasses: {
+				type: 'array',
+				items: { type: 'string' },
+				default: [],
+			},
+			positionClasses: {
+				type: 'array',
+				items: { type: 'string' },
+				default: [],
+			},
+			zindexClasses: {
+				type: 'array',
+				items: { type: 'string' },
+				default: [],
+			},
+			blendModeClasses: {
+				type: 'array',
+				items: { type: 'string' },
+				default: [],
+			},
 
 			[ dropdownConfig.attributeKey ]: {
 				type: 'string',
@@ -172,15 +186,28 @@ const withExtendedInspectorControls = createHigherOrderComponent(
 
 			// Find this block's dropdown config
 			const dropdownConfig = BLOCK_DROPDOWN_CONFIG[ props.name ] || {};
-			const uniqueDropdownValue = attributes[ dropdownConfig.attributeKey ];
+			const uniqueDropdownValue =
+				attributes[ dropdownConfig.attributeKey ];
 
 			// Handle changes for each token field
-			function onChangeDisplay( newTokens )  { setAttributes( { displayClasses:   newTokens } ); }
-			function onChangeMargin( newTokens )   { setAttributes( { marginClasses:    newTokens } ); }
-			function onChangePadding( newTokens )  { setAttributes( { paddingClasses:   newTokens } ); }
-			function onChangePosition( newTokens ) { setAttributes( { positionClasses:  newTokens } ); }
-			function onChangeZIndex( newTokens )   { setAttributes( { zindexClasses:    newTokens } ); }
-			function onChangeBlendMode( newTokens ){ setAttributes( { blendModeClasses: newTokens } ); }
+			function onChangeDisplay( newTokens ) {
+				setAttributes( { displayClasses: newTokens } );
+			}
+			function onChangeMargin( newTokens ) {
+				setAttributes( { marginClasses: newTokens } );
+			}
+			function onChangePadding( newTokens ) {
+				setAttributes( { paddingClasses: newTokens } );
+			}
+			function onChangePosition( newTokens ) {
+				setAttributes( { positionClasses: newTokens } );
+			}
+			function onChangeZIndex( newTokens ) {
+				setAttributes( { zindexClasses: newTokens } );
+			}
+			function onChangeBlendMode( newTokens ) {
+				setAttributes( { blendModeClasses: newTokens } );
+			}
 
 			// Handle changes for the unique dropdown
 			function onChangeUniqueDropdown( newVal ) {
@@ -192,7 +219,10 @@ const withExtendedInspectorControls = createHigherOrderComponent(
 					<BlockEdit { ...props } />
 
 					<InspectorControls>
-						<PanelBody title="Bootstrap Classes" initialOpen={ true }>
+						<PanelBody
+							title="Bootstrap Classes"
+							initialOpen={ true }
+						>
 							<FormTokenField
 								label="Display Classes"
 								value={ displayClasses }
@@ -231,9 +261,14 @@ const withExtendedInspectorControls = createHigherOrderComponent(
 							/>
 						</PanelBody>
 
-						<PanelBody title="Unique Dropdown" initialOpen={ false }>
+						<PanelBody
+							title="Unique Dropdown"
+							initialOpen={ false }
+						>
 							<SelectControl
-								label={ dropdownConfig.label || 'Unique Option' }
+								label={
+									dropdownConfig.label || 'Unique Option'
+								}
 								value={ uniqueDropdownValue }
 								options={ dropdownConfig.options || [] }
 								onChange={ onChangeUniqueDropdown }
@@ -272,15 +307,15 @@ addFilter(
 
 			// Start with the default class
 			const defaultClass = getBlockDefaultClassName( name ) || '';
-			let combinedClass  = defaultClass;
+			let combinedClass = defaultClass;
 
 			// Merge arrays
-			const display = attributes.displayClasses    || [];
-			const margin  = attributes.marginClasses     || [];
-			const padding = attributes.paddingClasses    || [];
-			const pos     = attributes.positionClasses   || [];
-			const zindex  = attributes.zindexClasses     || [];
-			const blend   = attributes.blendModeClasses  || [];
+			const display = attributes.displayClasses || [];
+			const margin = attributes.marginClasses || [];
+			const padding = attributes.paddingClasses || [];
+			const pos = attributes.positionClasses || [];
+			const zindex = attributes.zindexClasses || [];
+			const blend = attributes.blendModeClasses || [];
 
 			const combinedTokens = [
 				...display,
@@ -331,16 +366,16 @@ addFilter(
 
 		// Start with WP's default class
 		const defaultClass = getBlockDefaultClassName( name ) || '';
-		const existing     = extraProps.className || defaultClass;
+		const existing = extraProps.className || defaultClass;
 
 		// Combine token arrays
 		const combinedTokens = [
-			...( attributes.displayClasses    || [] ),
-			...( attributes.marginClasses     || [] ),
-			...( attributes.paddingClasses    || [] ),
-			...( attributes.positionClasses   || [] ),
-			...( attributes.zindexClasses     || [] ),
-			...( attributes.blendModeClasses  || [] ),
+			...( attributes.displayClasses || [] ),
+			...( attributes.marginClasses || [] ),
+			...( attributes.paddingClasses || [] ),
+			...( attributes.positionClasses || [] ),
+			...( attributes.zindexClasses || [] ),
+			...( attributes.blendModeClasses || [] ),
 		];
 
 		let finalClass = existing;
@@ -371,7 +406,8 @@ const BLOCK_VARIATIONS = {
 			// Unique variation name (no "default" in it)
 			name: 'heading-custom',
 			title: 'Heading (Custom)',
-			description: 'A custom heading variation with default classes/options.',
+			description:
+				'A custom heading variation with default classes/options.',
 			icon: 'editor-bold',
 			attributes: {
 				// Using the "none" fallback so there's no empty string
@@ -408,18 +444,18 @@ const BLOCK_VARIATIONS = {
 		},
 	],
 	'core/list-item': [
-        {
-            name: 'list-item-custom',
-            title: 'List Item (Custom)',
-            description: 'A list item variation that replaces the default.',
-            icon: 'editor-ul',
-            attributes: {
-                listItemDropdownValue: 'none',
-            },
-            isDefault: true,
-            scope: [ 'inserter' ],
-        },
-    ],
+		{
+			name: 'list-item-custom',
+			title: 'List Item (Custom)',
+			description: 'A list item variation that replaces the default.',
+			icon: 'editor-ul',
+			attributes: {
+				listItemDropdownValue: 'none',
+			},
+			isDefault: true,
+			scope: [ 'inserter' ],
+		},
+	],
 	'core/buttons': [
 		{
 			name: 'buttons-custom',
@@ -439,4 +475,4 @@ Object.keys( BLOCK_VARIATIONS ).forEach( ( blockName ) => {
 	BLOCK_VARIATIONS[ blockName ].forEach( ( variation ) => {
 		registerBlockVariation( blockName, variation );
 	} );
-});
+} );

@@ -8,14 +8,13 @@ import {
 	RichTextToolbarButton,
 } from '@wordpress/block-editor';
 import {
-	Popover,
+	Modal,
 	Button,
 	FormTokenField,
 } from '@wordpress/components';
 import { useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-// Import your Bootstrap arrays
 import {
 	displayOptions,
 	marginOptions,
@@ -28,11 +27,12 @@ import {
 registerFormatType( 'fs/span', {
 	title: __( 'Span', 'fs-blocks' ),
 	tagName: 'span',
-	className: 'fs-span-base', // Unique base class to avoid collisions
+	className: 'fs-span-base', // a base class to avoid conflicts
 	icon: 'editor-code',
 
 	edit( { isActive, value, onChange } ) {
-		const [ isPopoverVisible, setIsPopoverVisible ] = useState( false );
+		// If the modal is open or closed
+		const [ isModalOpen, setIsModalOpen ] = useState( false );
 
 		// Separate states for each category
 		const [ displayTokens, setDisplayTokens ] = useState( [] );
@@ -44,7 +44,7 @@ registerFormatType( 'fs/span', {
 
 		const buttonElementRef = useRef( null );
 
-		// Utility: convert each array of {value, label?} to just string values
+		// Convert each array of objects into a list of string suggestions
 		const displaySuggestions   = displayOptions.map( ( opt ) => opt.value );
 		const marginSuggestions    = marginOptions.map( ( opt ) => opt.value );
 		const paddingSuggestions   = paddingOptions.map( ( opt ) => opt.value );
@@ -52,50 +52,40 @@ registerFormatType( 'fs/span', {
 		const zindexSuggestions    = zindexOptions.map( ( opt ) => opt.value );
 		const blendSuggestions     = blendModeOptions.map( ( opt ) => opt.value );
 
-		/**
-		 * When user toggles the button:
-		 * - If the format is not active, open a fresh popover
-		 * - If it is active, parse existing classes and open the popover for editing
-		 */
 		function onToggleFormat() {
 			if ( isActive ) {
-				// Format is already active, so parse existing classes
+				// Already active, parse existing classes
 				populateExistingClasses();
 			} else {
-				// Fresh usage: just open popover with empty states
-				openPopover();
+				// Fresh usage
+				openModal();
 			}
 		}
 
-		function openPopover() {
-			setIsPopoverVisible( true );
+		function openModal() {
+			setIsModalOpen( true );
 		}
-		function closePopover() {
-			setIsPopoverVisible( false );
+		function closeModal() {
+			setIsModalOpen( false );
 		}
 
 		/**
-		 * Parse existing classes from the <span> if the format is active,
-		 * then split them into display, margin, etc. states.
+		 * Parse existing classes from the active span, if any,
+		 * and populate the token fields so user can edit them.
 		 */
 		function populateExistingClasses() {
 			const activeSpan = getActiveFormat( value, 'fs/span' );
 			if ( ! activeSpan || ! activeSpan.attributes?.class ) {
-				// No existing classes found, just open
-				openPopover();
+				// No classes stored, just open empty
+				openModal();
 				return;
 			}
-
-			// Example class attribute might be: "fs-span-base d-none m-2 p-3"
 			const classString = activeSpan.attributes.class;
-
-			// Split by spaces
 			let classesArray = classString.split( /\s+/ );
 
-			// Remove the base "fs-span-base" so we only store user-chosen tokens
+			// Remove base class
 			classesArray = classesArray.filter( ( c ) => c !== 'fs-span-base' );
 
-			// Now figure out which category each class belongs to
 			const pickedDisplay   = [];
 			const pickedMargin    = [];
 			const pickedPadding   = [];
@@ -116,13 +106,10 @@ registerFormatType( 'fs/span', {
 					pickedZindex.push( cls );
 				} else if ( blendSuggestions.includes( cls ) ) {
 					pickedBlend.push( cls );
-				} else {
-					// This class doesn't match any known category
-					// You could store it somewhere or ignore it
 				}
 			} );
 
-			// Update state so the user sees them in the form
+			// Populate states
 			setDisplayTokens( pickedDisplay );
 			setMarginTokens( pickedMargin );
 			setPaddingTokens( pickedPadding );
@@ -130,15 +117,13 @@ registerFormatType( 'fs/span', {
 			setZindexTokens( pickedZindex );
 			setBlendTokens( pickedBlend );
 
-			// Finally, open the popover
-			openPopover();
+			openModal();
 		}
 
 		/**
 		 * Apply or update the classes around the selected text
 		 */
 		function applySpanClasses() {
-			// Combine tokens from all categories
 			const allPicked = [
 				...displayTokens,
 				...marginTokens,
@@ -149,34 +134,28 @@ registerFormatType( 'fs/span', {
 			];
 
 			if ( ! allPicked.length ) {
-				// If user ended up with no classes, you might remove the format entirely or just keep the base.
+				// If no classes, remove format entirely
 				const newValue = removeFormat( value, 'fs/span' );
 				onChange( newValue );
-				closePopover();
+				closeModal();
 				return;
 			}
 
-			// Add base class plus chosen classes
 			const classString = `fs-span-base ${ allPicked.join( ' ' ) }`.trim();
-
 			const newValue = applyFormat( value, {
 				type: 'fs/span',
 				attributes: {
 					class: classString,
 				},
 			} );
-
 			onChange( newValue );
-			closePopover();
+			closeModal();
 		}
 
-		/**
-		 * Optional: A simple way to remove the format from this popover.
-		 */
 		function removeSpanFormat() {
 			const newValue = removeFormat( value, 'fs/span' );
 			onChange( newValue );
-			closePopover();
+			closeModal();
 		}
 
 		return (
@@ -190,80 +169,82 @@ registerFormatType( 'fs/span', {
 					/>
 				</span>
 
-				{ isPopoverVisible && (
-					<Popover
-						anchor={ buttonElementRef.current }
-						position="bottom center"
-						onClose={ closePopover }
+				{/* Instead of a Popover, use <Modal>. It appears centered, as an overlay. */}
+				{ isModalOpen && (
+					<Modal
+						title={ __( 'Span Classes', 'fs-blocks' ) }
+						onRequestClose={ closeModal } // required for the close button
+						isDismissible={ true }
+						// You can pass additional props like style or className
 					>
-						<div style={ { padding: '1rem', minWidth: '320px' } }>
-							<h3 style={ { marginTop: 0 } }>
-								{ __( 'Edit Span Classes', 'fs-blocks' ) }
-							</h3>
-
-							{/* A grid for multiple token fields, or single column layout */}
-							<div
-								style={ {
-									display: 'grid',
-									gridTemplateColumns: 'repeat(2, 1fr)',
-									gap: '0.75rem',
-									alignItems: 'start',
-								} }
-							>
-								<FormTokenField
-									label={ __( 'Display', 'fs-blocks' ) }
-									value={ displayTokens }
-									suggestions={ displaySuggestions }
-									onChange={ setDisplayTokens }
-								/>
-								<FormTokenField
-									label={ __( 'Margin', 'fs-blocks' ) }
-									value={ marginTokens }
-									suggestions={ marginSuggestions }
-									onChange={ setMarginTokens }
-								/>
-								<FormTokenField
-									label={ __( 'Padding', 'fs-blocks' ) }
-									value={ paddingTokens }
-									suggestions={ paddingSuggestions }
-									onChange={ setPaddingTokens }
-								/>
-								<FormTokenField
-									label={ __( 'Position', 'fs-blocks' ) }
-									value={ positionTokens }
-									suggestions={ positionSuggestions }
-									onChange={ setPositionTokens }
-								/>
-								<FormTokenField
-									label={ __( 'Z-Index', 'fs-blocks' ) }
-									value={ zindexTokens }
-									suggestions={ zindexSuggestions }
-									onChange={ setZindexTokens }
-								/>
-								<FormTokenField
-									label={ __( 'Blend Mode', 'fs-blocks' ) }
-									value={ blendTokens }
-									suggestions={ blendSuggestions }
-									onChange={ setBlendTokens }
-								/>
-							</div>
-
-							<div style={ { marginTop: '1rem', display: 'flex', gap: '0.5rem' } }>
-								<Button
-									variant="primary"
-									onClick={ applySpanClasses }
-								>
-									{ __( 'Apply', 'fs-blocks' ) }
-								</Button>
-								<Button
-									variant="secondary"
-									onClick={ removeSpanFormat }
-								>
-									{ __( 'Remove', 'fs-blocks' ) }
-								</Button>
-							</div>
+						<div style={ { marginBottom: '1rem' } }>
+							<h3>{ __( 'Edit Classes', 'fs-blocks' ) }</h3>
+							<p>
+								{ __(
+									'Pick classes from each category. Press "Apply" to update the inline span.',
+									'fs-blocks'
+								) }
+							</p>
 						</div>
-					</Popover>
+
+						<div
+							style={ {
+								display: 'grid',
+								gridTemplateColumns: 'repeat(2, 1fr)',
+								gap: '0.75rem',
+								alignItems: 'start',
+							} }
+						>
+							<FormTokenField
+								label={ __( 'Display', 'fs-blocks' ) }
+								value={ displayTokens }
+								suggestions={ displaySuggestions }
+								onChange={ setDisplayTokens }
+							/>
+							<FormTokenField
+								label={ __( 'Margin', 'fs-blocks' ) }
+								value={ marginTokens }
+								suggestions={ marginSuggestions }
+								onChange={ setMarginTokens }
+							/>
+							<FormTokenField
+								label={ __( 'Padding', 'fs-blocks' ) }
+								value={ paddingTokens }
+								suggestions={ paddingSuggestions }
+								onChange={ setPaddingTokens }
+							/>
+							<FormTokenField
+								label={ __( 'Position', 'fs-blocks' ) }
+								value={ positionTokens }
+								suggestions={ positionSuggestions }
+								onChange={ setPositionTokens }
+							/>
+							<FormTokenField
+								label={ __( 'Z-Index', 'fs-blocks' ) }
+								value={ zindexTokens }
+								suggestions={ zindexSuggestions }
+								onChange={ setZindexTokens }
+							/>
+							<FormTokenField
+								label={ __( 'Blend', 'fs-blocks' ) }
+								value={ blendTokens }
+								suggestions={ blendSuggestions }
+								onChange={ setBlendTokens }
+							/>
+						</div>
+
+						<div style={ { marginTop: '1rem', display: 'flex', gap: '0.5rem' } }>
+							<Button variant="primary" onClick={ applySpanClasses }>
+								{ __( 'Apply', 'fs-blocks' ) }
+							</Button>
+							<Button variant="secondary" onClick={ removeSpanFormat }>
+								{ __( 'Remove Format', 'fs-blocks' ) }
+							</Button>
+							<Button variant="tertiary" onClick={ closeModal }>
+								{ __( 'Cancel', 'fs-blocks' ) }
+							</Button>
+						</div>
+					</Modal>
 				) }
 			</>
 		);

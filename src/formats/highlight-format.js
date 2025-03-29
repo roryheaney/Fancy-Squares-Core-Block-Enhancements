@@ -6,61 +6,45 @@ import {
 } from '@wordpress/rich-text';
 import {
 	RichTextToolbarButton,
+	ColorPalette,
 } from '@wordpress/block-editor';
 import {
 	Modal,
 	Button,
 	FormTokenField,
 } from '@wordpress/components';
-import { useState, useRef } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+// Import your other Bootstrap class arrays
 import {
 	displayOptions,
 	marginOptions,
 	paddingOptions,
 	positionOptions,
 	zindexOptions,
-	blendModeOptions,
+//  blendModeOptions, // removed for brevity
 } from '../../data/bootstrap-classes/classes.js';
 
 registerFormatType( 'fs/span', {
 	title: __( 'Span', 'fs-blocks' ),
 	tagName: 'span',
-	className: 'fs-span-base', // a base class to avoid conflicts
+	className: 'fs-span-base', // Unique base class to avoid collisions
 	icon: 'editor-code',
 
 	edit( { isActive, value, onChange } ) {
-		// If the modal is open or closed
 		const [ isModalOpen, setIsModalOpen ] = useState( false );
 
-		// Separate states for each category
+		// Token fields for various Bootstrap classes
 		const [ displayTokens, setDisplayTokens ] = useState( [] );
 		const [ marginTokens, setMarginTokens ] = useState( [] );
 		const [ paddingTokens, setPaddingTokens ] = useState( [] );
 		const [ positionTokens, setPositionTokens ] = useState( [] );
 		const [ zindexTokens, setZindexTokens ] = useState( [] );
-		const [ blendTokens, setBlendTokens ] = useState( [] );
 
-		const buttonElementRef = useRef( null );
-
-		// Convert each array of objects into a list of string suggestions
-		const displaySuggestions   = displayOptions.map( ( opt ) => opt.value );
-		const marginSuggestions    = marginOptions.map( ( opt ) => opt.value );
-		const paddingSuggestions   = paddingOptions.map( ( opt ) => opt.value );
-		const positionSuggestions  = positionOptions.map( ( opt ) => opt.value );
-		const zindexSuggestions    = zindexOptions.map( ( opt ) => opt.value );
-		const blendSuggestions     = blendModeOptions.map( ( opt ) => opt.value );
-
-		function onToggleFormat() {
-			if ( isActive ) {
-				// Already active, parse existing classes
-				populateExistingClasses();
-			} else {
-				// Fresh usage
-				openModal();
-			}
-		}
+		// NEW: store textColor and backgroundColor for inline styles
+		const [ textColor, setTextColor ] = useState( '' );
+		const [ backgroundColor, setBackgroundColor ] = useState( '' );
 
 		function openModal() {
 			setIsModalOpen( true );
@@ -70,28 +54,45 @@ registerFormatType( 'fs/span', {
 		}
 
 		/**
-		 * Parse existing classes from the active span, if any,
-		 * and populate the token fields so user can edit them.
+		 * Called when user clicks the toolbar button.
+		 * If already active, parse existing attributes so we can edit them;
+		 * Otherwise, open with empty defaults.
 		 */
-		function populateExistingClasses() {
+		function onToggleFormat() {
+			if ( isActive ) {
+				populateExistingFormat();
+			} else {
+				openModal();
+			}
+		}
+
+		/**
+		 * Parse the existing <span> for classes + inline style
+		 * if the format is active, so user can edit them.
+		 */
+		function populateExistingFormat() {
 			const activeSpan = getActiveFormat( value, 'fs/span' );
-			if ( ! activeSpan || ! activeSpan.attributes?.class ) {
-				// No classes stored, just open empty
+			if ( ! activeSpan ) {
 				openModal();
 				return;
 			}
-			const classString = activeSpan.attributes.class;
-			let classesArray = classString.split( /\s+/ );
 
-			// Remove base class
-			classesArray = classesArray.filter( ( c ) => c !== 'fs-span-base' );
+			// 1) Parse classes (excluding base class)
+			let classesString = activeSpan.attributes?.class || ''; 
+			let classesArray = classesString.split( /\s+/ ).filter( ( c ) => c && c !== 'fs-span-base' );
+
+			// We’ll figure out which category each belongs to
+			const displaySuggestions = displayOptions.map( ( opt ) => opt.value );
+			const marginSuggestions  = marginOptions.map( ( opt ) => opt.value );
+			const paddingSuggestions = paddingOptions.map( ( opt ) => opt.value );
+			const positionSuggestions= positionOptions.map( ( opt ) => opt.value );
+			const zindexSuggestions  = zindexOptions.map( ( opt ) => opt.value );
 
 			const pickedDisplay   = [];
 			const pickedMargin    = [];
 			const pickedPadding   = [];
 			const pickedPosition  = [];
 			const pickedZindex    = [];
-			const pickedBlend     = [];
 
 			classesArray.forEach( ( cls ) => {
 				if ( displaySuggestions.includes( cls ) ) {
@@ -104,89 +105,119 @@ registerFormatType( 'fs/span', {
 					pickedPosition.push( cls );
 				} else if ( zindexSuggestions.includes( cls ) ) {
 					pickedZindex.push( cls );
-				} else if ( blendSuggestions.includes( cls ) ) {
-					pickedBlend.push( cls );
 				}
 			} );
 
-			// Populate states
 			setDisplayTokens( pickedDisplay );
 			setMarginTokens( pickedMargin );
 			setPaddingTokens( pickedPadding );
 			setPositionTokens( pickedPosition );
 			setZindexTokens( pickedZindex );
-			setBlendTokens( pickedBlend );
+
+			// 2) Parse inline style for "color" and "background-color"
+			let styleString = activeSpan.attributes?.style || ''; // e.g. "color: #ff0000; background-color: #000;"
+			if ( styleString ) {
+				// Basic regex or manual splitting
+				const colorMatch = styleString.match( /color:\s*([^;]+)/ );
+				const bgMatch    = styleString.match( /background-color:\s*([^;]+)/ );
+
+				setTextColor( colorMatch ? colorMatch[1].trim() : '' );
+				setBackgroundColor( bgMatch ? bgMatch[1].trim() : '' );
+			} else {
+				setTextColor( '' );
+				setBackgroundColor( '' );
+			}
 
 			openModal();
 		}
 
 		/**
-		 * Apply or update the classes around the selected text
+		 * Apply or update the format around the selected text
 		 */
-		function applySpanClasses() {
+		function applySpanFormat() {
+			// Combine classes
 			const allPicked = [
 				...displayTokens,
 				...marginTokens,
 				...paddingTokens,
 				...positionTokens,
 				...zindexTokens,
-				...blendTokens,
 			];
+			const classString = `fs-span-base ${ allPicked.join( ' ' ) }`.trim();
 
-			if ( ! allPicked.length ) {
-				// If no classes, remove format entirely
-				const newValue = removeFormat( value, 'fs/span' );
-				onChange( newValue );
+			// Build an inline style from the chosen text & background
+			const styleParts = [];
+			if ( textColor ) {
+				styleParts.push( `color: ${ textColor }` );
+			}
+			if ( backgroundColor ) {
+				styleParts.push( `background-color: ${ backgroundColor }` );
+			}
+			const styleString = styleParts.join( '; ' );
+
+			// If the user picks no classes and no colors, remove format entirely
+			if ( ! classString.replace( 'fs-span-base', '' ) && ! styleString ) {
+				const removed = removeFormat( value, 'fs/span' );
+				onChange( removed );
 				closeModal();
 				return;
 			}
 
-			const classString = `fs-span-base ${ allPicked.join( ' ' ) }`.trim();
 			const newValue = applyFormat( value, {
 				type: 'fs/span',
 				attributes: {
 					class: classString,
+					style: styleString,
 				},
 			} );
+
 			onChange( newValue );
 			closeModal();
 		}
 
 		function removeSpanFormat() {
-			const newValue = removeFormat( value, 'fs/span' );
-			onChange( newValue );
+			const removed = removeFormat( value, 'fs/span' );
+			onChange( removed );
 			closeModal();
 		}
 
+		// Suggestions for token fields
+		const displaySuggestions = displayOptions.map( ( opt ) => opt.value );
+		const marginSuggestions  = marginOptions.map( ( opt ) => opt.value );
+		const paddingSuggestions = paddingOptions.map( ( opt ) => opt.value );
+		const positionSuggestions= positionOptions.map( ( opt ) => opt.value );
+		const zindexSuggestions  = zindexOptions.map( ( opt ) => opt.value );
+
+		// We’ll use the default WordPress color palette or you can provide custom colors
+		// The simpler approach is to let user pick from a free-form <ColorPicker>, but
+		// <ColorPalette> is more "WordPress-y".
+		const colors = [
+			{ name: 'Red', color: '#f00' },
+			{ name: 'Green', color: '#0f0' },
+			{ name: 'Blue', color: '#00f' },
+			// Add more or use theme colors
+		];
+
 		return (
 			<>
-				<span ref={ buttonElementRef }>
-					<RichTextToolbarButton
-						icon="editor-code"
-						title={ __( 'Span', 'fs-blocks' ) }
-						onClick={ onToggleFormat }
-						isActive={ isActive }
-					/>
-				</span>
+				<RichTextToolbarButton
+					icon="editor-code"
+					title={ __( 'Span', 'fs-blocks' ) }
+					onClick={ onToggleFormat }
+					isActive={ isActive }
+				/>
 
-				{/* Instead of a Popover, use <Modal>. It appears centered, as an overlay. */}
 				{ isModalOpen && (
 					<Modal
-						title={ __( 'Span Classes', 'fs-blocks' ) }
-						onRequestClose={ closeModal } // required for the close button
+						title={ __( 'Span Settings', 'fs-blocks' ) }
+						onRequestClose={ closeModal }
 						isDismissible={ true }
-						// You can pass additional props like style or className
 					>
 						<div style={ { marginBottom: '1rem' } }>
-							<h3>{ __( 'Edit Classes', 'fs-blocks' ) }</h3>
-							<p>
-								{ __(
-									'Pick classes from each category. Press "Apply" to update the inline span.',
-									'fs-blocks'
-								) }
-							</p>
+							<p>{ __( 'Select Bootstrap classes, text color, and background color.', 'fs-blocks' ) }</p>
 						</div>
 
+						{/* Two-column grid for the token fields */}
 						<div
 							style={ {
 								display: 'grid',
@@ -225,16 +256,30 @@ registerFormatType( 'fs/span', {
 								suggestions={ zindexSuggestions }
 								onChange={ setZindexTokens }
 							/>
-							<FormTokenField
-								label={ __( 'Blend', 'fs-blocks' ) }
-								value={ blendTokens }
-								suggestions={ blendSuggestions }
-								onChange={ setBlendTokens }
+						</div>
+
+						<hr style={ { margin: '1rem 0' } } />
+
+						{/* Color pickers for text and background */}
+						<div style={ { marginBottom: '1rem' } }>
+							<strong>{ __( 'Text Color', 'fs-blocks' ) }</strong>
+							<ColorPalette
+								colors={ colors }
+								value={ textColor }
+								onChange={ ( newVal ) => setTextColor( newVal || '' ) }
+							/>
+						</div>
+						<div style={ { marginBottom: '1rem' } }>
+							<strong>{ __( 'Background Color', 'fs-blocks' ) }</strong>
+							<ColorPalette
+								colors={ colors }
+								value={ backgroundColor }
+								onChange={ ( newVal ) => setBackgroundColor( newVal || '' ) }
 							/>
 						</div>
 
 						<div style={ { marginTop: '1rem', display: 'flex', gap: '0.5rem' } }>
-							<Button variant="primary" onClick={ applySpanClasses }>
+							<Button variant="primary" onClick={ applySpanFormat }>
 								{ __( 'Apply', 'fs-blocks' ) }
 							</Button>
 							<Button variant="secondary" onClick={ removeSpanFormat }>

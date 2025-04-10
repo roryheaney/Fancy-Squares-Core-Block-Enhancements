@@ -1,478 +1,462 @@
 /**
- * File: extend-core-blocks-variations.js
+ * File: index.js
  *
- * Extends these core blocks with custom attributes + InspectorControls:
- *   - core/heading
- *   - core/paragraph
- *   - core/list
- *   - core/buttons
- *
- * Then registers block variations for each, making your custom version
- * the default in the block inserter (hiding the original).
+ * Extends core blocks with custom attributes and InspectorControls using 10up's registerBlockExtension.
+ * Adds FormTokenField and dropdowns to apply Bootstrap classes to multiple blocks.
+ * Adds custom width controls to core/column for breakpoint-specific layouts.
  */
 
-import './formats/span-format.js';
+// Import SCSS for compilation
+import './editor.scss';
 
-/**
- * ------------------------
- * WordPress dependencies
- * ------------------------
- */
+// WordPress dependencies
+import { registerBlockExtension } from '@10up/block-components';
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, SelectControl, FormTokenField, CheckboxControl, Button, Icon } from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { keyboard, helpFilled, globe, gallery } from '@wordpress/icons';
+
+// Import class data (excluding columnOptionsCore)
 import {
-	registerBlockVariation,
-	getBlockDefaultClassName,
-} from '@wordpress/blocks';
-
-const { addFilter } = wp.hooks;
-const { createHigherOrderComponent } = wp.compose;
-const { Fragment } = wp.element;
-const { InspectorControls } = wp.blockEditor || wp.editor;
-const { PanelBody, SelectControl, FormTokenField } = wp.components;
-
-/**
- * ------------------------
- * 1) Allowed blocks
- * ------------------------
- */
-const ALLOWED_BLOCKS = [
-	'core/heading',
-	'core/paragraph',
-	'core/list',
-	'core/list-item',
-	'core/buttons',
-];
-
-/**
- * ------------------------
- * 2) Import your class data
- * ------------------------
- */
-import {
-	displayOptions,
-	marginOptions,
-	paddingOptions,
-	positionOptions,
-	zindexOptions,
-	blendModeOptions,
+    displayOptions,
+    marginOptions,
+    paddingOptions,
+    positionOptions,
+    zindexOptions,
+    blendModeOptions,
 } from '../data/bootstrap-classes/classes.js';
 
-// Convert them into arrays of string suggestions for FormTokenField
-const displaySuggestions = displayOptions.map( ( o ) => o.value );
-const marginSuggestions = marginOptions.map( ( o ) => o.value );
-const paddingSuggestions = paddingOptions.map( ( o ) => o.value );
-const positionSuggestions = positionOptions.map( ( o ) => o.value );
-const zindexSuggestions = zindexOptions.map( ( o ) => o.value );
-const blendModeSuggestions = blendModeOptions.map( ( o ) => o.value );
+// Allowed blocks
+const ALLOWED_BLOCKS = [
+    'core/heading',
+    'core/paragraph',
+    'core/list',
+    'core/list-item',
+    'core/buttons',
+    'core/columns',
+    'core/column',
+];
 
-/**
- * ------------------------
- * 3) Unique dropdown configs
- * ------------------------
- */
-const BLOCK_DROPDOWN_CONFIG = {
-	'core/heading': {
-		attributeKey: 'headingDropdownValue',
-		label: 'Heading Option',
-		default: '',
-		options: [ { label: 'Select one', value: 'none' } ],
-	},
-	'core/paragraph': {
-		attributeKey: 'paragraphDropdownValue',
-		label: 'Paragraph Option',
-		default: '',
-		options: [ { label: 'Select one', value: 'none' } ],
-	},
-	'core/list': {
-		attributeKey: 'listDropdownValue',
-		label: 'List Option',
-		default: '',
-		options: [ { label: 'Select one', value: 'none' } ],
-	},
-	'core/list-item': {
-		attributeKey: 'listItemDropdownValue',
-		label: 'List Item Option',
-		default: '',
-		options: [ { label: 'Select one', value: 'none' } ],
-	},
-	'core/buttons': {
-		attributeKey: 'buttonDropdownValue',
-		label: 'Button Option',
-		default: '',
-		options: [ { label: 'Select one', value: 'none' } ],
-	},
+// Block configuration
+const BLOCK_CONFIG = {
+    'core/heading': {
+        classOptions: ['display', 'margin', 'padding', 'position', 'zindex', 'blendMode'],
+        dropdown: {
+            attributeKey: 'headingDropdownValue',
+            label: 'Heading Option',
+            default: 'none',
+            options: [{ label: 'Select one', value: 'none' }],
+        },
+    },
+    'core/paragraph': {
+        classOptions: ['display', 'margin', 'padding'],
+        dropdown: {
+            attributeKey: 'paragraphDropdownValue',
+            label: 'Paragraph Option',
+            default: 'none',
+            options: [{ label: 'Select one', value: 'none' }],
+        },
+    },
+    'core/list': {
+        classOptions: ['display', 'margin', 'padding', 'position'],
+        dropdown: {
+            attributeKey: 'listDropdownValue',
+            label: 'List Option',
+            default: 'none',
+            options: [{ label: 'Select one', value: 'none' }],
+        },
+    },
+    'core/list-item': {
+        classOptions: ['margin', 'padding'],
+        dropdown: {
+            attributeKey: 'listItemDropdownValue',
+            label: 'List Item Option',
+            default: 'none',
+            options: [{ label: 'Select one', value: 'none' }],
+        },
+    },
+    'core/buttons': {
+        classOptions: ['display', 'margin', 'padding', 'position', 'zindex'],
+        dropdown: {
+            attributeKey: 'buttonDropdownValue',
+            label: 'Button Option',
+            default: 'none',
+            options: [{ label: 'Select one', value: 'none' }],
+        },
+    },
+    'core/columns': {
+        classOptions: ['display', 'margin', 'padding', 'position', 'zindex'],
+        dropdown: {
+            attributeKey: 'columnsLayout',
+            label: 'Columns Layout',
+            default: '',
+            options: [
+                { label: 'Inherit from Columns', value: '' },
+                { label: '1 across all', value: 'cols-mobile-1 cols-tablet-1 cols-desktop-1' },
+                { label: '2 across all', value: 'cols-mobile-2 cols-tablet-2 cols-desktop-2' },
+                { label: '3 across all', value: 'cols-mobile-3 cols-tablet-3 cols-desktop-3' },
+                { label: '4 across all', value: 'cols-mobile-4 cols-tablet-4 cols-desktop-4' },
+                { label: '5 across all', value: 'cols-mobile-5 cols-tablet-5 cols-desktop-5' },
+                { label: '6 across all', value: 'cols-mobile-6 cols-tablet-6 cols-desktop-6' },
+                { label: '1 mobile, 2 tablet, 3 desktop', value: 'cols-mobile-1 cols-tablet-2 cols-desktop-3' },
+                { label: '2 mobile, 3 tablet, 4 desktop', value: 'cols-mobile-2 cols-tablet-3 cols-desktop-4' },
+                { label: '3 mobile, 4 tablet, 6 desktop', value: 'cols-mobile-3 cols-tablet-4 cols-desktop-6' },
+            ],
+        },
+    },
+    'core/column': {
+        classOptions: ['display', 'margin', 'padding', 'position', 'zindex'],
+        dropdown: {
+            attributeKey: 'columnsLayout',
+            label: 'Column Layout Override',
+            default: '',
+            options: [{ label: 'Inherit from Columns', value: '' }],
+        },
+        hasWidthControls: true, // Flag to enable custom width controls
+    },
 };
 
-/**
- * ------------------------
- * 4) Add new attributes
- * ------------------------
- */
-addFilter(
-	'blocks.registerBlockType',
-	'fs-blocks/extend-core-blocks/attributes',
-	( settings, name ) => {
-		if ( ! ALLOWED_BLOCKS.includes( name ) ) {
-			return settings;
-		}
-
-		const dropdownConfig = BLOCK_DROPDOWN_CONFIG[ name ] || {};
-
-		// Inject attributes for the token fields + unique dropdown
-		settings.attributes = {
-			...settings.attributes,
-
-			displayClasses: {
-				type: 'array',
-				items: { type: 'string' },
-				default: [],
-			},
-			marginClasses: {
-				type: 'array',
-				items: { type: 'string' },
-				default: [],
-			},
-			paddingClasses: {
-				type: 'array',
-				items: { type: 'string' },
-				default: [],
-			},
-			positionClasses: {
-				type: 'array',
-				items: { type: 'string' },
-				default: [],
-			},
-			zindexClasses: {
-				type: 'array',
-				items: { type: 'string' },
-				default: [],
-			},
-			blendModeClasses: {
-				type: 'array',
-				items: { type: 'string' },
-				default: [],
-			},
-
-			[ dropdownConfig.attributeKey ]: {
-				type: 'string',
-				default: dropdownConfig.default || '',
-			},
-		};
-
-		return settings;
-	}
-);
-
-/**
- * ------------------------
- * 5) Custom Inspector Controls
- * ------------------------
- */
-const withExtendedInspectorControls = createHigherOrderComponent(
-	( BlockEdit ) => {
-		return ( props ) => {
-			if ( ! ALLOWED_BLOCKS.includes( props.name ) ) {
-				return <BlockEdit { ...props } />;
-			}
-
-			const { attributes, setAttributes } = props;
-			const {
-				displayClasses,
-				marginClasses,
-				paddingClasses,
-				positionClasses,
-				zindexClasses,
-				blendModeClasses,
-			} = attributes;
-
-			// Find this block's dropdown config
-			const dropdownConfig = BLOCK_DROPDOWN_CONFIG[ props.name ] || {};
-			const uniqueDropdownValue =
-				attributes[ dropdownConfig.attributeKey ];
-
-			// Handle changes for each token field
-			function onChangeDisplay( newTokens ) {
-				setAttributes( { displayClasses: newTokens } );
-			}
-			function onChangeMargin( newTokens ) {
-				setAttributes( { marginClasses: newTokens } );
-			}
-			function onChangePadding( newTokens ) {
-				setAttributes( { paddingClasses: newTokens } );
-			}
-			function onChangePosition( newTokens ) {
-				setAttributes( { positionClasses: newTokens } );
-			}
-			function onChangeZIndex( newTokens ) {
-				setAttributes( { zindexClasses: newTokens } );
-			}
-			function onChangeBlendMode( newTokens ) {
-				setAttributes( { blendModeClasses: newTokens } );
-			}
-
-			// Handle changes for the unique dropdown
-			function onChangeUniqueDropdown( newVal ) {
-				setAttributes( { [ dropdownConfig.attributeKey ]: newVal } );
-			}
-
-			return (
-				<Fragment>
-					<BlockEdit { ...props } />
-
-					<InspectorControls>
-						<PanelBody
-							title="Bootstrap Classes"
-							initialOpen={ true }
-						>
-							<FormTokenField
-								label="Display Classes"
-								value={ displayClasses }
-								suggestions={ displaySuggestions }
-								onChange={ onChangeDisplay }
-							/>
-							<FormTokenField
-								label="Margin Classes"
-								value={ marginClasses }
-								suggestions={ marginSuggestions }
-								onChange={ onChangeMargin }
-							/>
-							<FormTokenField
-								label="Padding Classes"
-								value={ paddingClasses }
-								suggestions={ paddingSuggestions }
-								onChange={ onChangePadding }
-							/>
-							<FormTokenField
-								label="Position Classes"
-								value={ positionClasses }
-								suggestions={ positionSuggestions }
-								onChange={ onChangePosition }
-							/>
-							<FormTokenField
-								label="Z-Index Classes"
-								value={ zindexClasses }
-								suggestions={ zindexSuggestions }
-								onChange={ onChangeZIndex }
-							/>
-							<FormTokenField
-								label="Blend Mode Classes"
-								value={ blendModeClasses }
-								suggestions={ blendModeSuggestions }
-								onChange={ onChangeBlendMode }
-							/>
-						</PanelBody>
-
-						<PanelBody
-							title="Unique Dropdown"
-							initialOpen={ false }
-						>
-							<SelectControl
-								label={
-									dropdownConfig.label || 'Unique Option'
-								}
-								value={ uniqueDropdownValue }
-								options={ dropdownConfig.options || [] }
-								onChange={ onChangeUniqueDropdown }
-							/>
-						</PanelBody>
-					</InspectorControls>
-				</Fragment>
-			);
-		};
-	},
-	'withExtendedInspectorControls'
-);
-
-addFilter(
-	'editor.BlockEdit',
-	'fs-blocks/extend-core-blocks/inspector-controls',
-	withExtendedInspectorControls
-);
-
-/**
- * ------------------------
- * 6) Editor Preview Classes
- * ------------------------
- */
-addFilter(
-	'editor.BlockListBlock',
-	'fs-blocks/extend-core-blocks/editor-preview-classes',
-	createHigherOrderComponent( ( BlockListBlock ) => {
-		return ( props ) => {
-			const { block } = props;
-			const { name, attributes } = block;
-
-			if ( ! ALLOWED_BLOCKS.includes( name ) ) {
-				return <BlockListBlock { ...props } />;
-			}
-
-			// Start with the default class
-			const defaultClass = getBlockDefaultClassName( name ) || '';
-			let combinedClass = defaultClass;
-
-			// Merge arrays
-			const display = attributes.displayClasses || [];
-			const margin = attributes.marginClasses || [];
-			const padding = attributes.paddingClasses || [];
-			const pos = attributes.positionClasses || [];
-			const zindex = attributes.zindexClasses || [];
-			const blend = attributes.blendModeClasses || [];
-
-			const combinedTokens = [
-				...display,
-				...margin,
-				...padding,
-				...pos,
-				...zindex,
-				...blend,
-			];
-
-			if ( combinedTokens.length ) {
-				combinedClass += ' ' + combinedTokens.join( ' ' );
-			}
-
-			// Unique dropdown
-			const dropdownConfig = BLOCK_DROPDOWN_CONFIG[ name ] || {};
-			const uniqueVal = attributes[ dropdownConfig.attributeKey ];
-			if ( uniqueVal && uniqueVal !== 'none' ) {
-				combinedClass += ' ' + uniqueVal;
-			}
-
-			return (
-				<BlockListBlock
-					{ ...props }
-					wrapperProps={ {
-						...props.wrapperProps,
-						className: combinedClass.trim(),
-					} }
-				/>
-			);
-		};
-	}, 'withEditorPreviewClasses' )
-);
-
-/**
- * ------------------------
- * 7) Final Saved Classes
- * ------------------------
- */
-addFilter(
-	'blocks.getSaveContent.extraProps',
-	'fs-blocks/extend-core-blocks/save-props',
-	( extraProps, blockType, attributes ) => {
-		const { name } = blockType;
-		if ( ! ALLOWED_BLOCKS.includes( name ) ) {
-			return extraProps;
-		}
-
-		// Start with WP's default class
-		const defaultClass = getBlockDefaultClassName( name ) || '';
-		const existing = extraProps.className || defaultClass;
-
-		// Combine token arrays
-		const combinedTokens = [
-			...( attributes.displayClasses || [] ),
-			...( attributes.marginClasses || [] ),
-			...( attributes.paddingClasses || [] ),
-			...( attributes.positionClasses || [] ),
-			...( attributes.zindexClasses || [] ),
-			...( attributes.blendModeClasses || [] ),
-		];
-
-		let finalClass = existing;
-		if ( combinedTokens.length ) {
-			finalClass += ' ' + combinedTokens.join( ' ' );
-		}
-
-		// Unique dropdown
-		const dropdownConfig = BLOCK_DROPDOWN_CONFIG[ name ] || {};
-		const uniqueVal = attributes[ dropdownConfig.attributeKey ];
-		if ( uniqueVal && uniqueVal !== 'none' ) {
-			finalClass += ' ' + uniqueVal;
-		}
-
-		extraProps.className = finalClass.trim();
-		return extraProps;
-	}
-);
-
-/**
- * ------------------------
- * 8) Define and register variations
- * ------------------------
- */
-const BLOCK_VARIATIONS = {
-	'core/heading': [
-		{
-			// Unique variation name (no "default" in it)
-			name: 'heading-custom',
-			title: 'Heading (Custom)',
-			description:
-				'A custom heading variation with default classes/options.',
-			icon: 'editor-bold',
-			attributes: {
-				// Using the "none" fallback so there's no empty string
-				headingDropdownValue: 'none',
-			},
-			isDefault: true, // replaces the core block in the inserter
-			scope: [ 'inserter' ],
-		},
-	],
-	'core/paragraph': [
-		{
-			name: 'paragraph-custom',
-			title: 'Paragraph (Custom)',
-			description: 'A paragraph with a chosen style by default.',
-			icon: 'editor-paragraph',
-			attributes: {
-				paragraphDropdownValue: 'none',
-			},
-			isDefault: true,
-			scope: [ 'inserter' ],
-		},
-	],
-	'core/list': [
-		{
-			name: 'list-custom',
-			title: 'List (Custom)',
-			description: 'A list block with a chosen style by default.',
-			icon: 'editor-ul',
-			attributes: {
-				listDropdownValue: 'none',
-			},
-			isDefault: true,
-			scope: [ 'inserter' ],
-		},
-	],
-	'core/list-item': [
-		{
-			name: 'list-item-custom',
-			title: 'List Item (Custom)',
-			description: 'A list item variation that replaces the default.',
-			icon: 'editor-ul',
-			attributes: {
-				listItemDropdownValue: 'none',
-			},
-			isDefault: true,
-			scope: [ 'inserter' ],
-		},
-	],
-	'core/buttons': [
-		{
-			name: 'buttons-custom',
-			title: 'Buttons (Custom)',
-			description: 'A button group with a chosen style by default.',
-			icon: 'button',
-			attributes: {
-				buttonDropdownValue: 'none',
-			},
-			isDefault: true,
-			scope: [ 'inserter' ],
-		},
-	],
+// Map class types to their options and suggestions
+const CLASS_OPTIONS_MAP = {
+    display: { options: displayOptions, suggestions: getSuggestions(displayOptions, false) },
+    margin: { options: marginOptions, suggestions: getSuggestions(marginOptions, false) },
+    padding: { options: paddingOptions, suggestions: getSuggestions(paddingOptions, false) },
+    position: { options: positionOptions, suggestions: getSuggestions(positionOptions, false) },
+    zindex: { options: zindexOptions, suggestions: getSuggestions(zindexOptions, false) },
+    blendMode: { options: blendModeOptions, suggestions: getSuggestions(blendModeOptions, false) },
 };
 
-Object.keys( BLOCK_VARIATIONS ).forEach( ( blockName ) => {
-	BLOCK_VARIATIONS[ blockName ].forEach( ( variation ) => {
-		registerBlockVariation( blockName, variation );
-	} );
-} );
+// Helper functions for FormTokenField
+function getDisplayValues(values, options, showValues) {
+    const result = [];
+    for (const value of values) {
+        const option = options.find((opt) => opt.value === value);
+        result.push(option ? (showValues ? option.value : option.label) : value);
+    }
+    return result;
+}
+
+function getValuesFromDisplay(displayValues, options, showValues) {
+    const result = [];
+    for (const display of displayValues) {
+        const option = options.find((opt) =>
+            showValues ? opt.value === display : opt.label === display
+        );
+        result.push(option ? option.value : display);
+    }
+    return result;
+}
+
+function getSuggestions(options, showValues) {
+    return options.map((item) => (showValues ? item.value : item.label));
+}
+
+// Custom WidthControl component for core/column
+const WidthControl = ({ label, icon, breakpoint, value, onChange, options }) => {
+    const numericValue = value.replace(/col-[a-z]{0,2}-/, '') || '0';
+    const [sliderValue, setSliderValue] = useState(numericValue);
+
+    const handleSliderChange = (event) => {
+        const newValue = event.target.value;
+        setSliderValue(newValue);
+        onChange(newValue === '0' ? '' : `col-${breakpoint}-${newValue}`);
+    };
+
+    const handleSquareClick = (index) => {
+        const newValue = (index + 1).toString();
+        setSliderValue(newValue);
+        onChange(newValue === '0' ? '' : `col-${breakpoint}-${newValue}`);
+    };
+
+    const handleOptionClick = (optionValue) => {
+        setSliderValue(optionValue === 'auto' ? '0' : optionValue);
+        onChange(optionValue);
+    };
+
+    const squares = Array.from({ length: 12 }, (_, index) => (
+        <div
+            key={index}
+            className={`custom-column-widths__square ${
+                index < parseInt(sliderValue || '0') ? 'custom-column-widths__square--selected' : ''
+            }`}
+            onClick={() => handleSquareClick(index)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    handleSquareClick(index);
+                }
+            }}
+        />
+    ));
+
+    return (
+        <div className="custom-column-widths__group">
+            <div className="custom-column-widths__header">
+                <Icon icon={icon} className="custom-column-widths__icon" />
+                <span className="custom-column-widths__label">{label}</span>
+                <span className="custom-column-widths__value">
+                    {value === 'auto'
+                        ? 'Auto'
+                        : value === ''
+                        ? 'Inherit'
+                        : `${numericValue} columns`}
+                </span>
+                {options.map((option) => (
+                    <Button
+                        key={option.value}
+                        onClick={() => handleOptionClick(option.value)}
+                        className={`custom-column-widths__option ${
+                            value === option.value ? 'is-active' : ''
+                        }`}
+                        variant="secondary"
+                    >
+                        {option.label}
+                    </Button>
+                ))}
+            </div>
+            <div className="custom-column-widths__slider">
+                {squares}
+                <input
+                    type="range"
+                    min="0"
+                    max="12"
+                    step="1"
+                    value={sliderValue}
+                    onChange={handleSliderChange}
+                    className="custom-column-widths__range"
+                />
+            </div>
+        </div>
+    );
+};
+
+// Custom Edit component for the block inspector
+const BlockEdit = (props) => {
+    const { attributes, setAttributes, name, clientId } = props;
+    const config = BLOCK_CONFIG[name] || {};
+    const dropdownConfig = config.dropdown || {};
+    const uniqueDropdownValue = attributes[dropdownConfig.attributeKey];
+    const [showValues, setShowValues] = useState(false);
+
+    // Bootstrap style check for core/column
+    const { parent, parentAtts } = useSelect(
+        (select) => ({
+            parent: select('core/block-editor').getBlockParents(clientId),
+            parentAtts: select('core/block-editor').getBlockAttributes(
+                select('core/block-editor').getBlockParents(clientId)[0]
+            ),
+        }),
+        [clientId]
+    );
+
+    const { updateBlockAttributes } = useDispatch('core/block-editor');
+    const isBootstrap =
+        parentAtts?.className && parentAtts.className.includes('is-style-bootstrap');
+
+    // FormTokenField controls for Bootstrap classes
+    const tokenFields = (config.classOptions || []).map((classType) => {
+        const classKey = `${classType}Classes`;
+        const classValue = attributes[classKey] || [];
+        const { options } = CLASS_OPTIONS_MAP[classType];
+
+        const onChange = (newTokens) => {
+            const newValues = getValuesFromDisplay(newTokens, options, showValues);
+            setAttributes({ [classKey]: newValues });
+        };
+
+        return (
+            <div key={classType} style={{ marginBottom: '20px' }}>
+                <FormTokenField
+                    label={`${classType.charAt(0).toUpperCase() + classType.slice(1)} Classes`}
+                    value={getDisplayValues(classValue, options, showValues)}
+                    suggestions={getSuggestions(options, showValues)}
+                    onChange={onChange}
+                />
+                <details style={{ marginTop: '5px' }}>
+                    <summary>{`Available ${classType.charAt(0).toUpperCase() + classType.slice(1)} Classes`}</summary>
+                    <ul style={{ fontSize: '12px', paddingLeft: '20px', margin: '5px 0' }}>
+                        {options.map((item) => (
+                            <li key={item.value}>{showValues ? item.value : item.label}</li>
+                        ))}
+                    </ul>
+                </details>
+            </div>
+        );
+    });
+
+    // Width controls for core/column
+    const widthControls = config.hasWidthControls ? (
+        <PanelBody title="Width Settings" initialOpen={true}>
+            {!isBootstrap && (
+                <div className="custom-column-widths__bootstrap-notice">
+                    <p className="greyd-inspector-help">
+                        By setting the columns style to "Bootstrap", the columns no longer break unintentionally.
+                    </p>
+                    <Button
+                        variant="secondary"
+                        isSmall
+                        onClick={() => {
+                            const newParentAtts = {
+                                ...parentAtts,
+                                className:
+                                    (parentAtts.className || '').replace('is-style-default', '') +
+                                    ' is-style-bootstrap',
+                            };
+                            updateBlockAttributes(parent[0], newParentAtts);
+                        }}
+                    >
+                        Set parent to "Bootstrap"
+                    </Button>
+                </div>
+            )}
+            <WidthControl
+                label="Larger Screen"
+                icon={keyboard}
+                breakpoint="lg"
+                value={attributes.widthLg}
+                onChange={(value) => setAttributes({ widthLg: value })}
+                options={[
+                    { label: 'Heirs ↓', value: '' },
+                    { label: 'Automatically', value: 'auto' },
+                ]}
+            />
+            <WidthControl
+                label="Laptop"
+                icon={helpFilled}
+                breakpoint="md"
+                value={attributes.widthMd}
+                onChange={(value) => setAttributes({ widthMd: value })}
+                options={[
+                    { label: 'Heirs ↓', value: '' },
+                    { label: 'Automatically', value: 'auto' },
+                ]}
+            />
+            <WidthControl
+                label="Tablet"
+                icon={globe}
+                breakpoint="sm"
+                value={attributes.widthSm}
+                onChange={(value) => setAttributes({ widthSm: value })}
+                options={[
+                    { label: 'Heirs ↓', value: '' },
+                    { label: 'Automatically', value: 'auto' },
+                ]}
+            />
+            <WidthControl
+                label="Mobile"
+                icon={gallery}
+                breakpoint=""
+                value={attributes.widthXs}
+                onChange={(value) => setAttributes({ widthXs: value })}
+                options={[
+                    { label: '100%', value: '' },
+                    { label: 'Automatically', value: 'auto' },
+                ]}
+            />
+        </PanelBody>
+    ) : null;
+
+    return (
+        <InspectorControls>
+            <PanelBody title="Bootstrap Classes" initialOpen={true}>
+                <CheckboxControl
+                    label="Show Values"
+                    checked={showValues}
+                    onChange={setShowValues}
+                    help="Display class names instead of labels."
+                    style={{ marginBottom: '20px' }}
+                />
+                {tokenFields}
+            </PanelBody>
+            {dropdownConfig.attributeKey && (
+                <PanelBody title="Unique Dropdown" initialOpen={false}>
+                    <SelectControl
+                        label={dropdownConfig.label || 'Unique Option'}
+                        value={uniqueDropdownValue}
+                        options={dropdownConfig.options || []}
+                        onChange={(newVal) =>
+                            setAttributes({ [dropdownConfig.attributeKey]: newVal })
+                        }
+                    />
+                </PanelBody>
+            )}
+            {widthControls}
+        </InspectorControls>
+    );
+};
+
+// Generate class names based on attributes
+const generateClassName = (attributes, blockName) => {
+    const config = BLOCK_CONFIG[blockName] || {};
+    const combinedTokens = [];
+
+    // Add classes from FormTokenField
+    for (const classType of config.classOptions || []) {
+        const classValue = attributes[`${classType}Classes`] || [];
+        combinedTokens.push(...classValue);
+    }
+
+    // Add classes from dropdown
+    const dropdownConfig = config.dropdown || {};
+    const uniqueVal = attributes[dropdownConfig.attributeKey];
+    if (uniqueVal && uniqueVal !== 'none' && uniqueVal !== '') {
+        combinedTokens.push(uniqueVal);
+    }
+
+    // Add width classes for core/column
+    if (config.hasWidthControls) {
+        const { widthXs, widthSm, widthMd, widthLg } = attributes;
+        if (widthLg && widthLg !== 'auto' && widthLg !== '') {
+            combinedTokens.push(widthLg);
+        }
+        if (widthMd && widthMd !== 'auto' && widthMd !== '') {
+            combinedTokens.push(widthMd);
+        }
+        if (widthSm && widthSm !== 'auto' && widthSm !== '') {
+            combinedTokens.push(widthSm);
+        }
+        if (widthXs && widthXs !== 'auto' && widthXs !== '') {
+            combinedTokens.push(widthXs);
+        }
+    }
+
+    return combinedTokens.join(' ');
+};
+
+// Register extensions for each block
+ALLOWED_BLOCKS.forEach((blockName) => {
+    const config = BLOCK_CONFIG[blockName] || {};
+    const dropdownConfig = config.dropdown || {};
+
+    // Define attributes
+    const attributes = {};
+    for (const classType of config.classOptions || []) {
+        attributes[`${classType}Classes`] = {
+            type: 'array',
+            items: { type: 'string' },
+            default: [],
+        };
+    }
+    if (dropdownConfig.attributeKey) {
+        attributes[dropdownConfig.attributeKey] = {
+            type: 'string',
+            default: dropdownConfig.default || 'none',
+        };
+    }
+    if (config.hasWidthControls) {
+        attributes.widthXs = { type: 'string', default: '' };
+        attributes.widthSm = { type: 'string', default: '' };
+        attributes.widthMd = { type: 'string', default: '' };
+        attributes.widthLg = { type: 'string', default: '' };
+    }
+
+    // Register the extension
+    registerBlockExtension(blockName, {
+        extensionName: `custom-${blockName.replace('core/', '')}`,
+        attributes: attributes,
+        Edit: BlockEdit,
+        classNameGenerator: (attributes) => generateClassName(attributes, blockName),
+    });
+});

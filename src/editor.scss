@@ -37,152 +37,166 @@ $column-breakpoints: (
 
 // Styles for wp-block-column (columnOptionsCore classes)
 .wp-block-column {
-  @each $prefix, $breakpoint in $column-breakpoints {
-    @if $prefix == "" {
-      @each $size-name, $size-value in $column-sizes {
-        // Add dash only if $size-name is not empty
-        @if $size-name == "" {
-          &.wp-block-column--column {
-            @include make-col($size-value);
-          }
-        } @else {
-          &.wp-block-column--column-#{$size-name} {
-            @include make-col($size-value);
-          }
-        }
-      }
-    } @else {
-      @include media-breakpoint-up(map.get($column-breakpoints, $prefix)) {
-        @each $size-name, $size-value in $column-sizes {
-          // Add dash only if $size-name is not empty
-          @if $size-name == "" {
-            &.wp-block-column--column#{$prefix} {
-              @include make-col($size-value);
-            }
-          } @else {
-            &.wp-block-column--column#{$prefix}-#{$size-name} {
-              @include make-col($size-value);
-            }
-          }
-        }
-      }
-    }
-  }
+	@each $prefix, $breakpoint in $column-breakpoints {
+		@if $prefix == "" {
+			@each $size-name, $size-value in $column-sizes {
+			// Add dash only if $size-name is not empty
+			@if $size-name == "" {
+				&.wp-block-column--column {
+					@include make-col($size-value);
+				}
+			} @else {
+				&.wp-block-column--column-#{$size-name} {
+					@include make-col($size-value);
+				}
+			}
+			}
+		} @else {
+			@include media-breakpoint-up(map.get($column-breakpoints, $prefix)) {
+				@each $size-name, $size-value in $column-sizes {
+					// Add dash only if $size-name is not empty
+					@if $size-name == "" {
+						&.wp-block-column--column#{$prefix} {
+							@include make-col($size-value);
+						}
+						} @else {
+						&.wp-block-column--column#{$prefix}-#{$size-name} {
+							@include make-col($size-value);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 
 // Styles for FormTokenField controls (shared across all blocks)
-.custom-inspector-controls {
-    .components-panel__body {
-        .components-checkbox-control {
-            margin-bottom: 20px;
-        }
+// Styles for FormTokenField controls (shared across all blocks)
+.custom-column-widths {
+	&__group {
+		margin-bottom: 20px;
+		.components-range-control {
+			// Customize the track
+			.components-range-control__track {
+				background: #ddd;
+			}
 
-        .components-form-token-field {
-            margin-bottom: 20px;
-        }
+			// Customize the thumb
+			.components-range-control__thumb-wrapper {
+				.components-range-control__thumb {
+					background: #000;
+					border: 2px solid #fff;
+				}
+			}
 
-        details {
-            margin-top: 5px;
+			// Customize the marks
+			.components-range-control__mark {
+				background: #666;
+			}
 
-            summary {
-                cursor: pointer;
-                font-size: 12px;
-                color: #555;
-            }
+			// Customize the mark labels
+			.components-range-control__mark-label {
+				color: #333;
+				font-size: 12px;
+			}
 
-            ul {
-                font-size: 12px;
-                padding-left: 20px;
-                margin: 5px 0;
-                list-style: disc;
-            }
-        }
-    }
-}
+			.components-base-control__label {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				padding: 0;
+				margin: -1px;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				border: 0;
+			}
+		}
+		// &--base {
+		// 	// Example: Add a border to the Base group
+		// 	border-left: 4px solid #007cba;
+		// 	padding-left: 10px;
+		// }
 
-// Styles for WidthControl (specific to core/column)
-.custom-column-widths__group {
-    margin-bottom: 20px;
-}
+		// &--mobile {
+		// 	// Example: Change the background color for the Mobile group
+		// 	background-color: #f8f9fa;
+		// }
 
-.custom-column-widths__header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
+		// &--tablet {
+		// 	// Example: Add a different border color for the Tablet group
+		// 	border-left: 4px solid #28a745;
+		// 	padding-left: 10px;
+		// }
 
-.custom-column-widths__icon {
-    margin-right: 5px;
-    color: #555;
-}
+		// &--laptop {
+		// 	// Example: Change the background color for the Laptop group
+		// 	background-color: #e9ecef;
+		// }
 
-.custom-column-widths__label {
-    flex-grow: 1;
-    font-weight: 500;
-}
-
-.custom-column-widths__value {
-    margin-right: 5px;
-    font-style: italic;
-    color: #666;
-}
-
-.custom-column-widths__option {
-    background: #f0f0f0;
-    border: 1px solid #ccc;
-    padding: 5px 10px;
-    margin-left: 5px;
-    cursor: pointer;
-
-    &.is-active {
-        background: #ddd;
-        font-weight: bold;
-    }
-}
-
-.custom-column-widths__slider {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-.custom-column-widths__square {
-    width: 15.25px;
-    height: 40px;
-    background: #ddd;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    transition: background-color 0.2s;
-
-    &:hover {
-        background: #ccc;
-    }
-
-    &--selected {
-        background: #000;
-    }
-
-    &:nth-child(4n) {
-        margin-right: 5px; // Add spacing after every 4th square
-    }
-	&:nth-child(12) {
-		margin-right: 0; // Remove margin for the last square
+		// &--larger-screen {
+		// 	// Example: Add a different border color for the Larger Screen group
+		// 	border-left: 4px solid #dc3545;
+		// 	padding-left: 10px;
+		// }
 	}
 
-}
+	&__header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 10px;
+		flex-wrap: wrap;
+	}
 
-.custom-column-widths__range {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
+	&__icon {
+		width: 23px; // Match the previous icon size
+		min-width: 23px;
+		height: 23px;
+		margin-right: 10px;
+		background-size: contain; // Ensure the image fits within the div
+		background-repeat: no-repeat;
+		background-position: center;
+		.custom-column-widths__group--base & {
+			display: none;
+		}
+	}
 
-.custom-column-widths__bootstrap-notice {
-    margin-bottom: 15px;
+	&__label {
+		flex-grow: 1;
+		font-weight: 500;
+	}
+
+	&__value {
+		margin-right: 10px;
+		font-style: italic;
+		color: #666;
+	}
+
+	&__buttons {
+		display: flex;
+		gap: 5px;
+		width: 100%;
+		justify-content: space-between;
+		margin: 6px 0 0;
+		.components-button {
+			margin: 0;
+		}
+	}
+
+	&__option {
+		background: #f0f0f0;
+		border: 1px solid #ccc;
+		padding: 3px 10px;
+		margin-left: 5px;
+		cursor: pointer;
+
+		&.is-active {
+			background: #ddd;
+			font-weight: bold;
+		}
+	}
+
+	&__bootstrap-notice {
+		margin-bottom: 15px;
+	}
 }

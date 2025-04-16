@@ -13,7 +13,7 @@ const WidthControl = ( {
 } ) => {
 	const getNumericValue = ( val ) => {
 		if ( val === '' || val === 'auto' ) return 0;
-		return parseInt( val.replace( /col-(?:[a-z]{0,2}-)?/, '' ) ) || 0;
+		return parseInt( val.replace( /wp-block-column--column-(?:[a-z]{0,3}-)?/, '' ) ) || 0;
 	};
 
 	const getLabelClassName = ( labelText ) => {
@@ -29,7 +29,7 @@ const WidthControl = ( {
 			const autoOption = options.find( ( opt ) => opt.value === 'auto' );
 			onChange( autoOption ? 'auto' : '' );
 		} else {
-			const classPrefix = breakpoint ? `col-${ breakpoint }` : 'col';
+			const classPrefix = breakpoint ? `wp-block-column--column-${ breakpoint }` : 'wp-block-column--column';
 			onChange( `${ classPrefix }-${ newValue }` );
 		}
 	};

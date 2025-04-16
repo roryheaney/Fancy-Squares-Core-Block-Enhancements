@@ -191,6 +191,18 @@ const BlockEdit = ( props ) => {
                     { label: 'Automatically', value: 'auto' },
                 ] }
             />
+			<WidthControl
+                label="XXL Screen"
+                subLabel={ BREAKPOINT_DIMENSIONS['xxl'] }
+                image={ desktopImage }
+                breakpoint="xxl"
+                value={ attributes.widthXXl }
+                onChange={ ( value ) => setAttributes( { widthXXl: value } ) }
+                options={ [
+                    { label: 'Heirs ↓', value: '' },
+                    { label: 'Automatically', value: 'auto' },
+                ] }
+            />
         </PanelBody>
     ) : null;
 

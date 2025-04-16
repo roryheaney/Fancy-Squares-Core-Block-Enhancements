@@ -28,7 +28,8 @@
 		max-width: none;
 	} @else {
 		$pct: calc(100% * $size / 12);
-		flex: 0 0 auto;
 		width: #{$pct};
+		min-width: #{$pct};
+		max-width: #{$pct};
 	}
 }

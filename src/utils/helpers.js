@@ -90,7 +90,7 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 
 	// Add width classes for core/column
 	if ( config.hasWidthControls ) {
-		const { widthBase, widthSm, widthMd, widthLg, widthXl } = attributes;
+		const { widthBase, widthSm, widthMd, widthLg, widthXl, widthXXl } = attributes;
 		if ( widthBase && widthBase !== 'auto' && widthBase !== '' ) {
 			combinedTokens.push( widthBase );
 		}
@@ -106,10 +106,13 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 		if ( widthXl && widthXl !== 'auto' && widthXl !== '' ) {
 			combinedTokens.push( widthXl );
 		}
+		if ( widthXXl && widthXXl !== 'auto' && widthXXl !== '' ) {
+			combinedTokens.push( widthXXl );
+		}
 	}
 
 	// Add padding classes
-	const breakpoints = [ '', 'sm', 'md', 'lg', 'xl' ];
+	const breakpoints = [ '', 'sm', 'md', 'lg', 'xl', 'xxl' ];
 
 	PADDING_SIDE_TYPES.forEach( ( sideType ) => {
 		breakpoints.forEach( ( breakpoint ) => {

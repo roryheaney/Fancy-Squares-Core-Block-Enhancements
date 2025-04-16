@@ -58,6 +58,7 @@ ALLOWED_BLOCKS.forEach( ( blockName ) => {
 		attributes.widthMd = { type: 'string', default: '' };
 		attributes.widthLg = { type: 'string', default: '' };
 		attributes.widthXl = { type: 'string', default: '' };
+		attributes.widthXXl = { type: 'string', default: '' };
 	}
 
 	// Register the extension

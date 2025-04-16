@@ -200,3 +200,9 @@ $column-breakpoints: (
 		margin-bottom: 15px;
 	}
 }
+
+.is-style-bootstrap {
+	&.wp-block-columns {
+		flex-wrap: wrap !important;
+	}
+}

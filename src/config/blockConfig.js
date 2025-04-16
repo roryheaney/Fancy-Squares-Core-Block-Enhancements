@@ -7,6 +7,7 @@ import {
     blendModeOptions,
     alignItemsOptions,
     selfAlignmentOptions,
+	justifyContentOptions
 } from '../../data/bootstrap-classes/classes.js';
 
 export const ALLOWED_BLOCKS = [
@@ -80,7 +81,7 @@ export const BLOCK_CONFIG = {
         },
     },
     'core/columns': {
-        classOptions: [ 'display', 'position', 'zindex', 'alignItems' ], // Added alignItems for controlling child column alignment
+        classOptions: [ 'display', 'position', 'zindex', 'alignItems', 'justifyContent' ], // Added alignItems for controlling child column alignment
         dropdown: {
             attributeKey: 'columnsLayout',
             label: 'Columns Layout',
@@ -171,6 +172,10 @@ export const CLASS_OPTIONS_MAP = {
         options: selfAlignmentOptions,
         suggestions: getSuggestions( selfAlignmentOptions, false ),
     },
+	justifyContent: { // Added justifyContent for core/columns
+		options: justifyContentOptions,
+		suggestions: getSuggestions( justifyContentOptions, false ),
+	},
 };
 
 // Note: getSuggestions is used in CLASS_OPTIONS_MAP, so we need to define it here temporarily

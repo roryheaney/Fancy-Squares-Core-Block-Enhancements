@@ -7,7 +7,8 @@ import {
     blendModeOptions,
     alignItemsOptions,
     selfAlignmentOptions,
-	justifyContentOptions
+	justifyContentOptions,
+	orderOptions
 } from '../../data/bootstrap-classes/classes.js';
 
 export const ALLOWED_BLOCKS = [
@@ -128,7 +129,7 @@ export const BLOCK_CONFIG = {
         },
     },
     'core/column': {
-        classOptions: [ 'display', 'position', 'zindex', 'selfAlignment' ], // Added selfAlignment for controlling column alignment within parent
+        classOptions: [ 'display', 'position', 'zindex', 'selfAlignment', 'order' ], // Added selfAlignment for controlling column alignment within parent
         dropdown: {
             attributeKey: 'columnsLayout',
             label: 'Column Layout Override',
@@ -175,6 +176,10 @@ export const CLASS_OPTIONS_MAP = {
 	justifyContent: { // Added justifyContent for core/columns
 		options: justifyContentOptions,
 		suggestions: getSuggestions( justifyContentOptions, false ),
+	},
+	order: { // Added order for core/column
+		options: orderOptions,
+		suggestions: getSuggestions( orderOptions, false ),
 	},
 };
 

@@ -1,0 +1,35 @@
+// ==========================================
+// File: _mixins.scss
+// ==========================================
+
+@use "sass:map";
+@use "settings" as *;
+
+/// Mixin: media-breakpoint-up($breakpoint)
+/// Applies min-width media query based on $grid-breakpoints.
+@mixin media-breakpoint-up($breakpoint) {
+	@if map.has-key($grid-breakpoints, $breakpoint) {
+		@media (min-width: #{map.get($grid-breakpoints, $breakpoint)}) {
+			@content;
+		}
+	} @else {
+		@warn "Breakpoint `#{$breakpoint}` not found in $grid-breakpoints map.";
+	}
+}
+
+/// Mixin: make-column($size)
+/// Creates .column, .column-auto, .column-1..12 styles.
+@mixin make-col($size: false) {
+	@if $size == false {
+		flex: 1 0 0%;
+	} @else if $size == auto {
+		flex: 0 0 auto;
+		width: auto;
+		max-width: none;
+	} @else {
+		$pct: calc(100% * $size / 12);
+		width: #{$pct};
+		min-width: #{$pct};
+		max-width: #{$pct};
+	}
+}

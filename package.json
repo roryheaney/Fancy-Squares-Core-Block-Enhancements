@@ -1,6 +1,6 @@
 {
 	"name": "fancy-squares-core-enhancements",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"description": "Extends core blocks with custom classes and dropdowns",
 	"author": "Your Name",
 	"license": "GPL-2.0-or-later",
@@ -13,5 +13,8 @@
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^30.10.0"
+	},
+	"dependencies": {
+		"@10up/block-components": "^1.20.0"
 	}
 }

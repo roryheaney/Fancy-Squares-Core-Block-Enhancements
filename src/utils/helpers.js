@@ -90,7 +90,8 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 
 	// Add width classes for core/column
 	if ( config.hasWidthControls ) {
-		const { widthBase, widthSm, widthMd, widthLg, widthXl, widthXXl } = attributes;
+		const { widthBase, widthSm, widthMd, widthLg, widthXl, widthXXl } =
+			attributes;
 		if ( widthBase && widthBase !== 'auto' && widthBase !== '' ) {
 			combinedTokens.push( widthBase );
 		}

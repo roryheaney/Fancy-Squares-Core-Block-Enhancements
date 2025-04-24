@@ -1237,3 +1237,19 @@ export const columnOptionsCore = [
 	{ label: 'XXL 11/12', value: 'wp-block-column--column-xxl-11' },
 	{ label: 'XXL Full Width', value: 'wp-block-column--column-xxl-12' },
 ];
+
+export const widthOptions = [
+	{ label: 'Auto Width', value: 'w-auto' },
+	{ label: '25% Width', value: 'w-25' },
+	{ label: '50% Width', value: 'w-50' },
+	{ label: '75% Width', value: 'w-75' },
+	{ label: '100% Width', value: 'w-100' },
+];
+
+export const heightOptions = [
+	{ label: 'Auto Height', value: 'h-auto' },
+	{ label: '25% Height', value: 'h-25' },
+	{ label: '50% Height', value: 'h-50' },
+	{ label: '75% Height', value: 'h-75' },
+	{ label: '100% Height', value: 'h-100' },
+];

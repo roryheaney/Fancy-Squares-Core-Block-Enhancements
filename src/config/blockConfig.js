@@ -9,6 +9,7 @@ import {
 	selfAlignmentOptions,
 	justifyContentOptions,
 	orderOptions,
+	gapOptions
 } from '../../data/bootstrap-classes/classes.js';
 
 export const ALLOWED_BLOCKS = [
@@ -19,6 +20,7 @@ export const ALLOWED_BLOCKS = [
 	'core/buttons',
 	'core/columns',
 	'core/column',
+	'core/group',
 ];
 
 export const BREAKPOINT_DIMENSIONS = {
@@ -145,6 +147,15 @@ export const BLOCK_CONFIG = {
 		},
 		hasWidthControls: true,
 	},
+	'core/group': {
+		classOptions: [ 'display', 'position', 'zindex', 'gapSpacing' ],
+		// dropdown: {
+		// 	attributeKey: 'stackDropdownValue',
+		// 	label: 'Group Option',
+		// 	default: 'none',
+		// 	options: [ { label: 'Select one', value: 'none' } ],
+		// },
+	},
 };
 
 export const CLASS_OPTIONS_MAP = {
@@ -191,6 +202,11 @@ export const CLASS_OPTIONS_MAP = {
 		// Added order for core/column
 		options: orderOptions,
 		suggestions: getSuggestions( orderOptions, false ),
+	},
+	gapSpacing: {
+		// Added gapSpacing for core/group
+		options: gapOptions,
+		suggestions: getSuggestions( gapOptions, false ),
 	},
 };
 

@@ -90,10 +90,15 @@ const BlockEdit = ( props ) => {
 					onChange={ onChange }
 				/>
 				<details style={ { marginTop: '5px' } }>
-					<summary>{ `Available ${
-						classType.charAt( 0 ).toUpperCase() +
-						classType.slice( 1 )
-					} Classes` }</summary>
+					<summary>
+						{`Available ${
+							classType
+							// 1) insert a space before each uppercase letter
+							.replace(/([A-Z])/g, ' $1')
+							// 2) uppercase the very first character
+							.replace(/^./, str => str.toUpperCase())
+						} Classes`}
+					</summary>
 					<ul
 						style={ {
 							fontSize: '12px',

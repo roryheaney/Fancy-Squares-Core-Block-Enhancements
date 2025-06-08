@@ -9,7 +9,7 @@ import {
 	selfAlignmentOptions,
 	justifyContentOptions,
 	orderOptions,
-	gapOptions
+	gapOptions,
 } from '../../data/bootstrap-classes/classes.js';
 
 export const ALLOWED_BLOCKS = [

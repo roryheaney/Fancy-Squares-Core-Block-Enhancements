@@ -170,32 +170,36 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 
 	// Add negative margin classes
 	// utils/helpers.js (snippet)
-	NEGATIVE_MARGIN_SIDE_TYPES.forEach( ( sideType ) => {
-		breakpoints.forEach( ( breakpoint ) => {
-			const attrKey = `${ sideType.key }${
-				breakpoint
-					? breakpoint.charAt( 0 ).toUpperCase() +
-					  breakpoint.slice( 1 )
-					: 'Base'
-			}`;
-			const value = attributes[ attrKey ];
-			if ( value && value !== '' ) {
-				const breakpointSuffix = breakpoint ? `-${ breakpoint }` : '';
-				const negativeValue = Math.abs( parseInt( value ) );
-				if ( Array.isArray( sideType.prefix ) ) {
-					sideType.prefix.forEach( ( prefix ) => {
-						combinedTokens.push(
-							`${ prefix }${ breakpointSuffix }-n${ negativeValue }`
-						);
-					} );
-				} else {
-					combinedTokens.push(
-						`${ sideType.prefix }${ breakpointSuffix }-n${ negativeValue }`
-					);
-				}
-			}
-		} );
-	} );
+        NEGATIVE_MARGIN_SIDE_TYPES.forEach( ( sideType ) => {
+                breakpoints.forEach( ( breakpoint ) => {
+                        const attrKey = `${ sideType.key }${
+                                breakpoint
+                                        ? breakpoint.charAt( 0 ).toUpperCase() +
+                                          breakpoint.slice( 1 )
+                                        : 'Base'
+                        }`;
+                        const value = attributes[ attrKey ];
+                        if ( value && value !== '' ) {
+                                const intVal = parseInt( value );
+                                // Skip if value is zero which represents no negative margin
+                                if ( intVal !== 0 && ! isNaN( intVal ) ) {
+                                        const breakpointSuffix = breakpoint ? `-${ breakpoint }` : '';
+                                        const negativeValue = Math.abs( intVal );
+                                        if ( Array.isArray( sideType.prefix ) ) {
+                                                sideType.prefix.forEach( ( prefix ) => {
+                                                        combinedTokens.push(
+                                                                `${ prefix }${ breakpointSuffix }-n${ negativeValue }`
+                                                        );
+                                                } );
+                                        } else {
+                                                combinedTokens.push(
+                                                        `${ sideType.prefix }${ breakpointSuffix }-n${ negativeValue }`
+                                                );
+                                        }
+                                }
+                        }
+                } );
+        } );
 
 	return combinedTokens.join( ' ' );
 };

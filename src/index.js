@@ -6,6 +6,8 @@
  * Adds custom width controls to core/column for breakpoint-specific layouts.
  */
 
+import './block-enhancements.js';
+
 // Import span modal
 import './formats/span-format.js';
 

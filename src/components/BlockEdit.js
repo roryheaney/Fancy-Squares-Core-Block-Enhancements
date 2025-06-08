@@ -90,10 +90,15 @@ const BlockEdit = ( props ) => {
 					onChange={ onChange }
 				/>
 				<details style={ { marginTop: '5px' } }>
-					<summary>{ `Available ${
-						classType.charAt( 0 ).toUpperCase() +
-						classType.slice( 1 )
-					} Classes` }</summary>
+					<summary>
+						{ `Available ${ classType
+							// 1) insert a space before each uppercase letter
+							.replace( /([A-Z])/g, ' $1' )
+							// 2) uppercase the very first character
+							.replace( /^./, ( str ) =>
+								str.toUpperCase()
+							) } Classes` }
+					</summary>
 					<ul
 						style={ {
 							fontSize: '12px',
@@ -117,7 +122,7 @@ const BlockEdit = ( props ) => {
 			{ ! isBootstrap && (
 				<div className="custom-column-widths__bootstrap-notice">
 					<p className="greyd-inspector-help">
-						By setting the columns style to "Bootstrap", the columns
+						By setting the columns style to "Custom Breakpoints", the columns
 						no longer break unintentionally.
 					</p>
 					<Button
@@ -135,7 +140,7 @@ const BlockEdit = ( props ) => {
 							updateBlockAttributes( parent[ 0 ], newParentAtts );
 						} }
 					>
-						Set parent to "Bootstrap"
+						Set parent to use custom breakpoints
 					</Button>
 				</div>
 			) }
@@ -153,6 +158,7 @@ const BlockEdit = ( props ) => {
 			/>
 			<WidthControl
 				label="Mobile"
+				// eslint-disable-next-line dot-notation
 				subLabel={ BREAKPOINT_DIMENSIONS[ 'sm' ] }
 				image={ mobileImage }
 				breakpoint="sm"
@@ -165,6 +171,7 @@ const BlockEdit = ( props ) => {
 			/>
 			<WidthControl
 				label="Tablet"
+				// eslint-disable-next-line dot-notation
 				subLabel={ BREAKPOINT_DIMENSIONS[ 'md' ] }
 				image={ tabletImage }
 				breakpoint="md"
@@ -177,6 +184,7 @@ const BlockEdit = ( props ) => {
 			/>
 			<WidthControl
 				label="Laptop"
+				// eslint-disable-next-line dot-notation
 				subLabel={ BREAKPOINT_DIMENSIONS[ 'lg' ] }
 				image={ laptopImage }
 				breakpoint="lg"
@@ -189,6 +197,7 @@ const BlockEdit = ( props ) => {
 			/>
 			<WidthControl
 				label="Larger Screen"
+				// eslint-disable-next-line dot-notation
 				subLabel={ BREAKPOINT_DIMENSIONS[ 'xl' ] }
 				image={ desktopImage }
 				breakpoint="xl"
@@ -201,6 +210,7 @@ const BlockEdit = ( props ) => {
 			/>
 			<WidthControl
 				label="XXL Screen"
+				// eslint-disable-next-line dot-notation
 				subLabel={ BREAKPOINT_DIMENSIONS[ 'xxl' ] }
 				image={ desktopImage }
 				breakpoint="xxl"
@@ -791,7 +801,7 @@ const BlockEdit = ( props ) => {
 				{ tokenFields }
 			</PanelBody>
 			{ dropdownConfig.attributeKey && (
-				<PanelBody title="Unique Dropdown" initialOpen={ false }>
+				<PanelBody title="Block Specific Classes" initialOpen={ false }>
 					<SelectControl
 						label={ dropdownConfig.label || 'Unique Option' }
 						value={ uniqueDropdownValue }

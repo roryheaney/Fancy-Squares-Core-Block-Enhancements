@@ -19,6 +19,8 @@
 
 /// Mixin: make-column($size)
 /// Creates .column, .column-auto, .column-1..12 styles.
+/// var halfGap = 12 px
+$half-gap: 12px;
 @mixin make-col($size: false) {
 	@if $size == false {
 		flex: 1 0 0%;
@@ -28,8 +30,11 @@
 		max-width: none;
 	} @else {
 		$pct: calc(100% * $size / 12);
-		width: #{$pct};
-		min-width: #{$pct};
-		max-width: #{$pct};
+		// width: calc(#{$pct});
+		// min-width: calc(#{$pct});
+		// max-width: calc(#{$pct});
+		width: calc(#{$pct} - $half-gap);
+		min-width: calc(#{$pct} - $half-gap);
+		max-width: calc(#{$pct} - $half-gap);
 	}
 }

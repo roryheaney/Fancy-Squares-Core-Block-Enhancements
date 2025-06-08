@@ -122,8 +122,8 @@ const BlockEdit = ( props ) => {
 			{ ! isBootstrap && (
 				<div className="custom-column-widths__bootstrap-notice">
 					<p className="greyd-inspector-help">
-						By setting the columns style to "Custom Breakpoints", the columns
-						no longer break unintentionally.
+						By setting the columns style to "Custom Breakpoints",
+						the columns no longer break unintentionally.
 					</p>
 					<Button
 						variant="secondary"

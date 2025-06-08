@@ -165,7 +165,7 @@ const BlockEdit = ( props ) => {
 				value={ attributes.widthSm }
 				onChange={ ( value ) => setAttributes( { widthSm: value } ) }
 				options={ [
-					{ label: 'Heirs ↓', value: '' },
+					{ label: 'Inherit ↓', value: '' },
 					{ label: 'Automatically', value: 'auto' },
 				] }
 			/>
@@ -178,7 +178,7 @@ const BlockEdit = ( props ) => {
 				value={ attributes.widthMd }
 				onChange={ ( value ) => setAttributes( { widthMd: value } ) }
 				options={ [
-					{ label: 'Heirs ↓', value: '' },
+					{ label: 'Inherit ↓', value: '' },
 					{ label: 'Automatically', value: 'auto' },
 				] }
 			/>
@@ -191,7 +191,7 @@ const BlockEdit = ( props ) => {
 				value={ attributes.widthLg }
 				onChange={ ( value ) => setAttributes( { widthLg: value } ) }
 				options={ [
-					{ label: 'Heirs ↓', value: '' },
+					{ label: 'Inherit ↓', value: '' },
 					{ label: 'Automatically', value: 'auto' },
 				] }
 			/>
@@ -204,7 +204,7 @@ const BlockEdit = ( props ) => {
 				value={ attributes.widthXl }
 				onChange={ ( value ) => setAttributes( { widthXl: value } ) }
 				options={ [
-					{ label: 'Heirs ↓', value: '' },
+					{ label: 'Inherit ↓', value: '' },
 					{ label: 'Automatically', value: 'auto' },
 				] }
 			/>
@@ -217,7 +217,7 @@ const BlockEdit = ( props ) => {
 				value={ attributes.widthXXl }
 				onChange={ ( value ) => setAttributes( { widthXXl: value } ) }
 				options={ [
-					{ label: 'Heirs ↓', value: '' },
+					{ label: 'Inherit ↓', value: '' },
 					{ label: 'Automatically', value: 'auto' },
 				] }
 			/>

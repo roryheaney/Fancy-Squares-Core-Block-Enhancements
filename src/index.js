@@ -7,6 +7,8 @@
  */
 
 import './block-enhancements.js';
+import './link-aria.js';
+import './link-aria-ui.js';
 
 // Import span modal
 import './formats/span-format.js';

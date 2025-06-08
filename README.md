@@ -84,7 +84,11 @@ This plugin file (`index.js`) demonstrates how to:
      - For `core/column`, adjust width settings across breakpoints.
      - Set padding and margins (positive and negative) for each side and breakpoint.
    - To apply inline styling, select some text and click the “Span” toolbar button. A modal will open where you can choose Bootstrap classes and set text/background colors.
-   - After applying, the `<span>` is saved with the chosen classes and inline styles. When you re-open the modal for that span, your previous selections are repopulated for editing.
+    - After applying, the `<span>` is saved with the chosen classes and inline styles. When you re-open the modal for that span, your previous selections are repopulated for editing.
+
+### Link ARIA Label Override
+
+The link dialog now includes an **ARIA label text** field. This value is saved as `data-aria-label-text` on the link. When a link opens in a new window, the plugin reads this value and appends “opens in a new window” to form the final `aria-label`. If the field is left empty, the link text is used instead.
 
 ## Key Files & Code Sections
 

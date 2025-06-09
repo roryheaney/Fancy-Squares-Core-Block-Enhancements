@@ -1,46 +1,44 @@
-import { addFilter } from "@wordpress/hooks";
-import { TextControl } from "@wordpress/components";
-import { createElement } from "@wordpress/element";
-import { __ } from "@wordpress/i18n";
+import { TextControl } from '@wordpress/components';
+import { createElement, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+// WordPress exposes the LinkControl component on the global wp.blockEditor
+const { LinkControl } = window.wp?.blockEditor || {};
 
 /**
- * Extend the LinkControl component to include a text field that sets
- * the `data-aria-label-text` attribute on the link element.
- * This allows custom screen reader text when a link opens in a new window.
+ * Replace the global LinkControl with a wrapper that adds an
+ * "ARIA label text" field in the advanced section.
  */
-function addAriaTextSetting(LinkControl) {
-	return function (props) {
-		const ariaText =
-			props?.value?.attributes?.["data-aria-label-text"] || "";
+if ( LinkControl ) {
+       const OriginalLinkControl = LinkControl;
 
-		const updateAriaText = (newText) => {
-			const value = {
-				...props.value,
-				attributes: {
-					...(props.value?.attributes || {}),
-					"data-aria-label-text": newText || undefined,
-				},
-			};
-			props.onChange(value);
-		};
+       window.wp.blockEditor.LinkControl = function AriaLinkControl( props ) {
+               const [ ariaText, setAriaText ] = useState(
+                       props?.value?.attributes?.[ 'data-aria-label-text' ] || ''
+               );
 
-		const extraSetting = {
-			id: "ariaLabelText",
-			title: __("Aria label text", "fs-blocks"),
-			content: createElement(TextControl, {
-				label: __("ARIA label text", "fs-blocks"),
-				value: ariaText,
-				onChange: updateAriaText,
-			}),
-		};
+               const onAriaChange = ( newText ) => {
+                       setAriaText( newText );
+                       const value = {
+                               ...props.value,
+                               attributes: {
+                                       ...( props.value?.attributes || {} ),
+                                       'data-aria-label-text': newText || undefined,
+                               },
+                       };
+                       props.onChange( value );
+               };
 
-		const settings = [...(props.settings || []), extraSetting];
+               const renderControlBottom = () =>
+                       createElement( TextControl, {
+                               label: __( 'ARIA label text', 'fs-blocks' ),
+                               value: ariaText,
+                               onChange: onAriaChange,
+                       } );
 
-		return createElement(LinkControl, { ...props, settings });
-	};
+               return createElement( OriginalLinkControl, {
+                       ...props,
+                       renderControlBottom,
+               } );
+       };
 }
-addFilter(
-	"editor.LinkControl",
-	"fancy-squares-core-enhancements/aria-link-setting",
-	addAriaTextSetting,
-);

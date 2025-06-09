@@ -88,7 +88,7 @@ This plugin file (`index.js`) demonstrates how to:
 
 ### Link ARIA Label Override
 
-The link dialog now includes an **ARIA label text** field. This value is saved as `data-aria-label-text` on the link. When a link opens in a new window, the plugin reads this value and appends “opens in a new window” to form the final `aria-label`. If the field is left empty, the link text is used instead.
+The link dialog now includes an **ARIA label text** field in the Advanced settings. The text is stored in the `data-aria-label-text` attribute. When a link opens in a new window, the plugin reads this value and appends “opens in a new window” to build the final `aria-label`. If the field is left blank, the regular link text is used instead.
 
 ## Key Files & Code Sections
 

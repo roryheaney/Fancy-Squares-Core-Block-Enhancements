@@ -1,0 +1,142 @@
+// Styles for FormTokenField controls (shared across all blocks)
+// Styles for FormTokenField controls (shared across all blocks)
+.custom-column-widths {
+	&__group {
+		margin-bottom: 20px;
+		.components-range-control {
+			// Customize the track
+			.components-range-control__track {
+				background: #ddd;
+			}
+
+			// Customize the thumb
+			.components-range-control__thumb-wrapper {
+				.components-range-control__thumb {
+					background: #000;
+					border: 2px solid #fff;
+				}
+			}
+
+			// Customize the marks
+			.components-range-control__mark {
+				background: #666;
+			}
+
+			// Customize the mark labels
+			.components-range-control__mark-label {
+				color: #333;
+				font-size: 12px;
+			}
+
+			.components-base-control__label {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				padding: 0;
+				margin: -1px;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				border: 0;
+			}
+		}
+		// &--base {
+		// 	// Example: Add a border to the Base group
+		// 	border-left: 4px solid #007cba;
+		// 	padding-left: 10px;
+		// }
+
+		// &--mobile {
+		// 	// Example: Change the background color for the Mobile group
+		// 	background-color: #f8f9fa;
+		// }
+
+		// &--tablet {
+		// 	// Example: Add a different border color for the Tablet group
+		// 	border-left: 4px solid #28a745;
+		// 	padding-left: 10px;
+		// }
+
+		// &--laptop {
+		// 	// Example: Change the background color for the Laptop group
+		// 	background-color: #e9ecef;
+		// }
+
+		// &--larger-screen {
+		// 	// Example: Add a different border color for the Larger Screen group
+		// 	border-left: 4px solid #dc3545;
+		// 	padding-left: 10px;
+		// }
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 10px;
+		flex-wrap: wrap;
+	}
+
+	&__icon {
+		width: 23px; // Match the previous icon size
+		min-width: 23px;
+		height: 23px;
+		margin-right: 10px;
+		background-size: contain; // Ensure the image fits within the div
+		background-repeat: no-repeat;
+		background-position: center;
+		.custom-column-widths__group--base & {
+			display: none;
+		}
+	}
+
+	&__label {
+		flex-grow: 1;
+		font-weight: 500;
+	}
+
+	&__value {
+		margin-right: 10px;
+		font-style: italic;
+		color: #666;
+	}
+
+	&__buttons {
+		display: flex;
+		gap: 5px;
+		width: 100%;
+		justify-content: space-between;
+		margin: 6px 0 0;
+		.components-button {
+			margin: 0;
+		}
+	}
+
+	&__option {
+		background: #f0f0f0;
+		border: 1px solid #ccc;
+		padding: 3px 10px;
+		margin-left: 5px;
+		cursor: pointer;
+
+		&.is-active {
+			background: #ddd;
+			font-weight: bold;
+		}
+	}
+
+	&__bootstrap-notice {
+		margin-bottom: 15px;
+	}
+}
+
+.is-style-bootstrap {
+	&.wp-block-columns {
+		flex-wrap: wrap !important;
+	}
+}
+
+.custom-column-widths {
+	&__range-control {
+		display: block;
+		width: 100%;
+	}
+}

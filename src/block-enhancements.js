@@ -2,7 +2,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { useEffect } from '@wordpress/element';
+import { useEffect, Children } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 // Step 1: Add custom attributes to core/columns and core/column
@@ -96,6 +96,55 @@ addFilter(
 		) {
 			return wp.element.cloneElement( element, { role: 'listitem' } );
 		}
+		return element;
+	}
+);
+
+// Add lazy loading to images and videos
+addFilter(
+	'blocks.getSaveElement',
+	'fancy-squares-core-enhancements/lazy-elements',
+	( element, blockType, attributes ) => {
+		// Lazy load images
+		if ( element.type === 'img' ) {
+			return wp.element.cloneElement( element, { loading: 'lazy' } );
+		}
+
+		// Lazy load video block source
+		if ( blockType.name === 'core/video' && attributes.lazyLoadVideo ) {
+			const props = {
+				...element.props,
+				'data-src': element.props.src,
+				src: '',
+			};
+			return wp.element.cloneElement( element, props );
+		}
+
+		// Lazy load video inside cover block
+		if ( blockType.name === 'core/cover' && attributes.lazyLoadVideo ) {
+			const newChildren = Children.map(
+				element.props.children,
+				( child ) => {
+					if (
+						child?.props?.className?.includes(
+							'wp-block-cover__video-background'
+						)
+					) {
+						return wp.element.cloneElement( child, {
+							'data-src': child.props.src,
+							src: '',
+						} );
+					}
+					return child;
+				}
+			);
+			return wp.element.cloneElement(
+				element,
+				element.props,
+				newChildren
+			);
+		}
+
 		return element;
 	}
 );

@@ -1,6 +1,8 @@
 // components/PaddingControl.js
 import { RangeControl, Icon } from '@wordpress/components';
 
+/* eslint-disable jsx-a11y/label-has-associated-control */
+
 const PaddingControl = ( {
 	label,
 	subLabel,
@@ -15,13 +17,12 @@ const PaddingControl = ( {
 	onChangeMd,
 	onChangeLg,
 	onChangeXl,
-	sideType,
 } ) => {
 	const getLabelClassName = ( labelText ) => {
 		return labelText.toLowerCase().replace( /\s+/g, '-' );
 	};
 
-	const handleChange = ( newValue, onChange, breakpoint ) => {
+	const handleChange = ( newValue, onChange ) => {
 		// If the value is -1 (reset), set it to an empty string (no class)
 		onChange( newValue === -1 ? '' : newValue.toString() );
 	};
@@ -56,16 +57,14 @@ const PaddingControl = ( {
 					) }
 				</span>
 			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
-					Base
-				</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">Base</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ baseValue ? parseInt( baseValue ) : -1 } // Default to -1 if no value
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeBase, '' )
+						handleChange( newValue, onChangeBase )
 					}
 					min={ -1 } // Add -1 as the minimum (reset)
 					max={ 5 }
@@ -74,17 +73,17 @@ const PaddingControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Mobile (sm)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ smValue ? parseInt( smValue ) : -1 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeSm, 'sm' )
+						handleChange( newValue, onChangeSm )
 					}
 					min={ -1 }
 					max={ 5 }
@@ -93,17 +92,17 @@ const PaddingControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Tablet (md)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ mdValue ? parseInt( mdValue ) : -1 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeMd, 'md' )
+						handleChange( newValue, onChangeMd )
 					}
 					min={ -1 }
 					max={ 5 }
@@ -112,17 +111,17 @@ const PaddingControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Laptop (lg)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ lgValue ? parseInt( lgValue ) : -1 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeLg, 'lg' )
+						handleChange( newValue, onChangeLg )
 					}
 					min={ -1 }
 					max={ 5 }
@@ -131,17 +130,17 @@ const PaddingControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Larger Screen (xl)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ xlValue ? parseInt( xlValue ) : -1 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeXl, 'xl' )
+						handleChange( newValue, onChangeXl )
 					}
 					min={ -1 }
 					max={ 5 }
@@ -150,7 +149,7 @@ const PaddingControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
+			</label>
 		</div>
 	);
 };

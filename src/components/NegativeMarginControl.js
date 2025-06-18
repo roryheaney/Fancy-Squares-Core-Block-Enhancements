@@ -1,6 +1,8 @@
 // components/NegativeMarginControl.js
 import { RangeControl, Icon } from '@wordpress/components';
 
+/* eslint-disable jsx-a11y/label-has-associated-control */
+
 const NegativeMarginControl = ( {
 	label,
 	subLabel,
@@ -15,13 +17,12 @@ const NegativeMarginControl = ( {
 	onChangeMd,
 	onChangeLg,
 	onChangeXl,
-	sideType,
 } ) => {
 	const getLabelClassName = ( labelText ) => {
 		return labelText.toLowerCase().replace( /\s+/g, '-' );
 	};
 
-	const handleChange = ( newValue, onChange, breakpoint ) => {
+	const handleChange = ( newValue, onChange ) => {
 		onChange( newValue.toString() );
 	};
 
@@ -52,16 +53,14 @@ const NegativeMarginControl = ( {
 					) }
 				</span>
 			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
-					Base
-				</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">Base</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ baseValue ? parseInt( baseValue ) : 0 } // Default to 0
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeBase, '' )
+						handleChange( newValue, onChangeBase )
 					}
 					min={ -5 }
 					max={ 0 }
@@ -70,17 +69,17 @@ const NegativeMarginControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Mobile (sm)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ smValue ? parseInt( smValue ) : 0 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeSm, 'sm' )
+						handleChange( newValue, onChangeSm )
 					}
 					min={ -5 }
 					max={ 0 }
@@ -89,17 +88,17 @@ const NegativeMarginControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Tablet (md)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ mdValue ? parseInt( mdValue ) : 0 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeMd, 'md' )
+						handleChange( newValue, onChangeMd )
 					}
 					min={ -5 }
 					max={ 0 }
@@ -108,17 +107,17 @@ const NegativeMarginControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Laptop (lg)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ lgValue ? parseInt( lgValue ) : 0 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeLg, 'lg' )
+						handleChange( newValue, onChangeLg )
 					}
 					min={ -5 }
 					max={ 0 }
@@ -127,17 +126,17 @@ const NegativeMarginControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
-			<div className="custom-column-widths__range-control">
-				<label className="custom-column-widths__range-label">
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
 					Larger Screen (xl)
-				</label>
+				</span>
 				<RangeControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					value={ xlValue ? parseInt( xlValue ) : 0 }
 					onChange={ ( newValue ) =>
-						handleChange( newValue, onChangeXl, 'xl' )
+						handleChange( newValue, onChangeXl )
 					}
 					min={ -5 }
 					max={ 0 }
@@ -146,7 +145,7 @@ const NegativeMarginControl = ( {
 					showTooltip={ false }
 					withInputField={ false }
 				/>
-			</div>
+			</label>
 		</div>
 	);
 };

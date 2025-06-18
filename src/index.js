@@ -63,12 +63,55 @@ ALLOWED_BLOCKS.forEach( ( blockName ) => {
 		attributes.widthXXl = { type: 'string', default: '' };
 	}
 
+	// Add lazy load attribute for videos and cover blocks
+	if ( blockName === 'core/video' || blockName === 'core/cover' ) {
+		attributes.lazyLoadVideo = { type: 'boolean', default: true };
+	}
+
 	// Register the extension
 	registerBlockExtension( blockName, {
 		extensionName: `custom-${ blockName.replace( 'core/', '' ) }`,
-		attributes: attributes,
+		attributes,
 		Edit: BlockEdit,
-		classNameGenerator: ( attributes ) =>
-			generateClassName( attributes, blockName, BLOCK_CONFIG ),
+		classNameGenerator: ( attrs ) =>
+			generateClassName( attrs, blockName, BLOCK_CONFIG ),
 	} );
+} );
+
+// Lazy load cover background videos
+document.addEventListener( 'DOMContentLoaded', () => {
+	const lazyVideos = document.querySelectorAll(
+		'.wp-block-cover__video-background[data-src]'
+	);
+
+	if ( 'IntersectionObserver' in window ) {
+		const options = {
+			root: null,
+			rootMargin: '200px',
+			threshold: 0,
+		};
+		const observer = new window.IntersectionObserver( ( entries ) => {
+			entries.forEach( ( entry ) => {
+				if ( entry.isIntersecting ) {
+					const video = entry.target;
+					const dataSrc = video.getAttribute( 'data-src' );
+					if ( dataSrc ) {
+						video.setAttribute( 'src', dataSrc );
+						video.removeAttribute( 'data-src' );
+					}
+					observer.unobserve( video );
+				}
+			} );
+		}, options );
+
+		lazyVideos.forEach( ( video ) => observer.observe( video ) );
+	} else {
+		lazyVideos.forEach( ( video ) => {
+			const dataSrc = video.getAttribute( 'data-src' );
+			if ( dataSrc ) {
+				video.setAttribute( 'src', dataSrc );
+				video.removeAttribute( 'data-src' );
+			}
+		} );
+	}
 } );

@@ -9,9 +9,11 @@ export function getDisplayValues( values, options, showValues ) {
 	const result = [];
 	for ( const value of values ) {
 		const option = options.find( ( opt ) => opt.value === value );
-		result.push(
-			option ? ( showValues ? option.value : option.label ) : value
-		);
+		if ( option ) {
+			result.push( showValues ? option.value : option.label );
+		} else {
+			result.push( value );
+		}
 	}
 	return result;
 }

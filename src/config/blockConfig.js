@@ -10,6 +10,7 @@ import {
 	justifyContentOptions,
 	orderOptions,
 	gapOptions,
+	bleedCoverOptions,
 } from '../../data/bootstrap-classes/classes.js';
 
 export const ALLOWED_BLOCKS = [
@@ -20,6 +21,8 @@ export const ALLOWED_BLOCKS = [
 	'core/buttons',
 	'core/columns',
 	'core/column',
+	'core/cover',
+	'core/video',
 	'core/group',
 ];
 
@@ -147,6 +150,15 @@ export const BLOCK_CONFIG = {
 		},
 		hasWidthControls: true,
 	},
+	'core/cover': {
+		classOptions: [ 'display', 'position', 'zindex', 'bleedCoverOptions' ],
+		dropdown: {
+			attributeKey: 'bleedCover',
+			label: 'Bleed Options',
+			default: '',
+			options: [ { label: 'None', value: '' } ],
+		},
+	},
 	'core/group': {
 		classOptions: [ 'display', 'position', 'zindex', 'gapSpacing' ],
 		// dropdown: {
@@ -207,6 +219,11 @@ export const CLASS_OPTIONS_MAP = {
 		// Added gapSpacing for core/group
 		options: gapOptions,
 		suggestions: getSuggestions( gapOptions, false ),
+	},
+	bleedCoverOptions: {
+		// Added bleedCoverOptions for core/cover
+		options: bleedCoverOptions,
+		suggestions: getSuggestions( bleedCoverOptions, false ),
 	},
 };
 

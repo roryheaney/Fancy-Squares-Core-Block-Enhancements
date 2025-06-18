@@ -5,6 +5,7 @@ import {
 	SelectControl,
 	FormTokenField,
 	CheckboxControl,
+	ToggleControl,
 	Button,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
@@ -122,8 +123,9 @@ const BlockEdit = ( props ) => {
 			{ ! isBootstrap && (
 				<div className="custom-column-widths__bootstrap-notice">
 					<p className="greyd-inspector-help">
-						By setting the columns style to "Custom Breakpoints",
-						the columns no longer break unintentionally.
+						By setting the columns style to &quot;Custom
+						Breakpoints&quot;, the columns no longer break
+						unintentionally.
 					</p>
 					<Button
 						variant="secondary"
@@ -818,6 +820,17 @@ const BlockEdit = ( props ) => {
 			{ paddingControls }
 			{ marginControls }
 			{ negativeMarginControls }
+			{ ( name === 'core/video' || name === 'core/cover' ) && (
+				<PanelBody title="Video Settings" initialOpen={ false }>
+					<ToggleControl
+						label="Lazy Load Video"
+						checked={ attributes.lazyLoadVideo }
+						onChange={ ( val ) =>
+							setAttributes( { lazyLoadVideo: val } )
+						}
+					/>
+				</PanelBody>
+			) }
 		</InspectorControls>
 	);
 };

@@ -67,12 +67,21 @@ function fs_core_enhancements_frontend_assets()
 		];
 	}
 
-	// Enqueue the CSS (front end)
-	wp_enqueue_style(
-		'fs-core-enhancements-frontend',
-		$plugin_url . 'build/index.css',
-		[], // No dependencies unless you need theme styles
-		$asset['version']
-	);
+       // Enqueue the JavaScript for the front end
+       wp_enqueue_script(
+               'fs-core-enhancements-frontend',
+               $plugin_url . 'build/index.js',
+               $asset['dependencies'] ?? [],
+               $asset['version'],
+               true
+       );
+
+       // Enqueue the CSS (front end)
+       wp_enqueue_style(
+               'fs-core-enhancements-frontend',
+               $plugin_url . 'build/index.css',
+               [],
+               $asset['version']
+       );
 }
 add_action('wp_enqueue_scripts', 'fs_core_enhancements_frontend_assets');

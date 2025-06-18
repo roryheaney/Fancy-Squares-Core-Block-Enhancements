@@ -9,30 +9,30 @@
 
 // Define column sizes
 $column-sizes: (
-  "": false, // Default .wp-block-column--column
-  "auto": auto,
-  "1": 1,
-  "2": 2,
-  "3": 3,
-  "4": 4,
-  "5": 5,
-  "6": 6,
-  "7": 7,
-  "8": 8,
-  "9": 9,
-  "10": 10,
-  "11": 11,
-  "12": 12
+	"": false, // Default .wp-block-column--column
+	"auto": auto,
+	"1": 1,
+	"2": 2,
+	"3": 3,
+	"4": 4,
+	"5": 5,
+	"6": 6,
+	"7": 7,
+	"8": 8,
+	"9": 9,
+	"10": 10,
+	"11": 11,
+	"12": 12
 );
 
 // Define breakpoints matching $grid-breakpoints
 $column-breakpoints: (
-  "": xs,  // Base (no prefix)
-  "-sm": sm,
-  "-md": md,
-  "-lg": lg,
-  "-xl": xl,
-  "-xxl": xxl
+	"": xs,  // Base (no prefix)
+	"-sm": sm,
+	"-md": md,
+	"-lg": lg,
+	"-xl": xl,
+	"-xxl": xxl
 );
 
 // Styles for wp-block-column (columnOptionsCore classes)
@@ -40,29 +40,29 @@ $column-breakpoints: (
 	@each $prefix, $breakpoint in $column-breakpoints {
 		@if $prefix == "" {
 			@each $size-name, $size-value in $column-sizes {
-			// Add dash only if $size-name is not empty
-			@if $size-name == "" {
-				&.wp-block-column--column {
-					@include make-col($size-value);
+				// Add dash only if $size-name is not empty
+				@if $size-name == "" {
+					&.wp-block-column--column {
+						@include make-col($size-value);
+					}
+				} @else {
+					&.wp-block-column--column-#{$size-name} {
+						@include make-col($size-value);
+					}
 				}
-			} @else {
-				&.wp-block-column--column-#{$size-name} {
-					@include make-col($size-value);
-				}
-			}
 			}
 		} @else {
 			@include media-breakpoint-up(map.get($column-breakpoints, $prefix)) {
 				@each $size-name, $size-value in $column-sizes {
 					// Add dash only if $size-name is not empty
 					@if $size-name == "" {
-						&.wp-block-column--column#{$prefix} {
-							@include make-col($size-value);
-						}
+							&.wp-block-column--column#{$prefix} {
+								@include make-col($size-value);
+							}
 						} @else {
-						&.wp-block-column--column#{$prefix}-#{$size-name} {
-							@include make-col($size-value);
-						}
+							&.wp-block-column--column#{$prefix}-#{$size-name} {
+								@include make-col($size-value);
+							}
 					}
 				}
 			}
@@ -204,5 +204,95 @@ $column-breakpoints: (
 .is-style-bootstrap {
 	&.wp-block-columns {
 		flex-wrap: wrap !important;
+	}
+}
+
+.custom-column-widths {
+	&__range-control {
+		display: block;
+		width: 100%;
+	}
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Cover blocks that break out of the layout – right OR left
+   ────────────────────────────────────────────────────────────── */
+
+.wp-block-cover {
+	/* ─────────── Common base styles ─────────── */
+	&.cover-negative-margin-right,
+	&.cover-negative-margin-left {
+		background-color: #000;
+		overflow: visible;
+		position: relative;               // containing block
+
+		/* Fill the cover at mobile sizes */
+		> .wp-block-cover__background,
+		> .wp-block-cover__image-background,
+		> .wp-block-cover__video-background {
+			position: absolute;
+			inset: 0;
+		}
+
+		/* Remove WP’s width clamp for the image */
+		> .wp-block-cover__image-background {
+			max-width: none !important;
+			width: 100%;                    // default at < 1024 px
+		}
+	}
+
+	/* ─────────── Push to the RIGHT ─────────── */
+	&.cover-negative-margin-right {
+		@media (min-width: 1024px) {
+			/* layout math */
+			--container-width: 480px;
+			--negative-margin: calc(var(--container-width) - 50vw - 30px); // negative
+
+			/* let media grow past the right edge */
+			> .wp-block-cover__background,
+			> .wp-block-cover__image-background,
+			> .wp-block-cover__video-background {
+				width: calc(100% - var(--negative-margin)); // subtracting a negative = +
+				/* anchor on the left side */
+				left: 0;
+			}
+		}
+		@media (min-width: 1200px) { --container-width: 570px; }
+		@media (min-width: 1400px) { --container-width: 660px; }
+	}
+
+	/* ─────────── Push to the LEFT ─────────── */
+	&.cover-negative-margin-left {
+		@media (min-width: 1024px) {
+			/* same math variable - just apply it to the other side */
+			--container-width: 480px;
+			--negative-margin: calc(var(--container-width) - 50vw - 30px); // negative
+
+			> .wp-block-cover__background,
+			> .wp-block-cover__image-background,
+			> .wp-block-cover__video-background {
+				width: calc(100% - var(--negative-margin)); // grow wider
+				/* anchor on the RIGHT and pull leftward */
+				left: var(--negative-margin);
+			}
+		}
+		@media (min-width: 1200px) { --container-width: 570px; }
+		@media (min-width: 1400px) { --container-width: 660px; }
+	}
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Constrained post-content layouts (narrower container widths)
+   ────────────────────────────────────────────────────────────── */
+
+.wp-block-post-content-is-layout-constrained {
+	.wp-block-cover {
+		&.cover-negative-margin-left,
+		&.cover-negative-margin-right {
+
+			/* override container width only – media rules above react automatically */
+			@media (min-width: 1200px) { --container-width: 530px; }
+			@media (min-width: 1400px) { --container-width: 530px; }
+		}
 	}
 }

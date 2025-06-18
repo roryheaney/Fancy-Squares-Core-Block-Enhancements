@@ -12,7 +12,9 @@ const WidthControl = ( {
 	options,
 } ) => {
 	const getNumericValue = ( val ) => {
-		if ( val === '' || val === 'auto' ) return 0;
+		if ( val === '' || val === 'auto' ) {
+			return 0;
+		}
 		return (
 			parseInt(
 				val.replace( /wp-block-column--column-(?:[a-z]{0,3}-)?/, '' )
@@ -26,6 +28,16 @@ const WidthControl = ( {
 
 	const numericValue = getNumericValue( value );
 	const [ sliderValue, setSliderValue ] = useState( numericValue );
+
+	const getDisplayValue = () => {
+		if ( value === 'auto' ) {
+			return 'Auto';
+		}
+		if ( value === '' ) {
+			return 'Inherit';
+		}
+		return `${ getNumericValue( value ) } columns`;
+	};
 
 	const handleChange = ( newValue ) => {
 		setSliderValue( newValue );
@@ -72,11 +84,7 @@ const WidthControl = ( {
 					) }
 				</span>
 				<span className="custom-column-widths__value">
-					{ value === 'auto'
-						? 'Auto'
-						: value === ''
-						? 'Inherit'
-						: `${ getNumericValue( value ) } columns` }
+					{ getDisplayValue() }
 				</span>
 				<div className="custom-column-widths__buttons">
 					{ options.map( ( option ) => (

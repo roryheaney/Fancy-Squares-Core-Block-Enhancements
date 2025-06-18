@@ -151,11 +151,12 @@ export const BLOCK_CONFIG = {
 		hasWidthControls: true,
 	},
 	'core/cover': {
+		classOptions: [ 'display', 'position', 'zindex', 'bleedCoverOptions' ],
 		dropdown: {
 			attributeKey: 'bleedCover',
 			label: 'Bleed Options',
 			default: '',
-			options: [ { label: 'None', value: '' }, ...bleedCoverOptions ],
+			options: [ { label: 'None', value: '' } ],
 		},
 	},
 	'core/group': {
@@ -218,6 +219,11 @@ export const CLASS_OPTIONS_MAP = {
 		// Added gapSpacing for core/group
 		options: gapOptions,
 		suggestions: getSuggestions( gapOptions, false ),
+	},
+	bleedCoverOptions: {
+		// Added bleedCoverOptions for core/cover
+		options: bleedCoverOptions,
+		suggestions: getSuggestions( bleedCoverOptions, false ),
 	},
 };
 

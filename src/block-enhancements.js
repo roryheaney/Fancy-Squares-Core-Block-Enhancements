@@ -105,11 +105,6 @@ addFilter(
 	'blocks.getSaveElement',
 	'fancy-squares-core-enhancements/lazy-elements',
 	( element, blockType, attributes ) => {
-		// Lazy load images
-		if ( element.type === 'img' ) {
-			return wp.element.cloneElement( element, { loading: 'lazy' } );
-		}
-
 		// Lazy load video block source
 		if ( blockType.name === 'core/video' && attributes.lazyLoadVideo ) {
 			const props = {
@@ -133,6 +128,16 @@ addFilter(
 						return wp.element.cloneElement( child, {
 							'data-src': child.props.src,
 							src: '',
+						} );
+					}
+					// layz load image inside cover block
+					if (
+						child?.props?.className?.includes(
+							'wp-block-cover__image-background'
+						)
+					) {
+						return wp.element.cloneElement( child, {
+							loading: 'lazy',
 						} );
 					}
 					return child;

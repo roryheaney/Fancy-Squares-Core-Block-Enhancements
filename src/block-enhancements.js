@@ -20,6 +20,11 @@ addFilter(
 				type: 'boolean',
 				default: false,
 			};
+		} else if ( name === 'core/video' || name === 'core/cover' ) {
+			settings.attributes.lazyLoadVideo = {
+				type: 'boolean',
+				default: true,
+			};
 		}
 		return settings;
 	}
@@ -105,7 +110,28 @@ addFilter(
 	'blocks.getSaveElement',
 	'fancy-squares-core-enhancements/lazy-elements',
 	( element, blockType, attributes ) => {
-		// Lazy load video block source handled in PHP
+		// Lazy load standalone video blocks
+		if ( blockType.name === 'core/video' && attributes.lazyLoadVideo ) {
+			const newChildren = Children.map(
+				element.props.children,
+				( child ) => {
+					if ( child?.type === 'video' ) {
+						return wp.element.cloneElement( child, {
+							...child.props,
+							'data-fs-lazy-video': true,
+							'data-src': child.props.src,
+							src: '',
+						} );
+					}
+					return child;
+				}
+			);
+			return wp.element.cloneElement(
+				element,
+				element.props,
+				newChildren
+			);
+		}
 
 		// Lazy load video inside cover block
 		if ( blockType.name === 'core/cover' && attributes.lazyLoadVideo ) {

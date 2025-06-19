@@ -820,17 +820,6 @@ const BlockEdit = ( props ) => {
 			{ paddingControls }
 			{ marginControls }
 			{ negativeMarginControls }
-			{ ( name === 'core/video' || name === 'core/cover' ) && (
-				<PanelBody title="Video Settings" initialOpen={ false }>
-					<ToggleControl
-						label="Lazy Load Video"
-						checked={ attributes.lazyLoadVideo }
-						onChange={ ( val ) =>
-							setAttributes( { lazyLoadVideo: val } )
-						}
-					/>
-				</PanelBody>
-			) }
 		</InspectorControls>
 	);
 };

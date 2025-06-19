@@ -63,11 +63,6 @@ ALLOWED_BLOCKS.forEach( ( blockName ) => {
 		attributes.widthXXl = { type: 'string', default: '' };
 	}
 
-	// Add lazy load attribute for videos and cover blocks
-	if ( blockName === 'core/video' || blockName === 'core/cover' ) {
-		attributes.lazyLoadVideo = { type: 'boolean', default: true };
-	}
-
 	// Register the extension
 	registerBlockExtension( blockName, {
 		extensionName: `custom-${ blockName.replace( 'core/', '' ) }`,
@@ -80,9 +75,18 @@ ALLOWED_BLOCKS.forEach( ( blockName ) => {
 
 // Lazy load cover background videos
 document.addEventListener( 'DOMContentLoaded', () => {
+	// .wp-block-cover__video-background[data-src]
+	//  video[data-fs-lazy-video][data-src]
 	const lazyVideos = document.querySelectorAll(
-		'.wp-block-cover__video-background[data-src]'
+		'video[data-fs-lazy-video][data-src]'
 	);
+
+	// console.log( 'Lazy loading videos:', lazyVideos );
+
+	// If no lazy videos, exit early
+	if ( lazyVideos.length === 0 ) {
+		return;
+	}
 
 	if ( 'IntersectionObserver' in window ) {
 		const options = {

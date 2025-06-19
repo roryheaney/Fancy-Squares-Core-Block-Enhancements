@@ -2,7 +2,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { useEffect, Children } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 // Step 1: Add custom attributes to core/columns and core/column
@@ -17,6 +17,11 @@ addFilter(
 			};
 		} else if ( name === 'core/column' ) {
 			settings.attributes.parentIsList = {
+				type: 'boolean',
+				default: false,
+			};
+		} else if ( name === 'core/video' || name === 'core/cover' ) {
+			settings.attributes.lazyLoadVideo = {
 				type: 'boolean',
 				default: false,
 			};
@@ -78,78 +83,34 @@ addFilter(
 					</>
 				);
 			}
+
+			if ( props.name === 'core/video' || props.name === 'core/cover' ) {
+				const { attributes, setAttributes } = props;
+				const { lazyLoadVideo } = attributes;
+				const toggleLazyLoad = () => {
+					setAttributes( { lazyLoadVideo: ! lazyLoadVideo } );
+				};
+
+				return (
+					<>
+						<BlockEdit { ...props } />
+						<InspectorControls>
+							<PanelBody title="Video Settings">
+								<ToggleControl
+									label="Lazy Load Video"
+									checked={ lazyLoadVideo }
+									onChange={ toggleLazyLoad }
+									help="Delay loading the video until it becomes visible."
+								/>
+							</PanelBody>
+						</InspectorControls>
+					</>
+				);
+			}
+
 			return <BlockEdit { ...props } />;
 		};
 	}, 'addInspectorControls' )
 );
 
-// Step 3: Modify save output to add role attributes
-addFilter(
-	'blocks.getSaveElement',
-	'fancy-squares-core-enhancements/add-role-attributes',
-	( element, blockType, attributes ) => {
-		if ( blockType.name === 'core/columns' && attributes.isList ) {
-			return wp.element.cloneElement( element, { role: 'list' } );
-		} else if (
-			blockType.name === 'core/column' &&
-			attributes.parentIsList
-		) {
-			return wp.element.cloneElement( element, { role: 'listitem' } );
-		}
-		return element;
-	}
-);
-
-// Add lazy loading to images and videos
-addFilter(
-	'blocks.getSaveElement',
-	'fancy-squares-core-enhancements/lazy-elements',
-	( element, blockType, attributes ) => {
-		// Lazy load video block source
-		if ( blockType.name === 'core/video' && attributes.lazyLoadVideo ) {
-			const props = {
-				...element.props,
-				'data-src': element.props.src,
-				src: '',
-			};
-			return wp.element.cloneElement( element, props );
-		}
-
-		// Lazy load video inside cover block
-		if ( blockType.name === 'core/cover' && attributes.lazyLoadVideo ) {
-			const newChildren = Children.map(
-				element.props.children,
-				( child ) => {
-					if (
-						child?.props?.className?.includes(
-							'wp-block-cover__video-background'
-						)
-					) {
-						return wp.element.cloneElement( child, {
-							'data-src': child.props.src,
-							src: '',
-						} );
-					}
-					// layz load image inside cover block
-					if (
-						child?.props?.className?.includes(
-							'wp-block-cover__image-background'
-						)
-					) {
-						return wp.element.cloneElement( child, {
-							loading: 'lazy',
-						} );
-					}
-					return child;
-				}
-			);
-			return wp.element.cloneElement(
-				element,
-				element.props,
-				newChildren
-			);
-		}
-
-		return element;
-	}
-);
+// The front-end PHP handles lazy-loading for video elements.

@@ -100,11 +100,19 @@ function fs_core_enhancements_lazy_video_render( $block_content, $block ) {
                'core/video' === $block['blockName'] &&
                ! empty( $block['attrs']['lazyLoadVideo'] )
        ) {
-               $block_content = preg_replace(
-                       '/<video([^>]*)src="([^"]+)"([^>]*)>/i',
-                       '<video$1src="$2" data-fs-lazy-video="true" data-src="$2"$3>',
-                       $block_content
-               );
+               $processor = new WP_HTML_Tag_Processor( $block_content );
+
+               if ( $processor->next_tag( 'video' ) ) {
+                       $src = $processor->get_attribute( 'src' );
+
+                       if ( $src ) {
+                               $processor->set_attribute( 'data-fs-lazy-video', 'true' );
+                               $processor->set_attribute( 'data-src', $src );
+                               $processor->set_attribute( 'src', '' );
+                       }
+
+                       $block_content = $processor->get_updated_html();
+               }
        }
 
        return $block_content;

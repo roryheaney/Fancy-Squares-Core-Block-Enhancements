@@ -105,28 +105,7 @@ addFilter(
 	'blocks.getSaveElement',
 	'fancy-squares-core-enhancements/lazy-elements',
 	( element, blockType, attributes ) => {
-		// Lazy load video block source
-		if ( blockType.name === 'core/video' && attributes.lazyLoadVideo ) {
-			const newChildren = Children.map(
-				element.props.children,
-				( child ) => {
-					if ( child?.type === 'video' ) {
-						const videoProps = {
-							...child.props,
-							'data-fs-lazy-video': true,
-							'data-src': child.props.src,
-						};
-						return wp.element.cloneElement( child, videoProps );
-					}
-					return child;
-				}
-			);
-			return wp.element.cloneElement(
-				element,
-				element.props,
-				newChildren
-			);
-		}
+		// Lazy load video block source handled in PHP
 
 		// Lazy load video inside cover block
 		if ( blockType.name === 'core/cover' && attributes.lazyLoadVideo ) {

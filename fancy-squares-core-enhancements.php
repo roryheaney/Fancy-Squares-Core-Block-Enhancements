@@ -85,3 +85,28 @@ function fs_core_enhancements_frontend_assets()
        );
 }
 add_action('wp_enqueue_scripts', 'fs_core_enhancements_frontend_assets');
+
+/**
+ * Add lazy loading data attributes to core/video blocks.
+ *
+ * @param string $block_content Rendered HTML of the block.
+ * @param array  $block         Parsed block data.
+ *
+ * @return string Modified block HTML.
+ */
+function fs_core_enhancements_lazy_video_render( $block_content, $block ) {
+       if (
+               isset( $block['blockName'] ) &&
+               'core/video' === $block['blockName'] &&
+               ! empty( $block['attrs']['lazyLoadVideo'] )
+       ) {
+               $block_content = preg_replace(
+                       '/<video([^>]*)src="([^"]+)"([^>]*)>/i',
+                       '<video$1src="$2" data-fs-lazy-video="true" data-src="$2"$3>',
+                       $block_content
+               );
+       }
+
+       return $block_content;
+}
+add_filter( 'render_block', 'fs_core_enhancements_lazy_video_render', 10, 2 );

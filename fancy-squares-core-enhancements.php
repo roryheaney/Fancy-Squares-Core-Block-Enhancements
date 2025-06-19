@@ -86,21 +86,6 @@ function fs_core_enhancements_frontend_assets()
 }
 add_action('wp_enqueue_scripts', 'fs_core_enhancements_frontend_assets');
 
-/**
- * Register custom block attributes on the server.
- */
-function fs_core_enhancements_register_attributes( $args, $name ) {
-       if ( in_array( $name, array( 'core/video', 'core/cover' ), true ) ) {
-               if ( ! isset( $args['attributes']['lazyLoadVideo'] ) ) {
-                       $args['attributes']['lazyLoadVideo'] = array(
-                               'type'    => 'boolean',
-                               'default' => true,
-                       );
-               }
-       }
-       return $args;
-}
-add_filter( 'register_block_type_args', 'fs_core_enhancements_register_attributes', 10, 2 );
 
 /**
  * Add lazy loading data attributes to core/video blocks.

@@ -115,7 +115,6 @@ addFilter(
 							...child.props,
 							'data-fs-lazy-video': true,
 							'data-src': child.props.src,
-							src: '',
 						};
 						return wp.element.cloneElement( child, videoProps );
 					}

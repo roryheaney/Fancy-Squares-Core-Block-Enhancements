@@ -23,7 +23,7 @@ addFilter(
 		} else if ( name === 'core/video' || name === 'core/cover' ) {
 			settings.attributes.lazyLoadVideo = {
 				type: 'boolean',
-				default: true,
+				default: false,
 			};
 		}
 		return settings;
@@ -86,7 +86,7 @@ addFilter(
 
 			if ( props.name === 'core/video' || props.name === 'core/cover' ) {
 				const { attributes, setAttributes } = props;
-				const { lazyLoadVideo = true } = attributes;
+				const { lazyLoadVideo } = attributes;
 				const toggleLazyLoad = () => {
 					setAttributes( { lazyLoadVideo: ! lazyLoadVideo } );
 				};
@@ -111,23 +111,6 @@ addFilter(
 			return <BlockEdit { ...props } />;
 		};
 	}, 'addInspectorControls' )
-);
-
-// Step 3: Modify save output to add role attributes
-addFilter(
-	'blocks.getSaveElement',
-	'fancy-squares-core-enhancements/add-role-attributes',
-	( element, blockType, attributes ) => {
-		if ( blockType.name === 'core/columns' && attributes.isList ) {
-			return wp.element.cloneElement( element, { role: 'list' } );
-		} else if (
-			blockType.name === 'core/column' &&
-			attributes.parentIsList
-		) {
-			return wp.element.cloneElement( element, { role: 'listitem' } );
-		}
-		return element;
-	}
 );
 
 // The front-end PHP handles lazy-loading for video elements.

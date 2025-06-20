@@ -5,7 +5,6 @@ import {
 	SelectControl,
 	FormTokenField,
 	CheckboxControl,
-	ToggleControl,
 	Button,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';

@@ -7,6 +7,7 @@ This plugin file (`index.js`) demonstrates how to:
 1. **Extend** specific WordPress core blocks with additional attributes and custom Inspector controls.
 2. **Inject** those attributes into both the block’s editor preview and final saved output.
 3. **Register** custom variations of each block that replace the default core version in the inserter (i.e., `isDefault: true`).
+4. **Lazy Load** media and add accessible list roles to column blocks.
 
 ## How It Works
 
@@ -30,6 +31,8 @@ This plugin file (`index.js`) demonstrates how to:
 
    - The code hooks into `@10up/block-components` `registerBlockExtension` to add six arrays of “token” classes (`displayClasses`, `marginClasses`, `paddingClasses`, `positionClasses`, `zindexClasses`, `blendModeClasses`), plus one “unique dropdown” attribute (e.g., `headingDropdownValue`).
    - Additional attributes for `core/column` include breakpoint-specific widths (`widthBase`, `widthSm`, etc.).
+   - Column blocks also include an `isList` toggle to enable accessible list semantics.
+   - `core/video` and `core/cover` blocks gain a `lazyLoadVideo` attribute to defer loading until scrolled into view.
    - Padding and margin attributes are dynamically generated for all sides (All, Horizontal, Vertical, Top, Right, Bottom, Left) and breakpoints (Base, Sm, Md, Lg, Xl), such as `paddingAllBase`, `marginTopMd`, `negativeMarginLeftXl`.
    - Each block thus gets extra fields in the block attributes object.
 
@@ -38,6 +41,8 @@ This plugin file (`index.js`) demonstrates how to:
    - We create a `BlockEdit` component that inserts custom controls into the **Inspector panel**.
    - These controls let users select from Bootstrap classes (via `FormTokenField`) and pick a “unique dropdown” option (via `SelectControl`).
    - For `core/column`, custom width controls allow setting Bootstrap column classes (e.g., `col-6`, `col-md-4`) across breakpoints.
+   - Column blocks include a toggle to add list semantics to the markup.
+   - Video and Cover blocks provide a **Lazy Load Video** toggle.
    - Padding controls provide range inputs to apply padding classes (e.g., `p-3`, `pt-md-2`) for each side and breakpoint.
    - Margin controls are split into positive and negative margins:
      - Positive margins range from `0` to `5` with a "None" option (e.g., `m-3`, `ms-md-2`).
@@ -56,11 +61,17 @@ This plugin file (`index.js`) demonstrates how to:
    - For each block, we register a **custom variation** with `isDefault: true`, which **replaces** the original core block in the inserter. This means when you insert (for example) a Heading block, you get our variation by default.
    - Each variation is given a unique name (like `heading-custom`), a distinctive title (like **Heading (Custom)**), and default attributes (`headingDropdownValue: 'none'`).
 
+7. **Performance Enhancements**
+
+   - Images are output with `loading="lazy"` and `decoding="async"` attributes.
+   - Videos can be lazy loaded with the Inspector toggle; an IntersectionObserver script sets `src` when the video enters the viewport.
+   - Column blocks can opt into accessible list markup.
+
 ## Usage
 
 1. **Include / Enqueue This File**
 
-   - In your plugin or theme, enqueue the main JS file (`index.js`) or import it into your main build. Make sure it loads in the Block Editor context (usually via `enqueue_block_editor_assets` in PHP or a build system).
+   - In your plugin or theme, enqueue the editor build (`index.js`) and the front-end script (`frontend.js`). The editor script should load in the Block Editor context (usually via `enqueue_block_editor_assets`), while `frontend.js` runs on the public site.
 
 2. **Adjust Classes & Options**
 
@@ -92,7 +103,11 @@ This plugin file (`index.js`) demonstrates how to:
 - `BLOCK_DROPDOWN_CONFIG` (`config/blockConfig.js`) – Dropdown attribute config per block (key, label, default, options).
 - `BLOCK_CONFIG` (`config/blockConfig.js`) – Configuration for block-specific settings (class options, dropdown, width controls).
 - **Registration**:
-  - `index.js` – Uses `@10up/block-components` `registerBlockExtension` to extend blocks with new attributes and controls.
+  - `registerExtensions.js` – Registers each block extension using `@10up/block-components`.
+  - `block-enhancements.js` – Adds list role and lazy video options via block filters.
+  - `lazyVideos.js` – Handles IntersectionObserver logic for deferred video sources.
+  - `index.js` – Entry point for editor scripts.
+  - `frontend.js` – Entry point for front-end behavior such as lazy video loading.
 - **Components** (`components/`):
   - `BlockEdit.js` – Main component for rendering InspectorControls.
   - `WidthControl.js` – Custom width controls for `core/column`.
@@ -108,7 +123,12 @@ This plugin file (`index.js`) demonstrates how to:
   - Uses a modal-based interface with multiple `<FormTokenField>` controls and two color pickers for text and background colors.
   - Ensures attributes are properly registered so that saved content is parsed back into the modal for editing.
 - **Assets** (`assets/`):
+  - `inc/assets.php` – Enqueues editor and front-end scripts and styles.
   - `icons/` – Contains icons for breakpoints (desktop, laptop, tablet, mobile) used in width controls.
+- **PHP Render Filters** (`inc/render-filters/`):
+  - `inc/render-filters.php` – Loads all individual filter files.
+  - Individual files like `image.php` and `lazy-video.php` modify specific block markup.
+  - Modify block HTML on the server to add lazy loading and list roles.
 
 ## Extensibility & Maintenance
 
@@ -122,6 +142,7 @@ This plugin file (`index.js`) demonstrates how to:
   - Utility functions (`generateAttributes`, `generateClassName`) reduce code duplication.
   - Centralized constants (`PADDING_SIDE_TYPES`, `MARGIN_SIDE_TYPES`) in `config/constants.js` make updates easier.
   - Separated UI components (`WidthControl`, `PaddingControl`, `PositiveMarginControl`, `NegativeMarginControl`) improve maintainability.
+  - Bootstrap option sets are broken into individual files under `data/bootstrap-classes/` for easier updates.
 
 ## Known Issues
 

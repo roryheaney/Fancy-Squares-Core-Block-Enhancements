@@ -25,6 +25,12 @@ addFilter(
 				type: 'boolean',
 				default: false,
 			};
+			if ( name === 'core/video' ) {
+				settings.attributes.useCustomPlayButton = {
+					type: 'boolean',
+					default: false,
+				};
+			}
 		} else if ( name === 'core/button' ) {
 			settings.attributes.triggerModal = {
 				type: 'boolean',
@@ -95,9 +101,15 @@ addFilter(
 
 			if ( props.name === 'core/video' || props.name === 'core/cover' ) {
 				const { attributes, setAttributes } = props;
-				const { lazyLoadVideo } = attributes;
+				const { lazyLoadVideo, useCustomPlayButton, poster } =
+					attributes;
 				const toggleLazyLoad = () => {
 					setAttributes( { lazyLoadVideo: ! lazyLoadVideo } );
+				};
+				const toggleCustomPlayButton = () => {
+					setAttributes( {
+						useCustomPlayButton: ! useCustomPlayButton,
+					} );
 				};
 
 				return (
@@ -111,6 +123,22 @@ addFilter(
 									onChange={ toggleLazyLoad }
 									help="Delay loading the video until it becomes visible."
 								/>
+								{ props.name === 'core/video' && (
+									<>
+										<ToggleControl
+											label="Use custom play button"
+											checked={ useCustomPlayButton }
+											onChange={ toggleCustomPlayButton }
+											help="Requires a poster image."
+										/>
+										{ useCustomPlayButton && ! poster && (
+											<p style={ { color: 'red' } }>
+												Add a poster image to use the
+												custom play button.
+											</p>
+										) }
+									</>
+								) }
 							</PanelBody>
 						</InspectorControls>
 					</>

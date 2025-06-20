@@ -11,7 +11,7 @@ import {
 	orderOptions,
 	gapOptions,
 	bleedCoverOptions,
-} from '../../data/bootstrap-classes/classes.js';
+} from '../../data/bootstrap-classes/index.js';
 
 export const ALLOWED_BLOCKS = [
 	'core/heading',

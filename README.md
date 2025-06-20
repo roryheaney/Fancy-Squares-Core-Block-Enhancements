@@ -64,7 +64,7 @@ This plugin file (`index.js`) demonstrates how to:
 
 2. **Adjust Classes & Options**
 
-   - If you want different token classes or dropdown options, edit the arrays in `data/bootstrap-classes/classes.js` or modify the local `BLOCK_DROPDOWN_CONFIG` in `config/blockConfig.js`.
+   - If you want different token classes or dropdown options, edit the files in `data/bootstrap-classes/` or modify the local `BLOCK_DROPDOWN_CONFIG` in `config/blockConfig.js`.
 
 3. **Add or Remove Blocks**
 

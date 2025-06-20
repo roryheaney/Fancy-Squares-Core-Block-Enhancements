@@ -27,7 +27,7 @@ import {
 	marginOptions,
 	paddingOptions,
 	positionOptions,
-} from '../../data/bootstrap-classes/classes.js';
+} from '../../data/bootstrap-classes/index.js';
 
 /*
  * Edit component for the "fs/span" RichText format.

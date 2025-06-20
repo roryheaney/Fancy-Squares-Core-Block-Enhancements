@@ -13,7 +13,7 @@ function fs_core_enhancements_editor_assets() {
         $plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
 
         // Load asset file for dependencies and version.
-        $asset_file = $plugin_dir . 'build/index.asset.php';
+       $asset_file = $plugin_dir . 'build/index.asset.php';
         if ( file_exists( $asset_file ) ) {
                 $asset = include $asset_file;
         } else {
@@ -49,8 +49,8 @@ function fs_core_enhancements_frontend_assets() {
         $plugin_dir = plugin_dir_path( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
         $plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
 
-        // Load asset file for version consistency.
-        $asset_file = $plugin_dir . 'build/index.asset.php';
+       // Load asset file for version consistency.
+       $asset_file = $plugin_dir . 'build/frontend.asset.php';
         if ( file_exists( $asset_file ) ) {
                 $asset = include $asset_file;
         } else {
@@ -60,13 +60,13 @@ function fs_core_enhancements_frontend_assets() {
         }
 
         // Enqueue the JavaScript for the front end.
-        wp_enqueue_script(
-                'fs-core-enhancements-frontend',
-                $plugin_url . 'build/index.js',
-                $asset['dependencies'] ?? [],
-                $asset['version'],
-                true
-        );
+       wp_enqueue_script(
+               'fs-core-enhancements-frontend',
+               $plugin_url . 'build/frontend.js',
+               $asset['dependencies'] ?? [],
+               $asset['version'],
+               true
+       );
 
         // Enqueue the CSS (front end).
         wp_enqueue_style(

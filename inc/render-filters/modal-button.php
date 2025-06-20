@@ -23,11 +23,16 @@ function fs_core_enhancements_button_modal_render( $block_content, $block ) {
         $processor = new WP_HTML_Tag_Processor( $block_content );
 
         if ( $processor->next_tag( 'a' ) ) {
-            $modal_id = sanitize_html_class( $block['attrs']['modalId'] );
+            $modal_id        = sanitize_html_class( $block['attrs']['modalId'] );
+            $existing_classes = $processor->get_attribute( 'class' );
             $processor->set_tag( 'button' );
             $processor->set_attribute( 'type', 'button' );
+            $processor->set_attribute( 'class', trim( $existing_classes . ' btn btn-primary' ) );
             $processor->set_attribute( 'data-bs-toggle', 'modal' );
             $processor->set_attribute( 'data-bs-target', '#' . $modal_id );
+            $processor->remove_attribute( 'href' );
+            $processor->remove_attribute( 'target' );
+            $processor->remove_attribute( 'rel' );
             $block_content = $processor->get_updated_html();
         }
     }

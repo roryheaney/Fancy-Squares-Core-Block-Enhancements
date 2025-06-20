@@ -1,6 +1,6 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { PanelBody, ToggleControl } from '@wordpress/components';
+import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import { useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -24,6 +24,15 @@ addFilter(
 			settings.attributes.lazyLoadVideo = {
 				type: 'boolean',
 				default: false,
+			};
+		} else if ( name === 'core/button' ) {
+			settings.attributes.triggerModal = {
+				type: 'boolean',
+				default: false,
+			};
+			settings.attributes.modalId = {
+				type: 'string',
+				default: '',
 			};
 		}
 		return settings;
@@ -102,6 +111,40 @@ addFilter(
 									onChange={ toggleLazyLoad }
 									help="Delay loading the video until it becomes visible."
 								/>
+							</PanelBody>
+						</InspectorControls>
+					</>
+				);
+			}
+
+			if ( props.name === 'core/button' ) {
+				const { attributes, setAttributes } = props;
+				const { triggerModal, modalId } = attributes;
+				const toggleTriggerModal = () => {
+					setAttributes( { triggerModal: ! triggerModal } );
+				};
+				const updateModalId = ( value ) => {
+					setAttributes( { modalId: value } );
+				};
+
+				return (
+					<>
+						<BlockEdit { ...props } />
+						<InspectorControls>
+							<PanelBody title="Modal Settings">
+								<ToggleControl
+									label="Trigger a modal"
+									checked={ triggerModal }
+									onChange={ toggleTriggerModal }
+								/>
+								{ triggerModal && (
+									<TextControl
+										label="Modal ID"
+										value={ modalId }
+										onChange={ updateModalId }
+										help="Enter the modal element ID"
+									/>
+								) }
 							</PanelBody>
 						</InspectorControls>
 					</>

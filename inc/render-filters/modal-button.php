@@ -25,7 +25,7 @@ function fs_core_enhancements_button_modal_render( $block_content, $block ) {
         if ( $processor->next_tag( 'a' ) ) {
             $modal_id        = sanitize_html_class( $block['attrs']['modalId'] );
             $existing_classes = $processor->get_attribute( 'class' );
-            $processor->set_tag( 'button' );
+
             $processor->set_attribute( 'type', 'button' );
             $processor->set_attribute( 'class', trim( $existing_classes . ' btn btn-primary' ) );
             $processor->set_attribute( 'data-bs-toggle', 'modal' );
@@ -33,7 +33,10 @@ function fs_core_enhancements_button_modal_render( $block_content, $block ) {
             $processor->remove_attribute( 'href' );
             $processor->remove_attribute( 'target' );
             $processor->remove_attribute( 'rel' );
+
             $block_content = $processor->get_updated_html();
+            $block_content = preg_replace( '/<a\b/i', '<button', $block_content, 1 );
+            $block_content = preg_replace( '/<\/a>/', '</button>', $block_content, 1 );
         }
     }
 

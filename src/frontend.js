@@ -1,5 +1,5 @@
-import lazyLoadVideos from './lazyVideos';
-import initCustomPlayButtons from './customPlayButtons';
+import lazyLoadVideos from './assets/js/lazyVideos'
+import initCustomPlayButtons from './assets/js/customPlayButtons';
 
 lazyLoadVideos();
 initCustomPlayButtons();

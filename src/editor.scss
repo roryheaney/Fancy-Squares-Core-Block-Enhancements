@@ -6,9 +6,9 @@
 @use "sass:map";
 @use "settings" as *;
 @use "mixins" as *;
-@use 'scss/admin-styles';
-@use 'scss/cover-block';
-@use 'scss/video-block';
+@use 'assets/scss/admin-styles';
+@use 'assets/scss/cover-block';
+@use 'assets/scss/video-block';
 
 
 // Define column sizes

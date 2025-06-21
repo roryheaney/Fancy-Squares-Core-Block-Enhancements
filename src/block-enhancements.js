@@ -2,7 +2,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 // Step 1: Add custom attributes to core/columns and core/column
@@ -25,6 +25,12 @@ addFilter(
 				type: 'boolean',
 				default: false,
 			};
+			if ( name === 'core/video' ) {
+				settings.attributes.useCustomPlayButton = {
+					type: 'boolean',
+					default: false,
+				};
+			}
 		} else if ( name === 'core/button' ) {
 			settings.attributes.triggerModal = {
 				type: 'boolean',
@@ -94,10 +100,25 @@ addFilter(
 			}
 
 			if ( props.name === 'core/video' || props.name === 'core/cover' ) {
-				const { attributes, setAttributes } = props;
-				const { lazyLoadVideo } = attributes;
+				const { attributes, setAttributes, clientId } = props;
+				const { lazyLoadVideo, useCustomPlayButton } = attributes;
+				const [ hasPoster, setHasPoster ] = useState( false );
+
+				useEffect( () => {
+					const videoEl = document.querySelector(
+						`[data-block="${ clientId }"] video`
+					);
+					setHasPoster(
+						!! ( videoEl && videoEl.getAttribute( 'poster' ) )
+					);
+				}, [ clientId ] );
 				const toggleLazyLoad = () => {
 					setAttributes( { lazyLoadVideo: ! lazyLoadVideo } );
+				};
+				const toggleCustomPlayButton = () => {
+					setAttributes( {
+						useCustomPlayButton: ! useCustomPlayButton,
+					} );
 				};
 
 				return (
@@ -111,6 +132,23 @@ addFilter(
 									onChange={ toggleLazyLoad }
 									help="Delay loading the video until it becomes visible."
 								/>
+								{ props.name === 'core/video' && (
+									<>
+										<ToggleControl
+											label="Use custom play button"
+											checked={ useCustomPlayButton }
+											onChange={ toggleCustomPlayButton }
+											help="Requires a poster image."
+										/>
+										{ useCustomPlayButton &&
+											! hasPoster && (
+												<p style={ { color: 'red' } }>
+													Add a poster image to use
+													the custom play button.
+												</p>
+											) }
+									</>
+								) }
 							</PanelBody>
 						</InspectorControls>
 					</>

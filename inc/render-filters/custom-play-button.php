@@ -19,10 +19,13 @@ function fs_core_enhancements_custom_play_button_render( $block_content, $block 
         'core/video' === $block['blockName'] &&
         ! empty( $block['attrs']['useCustomPlayButton'] )
     ) {
-        // Extract poster attribute from the markup since it's not a block attribute.
+        // Extract poster attribute from the markup using WP_HTML_Tag_Processor.
         $poster = '';
-        if ( preg_match( '/poster="([^"]+)"/', $block_content, $matches ) ) {
-            $poster = esc_url( $matches[1] );
+        if ( class_exists( '\\WP_HTML_Tag_Processor' ) ) {
+            $processor = new WP_HTML_Tag_Processor( $block_content );
+            if ( $processor->next_tag( 'video' ) ) {
+                $poster = esc_url( (string) $processor->get_attribute( 'poster' ) );
+            }
         }
 
         if ( $poster ) {

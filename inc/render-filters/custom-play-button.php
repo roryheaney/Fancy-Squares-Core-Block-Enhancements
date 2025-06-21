@@ -17,12 +17,18 @@ function fs_core_enhancements_custom_play_button_render( $block_content, $block 
     if (
         isset( $block['blockName'] ) &&
         'core/video' === $block['blockName'] &&
-        ! empty( $block['attrs']['useCustomPlayButton'] ) &&
-        ! empty( $block['attrs']['poster'] )
+        ! empty( $block['attrs']['useCustomPlayButton'] )
     ) {
-        $poster  = esc_url( $block['attrs']['poster'] );
-        $overlay = '<div class="fs-video-overlay" style="background-image:url(' . $poster . ');"><button aria-label="Play video"></button></div>';
-        $block_content = preg_replace( '/(<video\b)/', $overlay . '$1', $block_content, 1 );
+        // Extract poster attribute from the markup since it's not a block attribute.
+        $poster = '';
+        if ( preg_match( '/poster="([^"]+)"/', $block_content, $matches ) ) {
+            $poster = esc_url( $matches[1] );
+        }
+
+        if ( $poster ) {
+            $overlay       = '<div class="fs-video-overlay" style="background-image:url(' . $poster . ');"><button aria-label="Play video"></button></div>';
+            $block_content = preg_replace( '/(<video\b)/', $overlay . '$1', $block_content, 1 );
+        }
     }
 
     return $block_content;

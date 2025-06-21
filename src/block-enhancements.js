@@ -2,7 +2,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 // Step 1: Add custom attributes to core/columns and core/column
@@ -100,9 +100,18 @@ addFilter(
 			}
 
 			if ( props.name === 'core/video' || props.name === 'core/cover' ) {
-				const { attributes, setAttributes } = props;
-				const { lazyLoadVideo, useCustomPlayButton, poster } =
-					attributes;
+				const { attributes, setAttributes, clientId } = props;
+				const { lazyLoadVideo, useCustomPlayButton } = attributes;
+				const [ hasPoster, setHasPoster ] = useState( false );
+
+				useEffect( () => {
+					const videoEl = document.querySelector(
+						`[data-block="${ clientId }"] video`
+					);
+					setHasPoster(
+						!! ( videoEl && videoEl.getAttribute( 'poster' ) )
+					);
+				}, [ clientId ] );
 				const toggleLazyLoad = () => {
 					setAttributes( { lazyLoadVideo: ! lazyLoadVideo } );
 				};
@@ -131,12 +140,13 @@ addFilter(
 											onChange={ toggleCustomPlayButton }
 											help="Requires a poster image."
 										/>
-										{ useCustomPlayButton && ! poster && (
-											<p style={ { color: 'red' } }>
-												Add a poster image to use the
-												custom play button.
-											</p>
-										) }
+										{ useCustomPlayButton &&
+											! hasPoster && (
+												<p style={ { color: 'red' } }>
+													Add a poster image to use
+													the custom play button.
+												</p>
+											) }
 									</>
 								) }
 							</PanelBody>

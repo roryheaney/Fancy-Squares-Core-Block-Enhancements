@@ -146,8 +146,12 @@ This plugin file (`index.js`) demonstrates how to:
 
 ## Known Issues
 
-- **Bootstrap Style for Columns**: Ensure the parent block of `core/column` is set to the "Bootstrap" style to prevent unexpected column breaking. A button in the width controls allows users to set this style.
-- **Negative Margins**: Negative margins do not have a "None" option; resetting them requires setting a positive margin to "None" (which clears the attribute).
+- **Column Style Requirement**: Columns should use the **Custom Breakpoints** style to avoid unexpected wrapping. If you notice columns breaking, click the "Set parent to use custom breakpoints" button shown in the width controls.
+- **Negative Margins**: There is still no dedicated "None" option for negative margins. To remove a negative value, set the corresponding positive margin control to "None" which clears the attribute. A reset option is planned for a future release.
+
+## Building Assets
+
+Run `npm run build` to generate the `build/` directory locally. Compiled files are not committed to the repository. When a release is published, a GitHub Actions workflow automatically builds and zips the plugin.
 
 ## License
 

@@ -1,5 +1,6 @@
 import lazyLoadVideos from './assets/js/lazyVideos';
 import initCustomPlayButtons from './assets/js/customPlayButtons';
+import './assets/js/imageLightbox';
 
 const init = () => {
 	lazyLoadVideos();

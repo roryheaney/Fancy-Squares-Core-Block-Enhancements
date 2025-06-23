@@ -5,6 +5,7 @@ import { createHigherOrderComponent } from '@wordpress/compose';
 import ColumnsListControl from './inspector-controls/columns-list-control.js';
 import MediaControls from './inspector-controls/media-controls.js';
 import ModalButtonControl from './inspector-controls/modal-button-control.js';
+import LightboxControl from './inspector-controls/lightbox-control.js';
 
 // Step 1: Add custom attributes to core blocks
 addFilter(
@@ -36,6 +37,11 @@ addFilter(
 				type: 'string',
 				default: '',
 			};
+		} else if ( name === 'core/image' || name === 'core/gallery' ) {
+			settings.attributes.enableLightbox = {
+				type: 'boolean',
+				default: false,
+			};
 		}
 		return settings;
 	}
@@ -55,6 +61,12 @@ addFilter(
 			}
 			if ( props.name === 'core/button' ) {
 				return ModalButtonControl( BlockEdit, props );
+			}
+			if (
+				props.name === 'core/image' ||
+				props.name === 'core/gallery'
+			) {
+				return LightboxControl( BlockEdit, props );
 			}
 			return <BlockEdit { ...props } />;
 		};

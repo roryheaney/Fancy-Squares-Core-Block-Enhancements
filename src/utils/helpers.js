@@ -77,6 +77,10 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 	const config = BLOCK_CONFIG[ blockName ] || {};
 	const combinedTokens = [];
 
+	if ( attributes.enableLightbox ) {
+		combinedTokens.push( 'fs-enable-lightbox' );
+	}
+
 	// Add classes from FormTokenField
 	for ( const classType of config.classOptions || [] ) {
 		const classValue = attributes[ `${ classType }Classes` ] || [];

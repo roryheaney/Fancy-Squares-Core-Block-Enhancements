@@ -1,0 +1,79 @@
+.fs-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.75);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.fs-lightbox-overlay.fade {
+    transition: opacity 0.3s ease;
+}
+
+.fs-lightbox-dialog {
+    position: relative;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fs-lightbox-img {
+    cursor: pointer;
+}
+
+.fs-lightbox-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.fs-lightbox-overlay.show .fs-lightbox-dialog {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.fs-lightbox-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.fs-lightbox-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.fs-lightbox-prev,
+.fs-lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+.fs-lightbox-prev {
+    left: 10px;
+}
+
+.fs-lightbox-next {
+    right: 10px;
+}
+
+body.fs-lightbox-open {
+    overflow: hidden;
+}

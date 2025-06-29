@@ -12,6 +12,11 @@ export default function registerExtensions() {
 			...generateAttributes(),
 		};
 
+		if ( blockName === 'core/columns' ) {
+			attributes.isList = { type: 'boolean', default: false };
+			attributes.isConstrained = { type: 'boolean', default: false };
+		}
+
 		for ( const classType of config.classOptions || [] ) {
 			attributes[ `${ classType }Classes` ] = {
 				type: 'array',

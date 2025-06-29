@@ -16,6 +16,10 @@ addFilter(
 				type: 'boolean',
 				default: false,
 			};
+			settings.attributes.isConstrained = {
+				type: 'boolean',
+				default: false,
+			};
 		} else if ( name === 'core/video' || name === 'core/cover' ) {
 			settings.attributes.lazyLoadVideo = {
 				type: 'boolean',

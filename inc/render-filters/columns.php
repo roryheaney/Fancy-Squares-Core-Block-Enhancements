@@ -16,23 +16,30 @@ defined('ABSPATH') || exit;
  */
 function fs_core_enhancements_columns_render($block_content, $block)
 {
-	if (
-		isset($block['blockName']) &&
-		'core/columns' === $block['blockName'] &&
-		! empty($block['attrs']['isList'])
-	) {
-		$processor = new WP_HTML_Tag_Processor($block_content);
-		if ($processor->next_tag(array('tag_name' => 'div', 'class_name' => 'wp-block-columns'))) {
-			$processor->set_attribute('role', 'list');
-			$processor->add_class('wp-block-fancysquares-columns');
-			while ($processor->next_tag(array('tag_name' => 'div', 'class_name' => 'wp-block-column'))) {
-				$processor->set_attribute('role', 'listitem');
-				$processor->add_class('wp-block-fancysquares-column');
-			}
+        if (
+                isset($block['blockName']) &&
+                'core/columns' === $block['blockName']
+        ) {
+                $processor = new WP_HTML_Tag_Processor($block_content);
+                if ($processor->next_tag(array('tag_name' => 'div', 'class_name' => 'wp-block-columns'))) {
+                        if (! empty($block['attrs']['isList'])) {
+                                $processor->set_attribute('role', 'list');
+                                $processor->add_class('wp-block-fancysquares-columns');
+                        }
+                        if (! empty($block['attrs']['isConstrained'])) {
+                                $processor->add_class('wp-block-columns--constrained');
+                        }
 
-			$block_content = $processor->get_updated_html();
-		}
-	}
+                        if (! empty($block['attrs']['isList'])) {
+                                while ($processor->next_tag(array('tag_name' => 'div', 'class_name' => 'wp-block-column'))) {
+                                        $processor->set_attribute('role', 'listitem');
+                                        $processor->add_class('wp-block-fancysquares-column');
+                                }
+                        }
+
+                        $block_content = $processor->get_updated_html();
+                }
+        }
 
 	return $block_content;
 }

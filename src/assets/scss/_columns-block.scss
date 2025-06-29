@@ -1,0 +1,23 @@
+@use "sass:map";
+@use "../../settings" as *;
+@use "../../mixins" as *;
+
+$container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1320px,
+);
+
+.wp-block-columns--constrained {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+
+    @each $bp, $max in $container-max-widths {
+        @include media-breakpoint-up($bp) {
+            max-width: $max;
+        }
+    }
+}

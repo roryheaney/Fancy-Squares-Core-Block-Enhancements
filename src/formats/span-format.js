@@ -16,10 +16,17 @@ import {
 	FormTokenField,
 	ColorPicker,
 	Tooltip, // If WP < 6.3, consider __experimentalTooltip as Tooltip
+	CheckboxControl,
 } from '@wordpress/components';
 
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+import {
+	getDisplayValues,
+	getValuesFromDisplay,
+	getSuggestions,
+} from '../utils/helpers';
 
 // Import your Bootstrap arrays (minus z-index, blend modes, etc.)
 import {
@@ -52,6 +59,9 @@ function EditSpan( { isActive, value, onChange } ) {
 	// States for inline color styles
 	const [ textColor, setTextColor ] = useState( '' );
 	const [ backgroundColor, setBackgroundColor ] = useState( '' );
+
+	// Toggle between showing class labels or values
+	const [ showValues, setShowValues ] = useState( false );
 
 	// Fetch theme palette (WP 6.2+). If older WP, this is undefined or an error.
 	const themePalette = useSetting( 'color.palette' ) || [];
@@ -190,10 +200,10 @@ function EditSpan( { isActive, value, onChange } ) {
 	}
 
 	// Convert objects to strings for FormTokenField
-	const displaySuggestions = displayOptions.map( ( o ) => o.value );
-	const marginSuggestions = marginOptions.map( ( o ) => o.value );
-	const paddingSuggestions = paddingOptions.map( ( o ) => o.value );
-	const positionSuggestions = positionOptions.map( ( o ) => o.value );
+	const displaySuggestions = getSuggestions( displayOptions, showValues );
+	const marginSuggestions = getSuggestions( marginOptions, showValues );
+	const paddingSuggestions = getSuggestions( paddingOptions, showValues );
+	const positionSuggestions = getSuggestions( positionOptions, showValues );
 
 	return (
 		<>
@@ -212,6 +222,16 @@ function EditSpan( { isActive, value, onChange } ) {
 					className="fs-span-modal"
 				>
 					<h3>{ __( 'Bootstrap Classes', 'fs-blocks' ) }</h3>
+					<CheckboxControl
+						label={ __( 'Show Values', 'fs-blocks' ) }
+						checked={ showValues }
+						onChange={ setShowValues }
+						help={ __(
+							'Display class names instead of labels.',
+							'fs-blocks'
+						) }
+						style={ { marginBottom: '1rem' } }
+					/>
 					<div
 						style={ {
 							display: 'grid',
@@ -223,27 +243,75 @@ function EditSpan( { isActive, value, onChange } ) {
 					>
 						<FormTokenField
 							label={ __( 'Display', 'fs-blocks' ) }
-							value={ displayTokens }
+							value={ getDisplayValues(
+								displayTokens,
+								displayOptions,
+								showValues
+							) }
 							suggestions={ displaySuggestions }
-							onChange={ setDisplayTokens }
+							onChange={ ( tokens ) =>
+								setDisplayTokens(
+									getValuesFromDisplay(
+										tokens,
+										displayOptions,
+										showValues
+									)
+								)
+							}
 						/>
 						<FormTokenField
 							label={ __( 'Margin', 'fs-blocks' ) }
-							value={ marginTokens }
+							value={ getDisplayValues(
+								marginTokens,
+								marginOptions,
+								showValues
+							) }
 							suggestions={ marginSuggestions }
-							onChange={ setMarginTokens }
+							onChange={ ( tokens ) =>
+								setMarginTokens(
+									getValuesFromDisplay(
+										tokens,
+										marginOptions,
+										showValues
+									)
+								)
+							}
 						/>
 						<FormTokenField
 							label={ __( 'Padding', 'fs-blocks' ) }
-							value={ paddingTokens }
+							value={ getDisplayValues(
+								paddingTokens,
+								paddingOptions,
+								showValues
+							) }
 							suggestions={ paddingSuggestions }
-							onChange={ setPaddingTokens }
+							onChange={ ( tokens ) =>
+								setPaddingTokens(
+									getValuesFromDisplay(
+										tokens,
+										paddingOptions,
+										showValues
+									)
+								)
+							}
 						/>
 						<FormTokenField
 							label={ __( 'Position', 'fs-blocks' ) }
-							value={ positionTokens }
+							value={ getDisplayValues(
+								positionTokens,
+								positionOptions,
+								showValues
+							) }
 							suggestions={ positionSuggestions }
-							onChange={ setPositionTokens }
+							onChange={ ( tokens ) =>
+								setPositionTokens(
+									getValuesFromDisplay(
+										tokens,
+										positionOptions,
+										showValues
+									)
+								)
+							}
 						/>
 					</div>
 

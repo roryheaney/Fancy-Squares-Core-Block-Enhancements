@@ -133,6 +133,7 @@ export const BLOCK_CONFIG = {
 				},
 			],
 		},
+		hasConstrainToggle: true,
 	},
 	'core/column': {
 		classOptions: [

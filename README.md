@@ -31,7 +31,8 @@ This plugin file (`index.js`) demonstrates how to:
 
    - The code hooks into `@10up/block-components` `registerBlockExtension` to add six arrays of “token” classes (`displayClasses`, `marginClasses`, `paddingClasses`, `positionClasses`, `zindexClasses`, `blendModeClasses`), plus one “unique dropdown” attribute (e.g., `headingDropdownValue`).
    - Additional attributes for `core/column` include breakpoint-specific widths (`widthBase`, `widthSm`, etc.).
-   - Column blocks also include an `isList` toggle to enable accessible list semantics.
+  - Column blocks also include an `isList` toggle to enable accessible list semantics.
+  - Columns blocks feature a `isConstrained` toggle that applies a `wp-block-columns--constrained` class for responsive max widths.
    - `core/video` and `core/cover` blocks gain a `lazyLoadVideo` attribute to defer loading until scrolled into view.
    - Padding and margin attributes are dynamically generated for all sides (All, Horizontal, Vertical, Top, Right, Bottom, Left) and breakpoints (Base, Sm, Md, Lg, Xl), such as `paddingAllBase`, `marginTopMd`, `negativeMarginLeftXl`.
    - Each block thus gets extra fields in the block attributes object.

@@ -81,7 +81,7 @@ const BlockEdit = ( props ) => {
 								isConstrained: ! attributes.isConstrained,
 							} )
 						}
-						help="Limit column width based on breakpoints."
+						help="Limit columns max width in a full width container."
 					/>
 				</PanelBody>
 			) }

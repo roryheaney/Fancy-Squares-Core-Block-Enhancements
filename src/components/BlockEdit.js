@@ -4,6 +4,7 @@ import {
 	PanelBody,
 	SelectControl,
 	CheckboxControl,
+	ToggleControl,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
@@ -67,6 +68,20 @@ const BlockEdit = ( props ) => {
 								[ dropdownConfig.attributeKey ]: newVal,
 							} )
 						}
+					/>
+				</PanelBody>
+			) }
+			{ config.hasConstrainToggle && (
+				<PanelBody title="Layout" initialOpen={ false }>
+					<ToggleControl
+						label="Constrain width"
+						checked={ attributes.isConstrained }
+						onChange={ () =>
+							setAttributes( {
+								isConstrained: ! attributes.isConstrained,
+							} )
+						}
+						help="Limit columns max width in a full width container."
 					/>
 				</PanelBody>
 			) }

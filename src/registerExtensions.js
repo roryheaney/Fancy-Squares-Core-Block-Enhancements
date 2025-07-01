@@ -36,6 +36,13 @@ export default function registerExtensions() {
 			attributes.widthXXl = { type: 'string', default: '' };
 		}
 
+		if ( config.hasConstrainToggle ) {
+			attributes.isConstrained = {
+				type: 'boolean',
+				default: false,
+			};
+		}
+
 		registerBlockExtension( blockName, {
 			extensionName: `custom-${ blockName.replace( 'core/', '' ) }`,
 			attributes,

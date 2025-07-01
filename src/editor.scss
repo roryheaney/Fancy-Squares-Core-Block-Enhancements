@@ -72,6 +72,9 @@ $column-breakpoints: (
 			}
 		}
 	}
+}
+
+.wp-block-columns {
 	&--constrained {
 		margin-left: auto;
 		margin-right: auto;
@@ -94,4 +97,3 @@ $column-breakpoints: (
 		}
 	}
 }
-

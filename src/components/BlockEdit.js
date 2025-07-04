@@ -96,14 +96,17 @@ const BlockEdit = ( props ) => {
 			<PaddingControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
+				allowedControls={ config.allowedPaddingControls }
 			/>
 			<PositiveMarginControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
+				allowedControls={ config.allowedPositiveMarginControls }
 			/>
 			<NegativeMarginControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
+				allowedControls={ config.allowedNegativeMarginControls }
 			/>
 		</InspectorControls>
 	);

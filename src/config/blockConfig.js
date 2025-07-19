@@ -47,6 +47,9 @@ export const BLOCK_CONFIG = {
 	},
 	'core/paragraph': {
 		classOptions: [ 'display', 'position', 'zindex' ],
+		allowedPaddingControls: [ 'top', 'bottom' ],
+		allowedPositiveMarginControls: [ 'all', 'vertical' ],
+		allowedNegativeMarginControls: [ 'top', 'bottom', 'left', 'right' ],
 		dropdown: {
 			attributeKey: 'paragraphDropdownValue',
 			label: 'Paragraph Option',

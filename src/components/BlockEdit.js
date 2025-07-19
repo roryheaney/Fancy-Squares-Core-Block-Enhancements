@@ -20,6 +20,15 @@ const BlockEdit = ( props ) => {
 	const { attributes, setAttributes, name, clientId } = props;
 	const config = BLOCK_CONFIG[ name ] || {};
 	const dropdownConfig = config.dropdown || {};
+	const hasClassOptions =
+		Array.isArray( config.classOptions ) && config.classOptions.length > 0;
+	const showPaddingControls = Array.isArray( config.allowedPaddingControls );
+	const showPositiveMarginControls = Array.isArray(
+		config.allowedPositiveMarginControls
+	);
+	const showNegativeMarginControls = Array.isArray(
+		config.allowedNegativeMarginControls
+	);
 	const uniqueDropdownValue = attributes[ dropdownConfig.attributeKey ];
 	const [ showValues, setShowValues ] = useState( false );
 
@@ -39,24 +48,26 @@ const BlockEdit = ( props ) => {
 
 	return (
 		<InspectorControls>
-			<PanelBody
-				title="Visibility / Position Classes"
-				initialOpen={ false }
-			>
-				<CheckboxControl
-					label="Show Values"
-					checked={ showValues }
-					onChange={ setShowValues }
-					help="Display class names instead of labels."
-					style={ { marginBottom: '20px' } }
-				/>
-				<TokenFields
-					config={ config }
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					showValues={ showValues }
-				/>
-			</PanelBody>
+			{ hasClassOptions && (
+				<PanelBody
+					title="Visibility / Position Classes"
+					initialOpen={ false }
+				>
+					<CheckboxControl
+						label="Show Values"
+						checked={ showValues }
+						onChange={ setShowValues }
+						help="Display class names instead of labels."
+						style={ { marginBottom: '20px' } }
+					/>
+					<TokenFields
+						config={ config }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						showValues={ showValues }
+					/>
+				</PanelBody>
+			) }
 			{ dropdownConfig.attributeKey && (
 				<PanelBody title="Block Specific Classes" initialOpen={ false }>
 					<SelectControl
@@ -93,21 +104,27 @@ const BlockEdit = ( props ) => {
 				parentAtts={ parentAtts }
 				config={ config }
 			/>
-			<PaddingControls
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				allowedControls={ config.allowedPaddingControls }
-			/>
-			<PositiveMarginControls
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				allowedControls={ config.allowedPositiveMarginControls }
-			/>
-			<NegativeMarginControls
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				allowedControls={ config.allowedNegativeMarginControls }
-			/>
+			{ showPaddingControls && (
+				<PaddingControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					allowedControls={ config.allowedPaddingControls }
+				/>
+			) }
+			{ showPositiveMarginControls && (
+				<PositiveMarginControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					allowedControls={ config.allowedPositiveMarginControls }
+				/>
+			) }
+			{ showNegativeMarginControls && (
+				<NegativeMarginControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					allowedControls={ config.allowedNegativeMarginControls }
+				/>
+			) }
 		</InspectorControls>
 	);
 };

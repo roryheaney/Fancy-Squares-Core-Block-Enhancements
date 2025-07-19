@@ -231,6 +231,38 @@ export const CLASS_OPTIONS_MAP = {
 	},
 };
 
+/*
+ * Example configuration for adding a new block.
+ *
+ * Only the properties you define will appear in the editor panel. If an option
+ * such as `classOptions` or `dropdown` is omitted, the related controls stay
+ * hidden, keeping the interface clean.
+ *
+ * 'core/example': {
+ *     // Array of token fields to enable. Available groups:
+ *     // display, margin, padding, position, zindex, blendMode, alignItems,
+ *     // selfAlignment, justifyContent, order, gapSpacing, bleedCoverOptions.
+ *     classOptions: [ 'display', 'position' ],
+ *
+ *     // Adds a SelectControl with these options.
+ *     dropdown: {
+ *         attributeKey: 'exampleDropdown',
+ *         label: 'Example Select',
+ *         default: 'none',
+ *         options: [ { label: 'Select one', value: 'none' } ],
+ *     },
+ *
+ *     // Restrict which padding and margin controls show.
+ *     allowedPaddingControls: [ 'top', 'bottom' ],
+ *     allowedPositiveMarginControls: [ 'all', 'vertical' ],
+ *     allowedNegativeMarginControls: [ 'left', 'right' ],
+ *
+ *     // Additional block-specific toggles.
+ *     hasWidthControls: true,      // for core/column
+ *     hasConstrainToggle: true,    // for core/columns
+ * },
+ */
+
 // Note: getSuggestions is used in CLASS_OPTIONS_MAP, so we need to define it here temporarily
 function getSuggestions( options, showValues ) {
 	return options.map( ( item ) => ( showValues ? item.value : item.label ) );

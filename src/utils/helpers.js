@@ -35,7 +35,7 @@ export function getSuggestions( options, showValues ) {
 
 export function generateAttributes() {
 	const attributes = {};
-	const breakpoints = [ 'Base', 'Sm', 'Md', 'Lg', 'Xl' ];
+	const breakpoints = [ 'Base', 'Sm', 'Md', 'Lg', 'Xl', 'Xxl' ];
 	const sides = [
 		'All',
 		'Horizontal',
@@ -186,7 +186,7 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 			}`;
 			const value = attributes[ attrKey ];
 			if ( value && value !== '' ) {
-				const intVal = parseInt( value );
+				const intVal = parseInt( value, 10 );
 				// Skip if value is zero which represents no negative margin
 				if ( intVal !== 0 && ! isNaN( intVal ) ) {
 					const breakpointSuffix = breakpoint

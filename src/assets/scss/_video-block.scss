@@ -1,35 +1,35 @@
 .wp-block-video {
-    position: relative;
+	position: relative;
 
-    .fs-video-overlay {
-        position: absolute;
-        inset: 0;
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+	.fs-video-overlay {
+		position: absolute;
+		inset: 0;
+		background-size: cover;
+		background-position: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-    .fs-video-overlay button {
-        appearance: none;
-        width: 64px;
-        height: 64px;
-        border: none;
-        border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.6);
-        color: #fff;
-        cursor: pointer;
-    }
+	.fs-video-overlay button {
+		appearance: none;
+		width: 64px;
+		height: 64px;
+		border: none;
+		border-radius: 50%;
+		background-color: rgba(0, 0, 0, 0.6);
+		color: #fff;
+		cursor: pointer;
+	}
 
-    .fs-video-overlay button::before {
-        content: '';
-        display: block;
-        margin-left: 6px;
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 12px 0 12px 20px;
-        border-color: transparent transparent transparent #fff;
-    }
+	.fs-video-overlay button::before {
+		content: "";
+		display: block;
+		margin-left: 6px;
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 12px 0 12px 20px;
+		border-color: transparent transparent transparent #fff;
+	}
 }

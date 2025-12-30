@@ -22,6 +22,12 @@ const CONTROL_OPTIONS = [
 ];
 
 const capitalize = ( str ) => str.charAt( 0 ).toUpperCase() + str.slice( 1 );
+const isSetValue = ( value ) =>
+	value !== '' &&
+	value !== undefined &&
+	value !== null &&
+	value !== '0' &&
+	value !== 0;
 
 const NegativeMarginControls = ( {
 	attributes,
@@ -31,6 +37,24 @@ const NegativeMarginControls = ( {
 	const tabs = CONTROL_OPTIONS.filter( ( option ) =>
 		allowedControls.includes( option.name )
 	);
+	const getKeys = ( name ) => {
+		const type = capitalize( name );
+		return [
+			`negativeMargin${ type }Base`,
+			`negativeMargin${ type }Sm`,
+			`negativeMargin${ type }Md`,
+			`negativeMargin${ type }Lg`,
+			`negativeMargin${ type }Xl`,
+		];
+	};
+	const isTabActive = ( option ) =>
+		getKeys( option.name ).some( ( key ) =>
+			isSetValue( attributes[ key ] )
+		);
+	const activeLabels = tabs
+		.filter( ( option ) => isTabActive( option ) )
+		.map( ( option ) => option.label );
+	const hasActive = activeLabels.length > 0;
 
 	const renderControl = ( option ) => {
 		const type = capitalize( option.name );
@@ -71,12 +95,40 @@ const NegativeMarginControls = ( {
 	};
 
 	return (
-		<PanelBody title="Negative Margin Settings" initialOpen={ false }>
+		<PanelBody
+			title={
+				<span className="fs-panel-title">
+					Negative Margin Settings
+					{ hasActive && (
+						<span
+							className="fs-panel-indicator"
+							aria-hidden="true"
+						/>
+					) }
+				</span>
+			}
+			initialOpen={ false }
+		>
+			{ hasActive && (
+				<p className="fs-control-summary">
+					Active: { activeLabels.join( ', ' ) }
+				</p>
+			) }
 			<TabPanel
 				className="negative-margin-tabs"
-				tabs={ tabs.map( ( { name, icon } ) => ( {
-					name,
-					title: <Icon icon={ icon } />,
+				tabs={ tabs.map( ( option ) => ( {
+					name: option.name,
+					title: (
+						<span className="fs-tab-title" title={ option.label }>
+							<Icon icon={ option.icon } />
+							{ isTabActive( option ) && (
+								<span
+									className="fs-tab-badge"
+									aria-hidden="true"
+								/>
+							) }
+						</span>
+					),
 				} ) ) }
 			>
 				{ ( tab ) =>

@@ -1,6 +1,6 @@
 // components/WidthControl.js
 import { RangeControl, Button } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 const WidthControl = ( {
 	label,
@@ -8,6 +8,7 @@ const WidthControl = ( {
 	image,
 	breakpoint,
 	value,
+	isActive = false,
 	onChange,
 	options,
 } ) => {
@@ -28,6 +29,10 @@ const WidthControl = ( {
 
 	const numericValue = getNumericValue( value );
 	const [ sliderValue, setSliderValue ] = useState( numericValue );
+
+	useEffect( () => {
+		setSliderValue( numericValue );
+	}, [ numericValue ] );
 
 	const getDisplayValue = () => {
 		if ( value === 'auto' ) {
@@ -81,6 +86,12 @@ const WidthControl = ( {
 						<span className="custom-column-widths__sub-label">
 							- { subLabel }
 						</span>
+					) }
+					{ isActive && (
+						<span
+							className="custom-column-widths__badge"
+							aria-hidden="true"
+						/>
 					) }
 				</span>
 				<span className="custom-column-widths__value">

@@ -16,7 +16,20 @@ export default function ModalButtonControl( BlockEdit, props ) {
 		<>
 			<BlockEdit { ...props } />
 			<InspectorControls>
-				<PanelBody title="Modal Settings">
+				<PanelBody
+					title={
+						<span className="fs-panel-title">
+							Modal Settings
+							{ ( triggerModal ||
+								( modalId && modalId.trim() !== '' ) ) && (
+								<span
+									className="fs-panel-indicator"
+									aria-hidden="true"
+								/>
+							) }
+						</span>
+					}
+				>
 					<ToggleControl
 						label="Trigger a modal"
 						checked={ triggerModal }

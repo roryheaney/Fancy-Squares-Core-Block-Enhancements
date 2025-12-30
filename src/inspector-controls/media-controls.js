@@ -26,7 +26,19 @@ export default function MediaControls( BlockEdit, props ) {
 		<>
 			<BlockEdit { ...props } />
 			<InspectorControls>
-				<PanelBody title="Video Settings">
+				<PanelBody
+					title={
+						<span className="fs-panel-title">
+							Video Settings
+							{ ( lazyLoadVideo || useCustomPlayButton ) && (
+								<span
+									className="fs-panel-indicator"
+									aria-hidden="true"
+								/>
+							) }
+						</span>
+					}
+				>
 					<ToggleControl
 						label="Lazy Load Video"
 						checked={ lazyLoadVideo }

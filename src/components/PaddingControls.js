@@ -22,6 +22,8 @@ const CONTROL_OPTIONS = [
 ];
 
 const capitalize = ( str ) => str.charAt( 0 ).toUpperCase() + str.slice( 1 );
+const isSetValue = ( value ) =>
+	value !== '' && value !== undefined && value !== null;
 
 const PaddingControls = ( {
 	attributes,
@@ -31,6 +33,24 @@ const PaddingControls = ( {
 	const tabs = CONTROL_OPTIONS.filter( ( option ) =>
 		allowedControls.includes( option.name )
 	);
+	const getKeys = ( name ) => {
+		const type = capitalize( name );
+		return [
+			`padding${ type }Base`,
+			`padding${ type }Sm`,
+			`padding${ type }Md`,
+			`padding${ type }Lg`,
+			`padding${ type }Xl`,
+		];
+	};
+	const isTabActive = ( option ) =>
+		getKeys( option.name ).some( ( key ) =>
+			isSetValue( attributes[ key ] )
+		);
+	const activeLabels = tabs
+		.filter( ( option ) => isTabActive( option ) )
+		.map( ( option ) => option.label );
+	const hasActive = activeLabels.length > 0;
 
 	const renderControl = ( option ) => {
 		const type = capitalize( option.name );
@@ -71,12 +91,40 @@ const PaddingControls = ( {
 	};
 
 	return (
-		<PanelBody title="Padding Settings" initialOpen={ false }>
+		<PanelBody
+			title={
+				<span className="fs-panel-title">
+					Padding Settings
+					{ hasActive && (
+						<span
+							className="fs-panel-indicator"
+							aria-hidden="true"
+						/>
+					) }
+				</span>
+			}
+			initialOpen={ false }
+		>
+			{ hasActive && (
+				<p className="fs-control-summary">
+					Active: { activeLabels.join( ', ' ) }
+				</p>
+			) }
 			<TabPanel
 				className="padding-tabs"
-				tabs={ tabs.map( ( { name, icon } ) => ( {
-					name,
-					title: <Icon icon={ icon } />,
+				tabs={ tabs.map( ( option ) => ( {
+					name: option.name,
+					title: (
+						<span className="fs-tab-title" title={ option.label }>
+							<Icon icon={ option.icon } />
+							{ isTabActive( option ) && (
+								<span
+									className="fs-tab-badge"
+									aria-hidden="true"
+								/>
+							) }
+						</span>
+					),
 				} ) ) }
 			>
 				{ ( tab ) =>

@@ -13,7 +13,19 @@ export default function ColumnsListControl( BlockEdit, props ) {
 		<>
 			<BlockEdit { ...props } />
 			<InspectorControls>
-				<PanelBody title="List Settings">
+				<PanelBody
+					title={
+						<span className="fs-panel-title">
+							List Settings
+							{ isList && (
+								<span
+									className="fs-panel-indicator"
+									aria-hidden="true"
+								/>
+							) }
+						</span>
+					}
+				>
 					<ToggleControl
 						label="Enable List Role"
 						checked={ isList }

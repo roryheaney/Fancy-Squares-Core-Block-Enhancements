@@ -1,156 +1,153 @@
-# Fancy-Squares-Core-Block-Enhancements
+# Fancy Squares - Core Block Enhancements
 
-## Extend Core Blocks & Create Custom Variations
+Extend core blocks with Bootstrap-style utility classes, breakpoint width controls, and media enhancements. This plugin adds inspector controls and server-side render filters for a curated set of core blocks.
 
-This plugin file (`index.js`) demonstrates how to:
+## Requirements
 
-1. **Extend** specific WordPress core blocks with additional attributes and custom Inspector controls.
-2. **Inject** those attributes into both the block’s editor preview and final saved output.
-3. **Register** custom variations of each block that replace the default core version in the inserter (i.e., `isDefault: true`).
-4. **Lazy Load** media and add accessible list roles to column blocks.
+- WordPress 6.3+
+- Node/npm to build assets (via `@wordpress/scripts`)
 
-## How It Works
+## Quick Start
 
-1. **Allowed Blocks**\
-   We specify which blocks to target by name:
+1. Install dependencies: `npm install`
+2. Build assets: `npm run build` (or `npm run start` for watch mode)
+3. Activate the plugin in WordPress.
+4. In the editor, select a supported block and open the inspector to apply classes.
 
-   ```js
-   const ALLOWED_BLOCKS = [
-     'core/heading',
-     'core/paragraph',
-     'core/list',
-     'core/list-item',
-     'core/buttons',
-     'core/column',
-   ];
-   ```
+## Editor Usage
 
-   Only these blocks are extended or receive custom variations. Notably, `core/column` has been added to support custom width controls.
+### Token class selectors
+The "Visibility / Position Classes" panel exposes curated Bootstrap-style tokens. Use "Show Values" to toggle between labels and the raw class values.
 
-2. **New Attributes**
+### Block-specific dropdowns
+Some blocks include a dropdown for single-choice options (for example, columns layout or cover bleed). Selecting a value stores a single attribute and emits the chosen class.
 
-   - The code hooks into `@10up/block-components` `registerBlockExtension` to add six arrays of “token” classes (`displayClasses`, `marginClasses`, `paddingClasses`, `positionClasses`, `zindexClasses`, `blendModeClasses`), plus one “unique dropdown” attribute (e.g., `headingDropdownValue`).
-   - Additional attributes for `core/column` include breakpoint-specific widths (`widthBase`, `widthSm`, etc.).
-  - Column blocks also include an `isList` toggle to enable accessible list semantics.
-  - Columns blocks feature a `isConstrained` toggle that applies a `wp-block-columns--constrained` class for responsive max widths.
-   - `core/video` and `core/cover` blocks gain a `lazyLoadVideo` attribute to defer loading until scrolled into view.
-   - Padding and margin attributes are dynamically generated for all sides (All, Horizontal, Vertical, Top, Right, Bottom, Left) and breakpoints (Base, Sm, Md, Lg, Xl), such as `paddingAllBase`, `marginTopMd`, `negativeMarginLeftXl`.
-   - Each block thus gets extra fields in the block attributes object.
+### Width Settings (core/column)
+The Width Settings panel exposes Base/Sm/Md/Lg/Xl/Xxl breakpoints. Setting a width emits classes like `wp-block-column--column-6` or `wp-block-column--column-md-4`. "Auto" emits the `auto` token, and "Inherit" clears the attribute.
 
-3. **Inspector Controls**
+Breakpoints:
+- Base: All
+- Sm: >=576px
+- Md: >=768px
+- Lg: >=992px
+- Xl: >=1200px
+- Xxl: >=1400px
 
-   - We create a `BlockEdit` component that inserts custom controls into the **Inspector panel**.
-   - These controls let users select from Bootstrap classes (via `FormTokenField`) and pick a “unique dropdown” option (via `SelectControl`).
-   - For `core/column`, custom width controls allow setting Bootstrap column classes (e.g., `col-6`, `col-md-4`) across breakpoints.
-   - Column blocks include a toggle to add list semantics to the markup.
-   - Video and Cover blocks provide a **Lazy Load Video** toggle.
-   - Padding controls provide range inputs to apply padding classes (e.g., `p-3`, `pt-md-2`) for each side and breakpoint.
-   - Margin controls are split into positive and negative margins:
-     - Positive margins range from `0` to `5` with a "None" option (e.g., `m-3`, `ms-md-2`).
-     - Negative margins range from `-5` to `0` (e.g., `m-n3`, `mt-lg-n2`).
+When any child column has custom width values, the parent `core/columns` block is auto-updated with the `is-style-bootstrap` class. When no widths are set, the class is removed.
 
-4. **Editor Preview Classes**
+### Spacing controls
+Padding, Margin, and Negative Margin panels appear only on blocks configured in `BLOCK_CONFIG`. These controls generate Bootstrap-style spacing classes for Base/Sm/Md/Lg/Xl. Negative margins use the `-n` convention, and a value of `0` is treated as "no class".
 
-   - In the editor, the `classNameGenerator` function in `utils/helpers.js` merges the chosen arrays of classes, width, padding, and margin settings into the block’s wrapper. This ensures users see a live preview of their selected classes and dropdown options.
+### Block-specific toggles
+- List Settings: adds list semantics to `core/columns` and `core/column`.
+- Video Settings: adds lazy video loading (cover/video) and a custom play overlay (video only).
+- Modal Settings: converts `core/button` into a modal trigger.
 
-5. **Final Saved Classes**
+### RichText span format
+Use the "Span" toolbar button to apply inline utility classes and optional text/background colors. The format adds a `fs-span-base` class and stores selected tokens and inline styles on the span.
 
-   - The same `classNameGenerator` function ensures these classes are applied to the block’s `className` attribute in the saved output, so the same tokens appear in the published content.
+## Allowed Blocks (Configuration)
 
-6. **Variations**
+Allowed blocks are defined in `src/config/blockConfig.js` under `ALLOWED_BLOCKS`. Each block entry in `BLOCK_CONFIG` controls which panels appear (token groups, dropdowns, spacing controls, width controls, and layout toggles).
 
-   - For each block, we register a **custom variation** with `isDefault: true`, which **replaces** the original core block in the inserter. This means when you insert (for example) a Heading block, you get our variation by default.
-   - Each variation is given a unique name (like `heading-custom`), a distinctive title (like **Heading (Custom)**), and default attributes (`headingDropdownValue: 'none'`).
+## How to Add or Update Settings
 
-7. **Performance Enhancements**
+### Add a new block to the extension UI
+1. Add the block name to `ALLOWED_BLOCKS` in `src/config/blockConfig.js`.
+2. Add a matching entry in `BLOCK_CONFIG` describing which controls should appear.
+3. If you need new token groups, add options in `data/bootstrap-classes/` and wire them into `CLASS_OPTIONS_MAP`.
+4. Run `npm run build` and verify the inspector panels in the editor.
 
-   - Images are output with `loading="lazy"` and `decoding="async"` attributes.
-   - Videos can be lazy loaded with the Inspector toggle; an IntersectionObserver script sets `src` when the video enters the viewport.
-   - Column blocks can opt into accessible list markup.
+### Add or adjust token options
+1. Update the relevant file in `data/bootstrap-classes/` (for example `margin-options.js`).
+2. Ensure `data/bootstrap-classes/index.js` exports it.
+3. If it is a new token group, add it to `CLASS_OPTIONS_MAP` in `src/config/blockConfig.js`.
 
-## Usage
+### Add or adjust spacing controls
+1. Edit the `allowedPaddingControls`, `allowedPositiveMarginControls`, or `allowedNegativeMarginControls` arrays in `BLOCK_CONFIG`.
+2. If you add new breakpoint attributes, update `generateAttributes()` in `src/utils/helpers.js` and the related control components.
 
-1. **Include / Enqueue This File**
+### Add a block-specific toggle (inspector control)
+1. Add block attributes in `src/block-enhancements.js` under the `blocks.registerBlockType` filter.
+2. Add the inspector control UI in `src/inspector-controls/` and wire it in `src/block-enhancements.js` under the `editor.BlockEdit` filter.
+3. If the feature needs server-side markup changes, add a render filter under `inc/render-filters/` and load it from `inc/render-filters.php`.
 
-   - In your plugin or theme, enqueue the editor build (`index.js`) and the front-end script (`frontend.js`). The editor script should load in the Block Editor context (usually via `enqueue_block_editor_assets`), while `frontend.js` runs on the public site.
+### Update width settings
+1. Width UI and classes live in `src/components/WidthControl.js` and `src/components/WidthControls.js`.
+2. Class composition is in `generateClassName()` in `src/utils/helpers.js`.
+3. Parent class auto-update (`is-style-bootstrap`) is handled in `src/block-enhancements.js`.
 
-2. **Adjust Classes & Options**
+## Supported Blocks and Controls
 
-   - If you want different token classes or dropdown options, edit the files in `data/bootstrap-classes/` or modify the local `BLOCK_DROPDOWN_CONFIG` in `config/blockConfig.js`.
-   - Only the options defined for a block in `BLOCK_CONFIG` will display controls in the editor. Refer to the commented example at the bottom of `config/blockConfig.js` when adding a new block.
+- `core/heading`: tokens (display, position, zindex, blend mode); dropdown (Heading Option).
+- `core/paragraph`: tokens (display, position, zindex); padding (top, bottom); positive margin (all, vertical); negative margin (top, bottom, left, right); dropdown (Paragraph Option).
+- `core/list`: tokens (display, position, zindex); dropdown (List Option).
+- `core/list-item`: tokens (display, position, zindex); dropdown (List Item Option).
+- `core/buttons`: tokens (display, margin, position, zindex); dropdown (Button Option).
+- `core/columns`: tokens (display, position, zindex, alignItems, justifyContent); dropdown (Columns Layout); Layout toggle (Constrain width); List Settings toggle.
+- `core/column`: tokens (display, position, zindex, selfAlignment, order); dropdown (Column Layout Override); Width Settings (Base/Sm/Md/Lg/Xl/Xxl).
+- `core/cover`: tokens (display, position, zindex, bleed options); dropdown (Bleed Options); Video Settings (lazy load for video backgrounds).
+- `core/video`: Video Settings (lazy load + custom play button overlay).
+- `core/group`: tokens (display, position, zindex, gap spacing).
+- `core/button`: Modal Settings (trigger modal + modal ID).
+- `core/image`: render filter adds `loading="lazy"` and `decoding="async"`.
 
-3. **Add or Remove Blocks**
+Note: `core/button` and `core/image` are enhanced via filters and inspector controls but are not part of the token-based block extension list.
 
-   - Update `ALLOWED_BLOCKS` in `config/blockConfig.js` to target only the blocks you want to extend.
-   - If you no longer need a certain block variation, remove or comment out its entry in `BLOCK_VARIATIONS`.
+## Output Behavior
 
-4. **Confirm Your Custom Default**
+- `generateClassName()` composes token classes, spacing classes, and width classes into the block `className`.
+- Spacing classes follow Bootstrap patterns (for example `pt-3`, `mt-md-2`, `ms-lg-4`). Negative margins use `-n` (for example `mt-n2`).
+- Column widths use `wp-block-column--column-*` classes with optional breakpoints (for example `wp-block-column--column-lg-4`).
+- List Settings adds `role="list"` to columns and `role="listitem"` to child columns, plus `wp-block-fancysquares-*` classes.
+- Lazy video adds `data-fs-lazy-video` and `data-src` while clearing `src`; `src/frontend.js` swaps the source in when visible.
+- Custom play button inserts a `.fs-video-overlay` when a poster is present and starts playback on click.
+- Modal Settings converts `core/button` markup into a `<button>` with `data-bs-toggle="modal"` and `data-bs-target="#modal-id"`.
 
-   - By setting `isDefault: true`, the original block is hidden in the inserter, replaced by your custom version. If you want both the original core block and yours, remove `isDefault: true`.
+## Development
 
-5. **Insert and Edit Blocks**
+Scripts:
+- `npm run build` - build editor + frontend assets to `build/`
+- `npm run start` - watch mode for development
+- `npm run format` - format with WordPress Prettier rules
+- `npm run lint:js` - lint JavaScript
+- `npm run lint:css` - lint styles
+- `npm run plugin-zip` - generate a release zip
 
-   - When you insert a block (such as a heading, paragraph, or column), your custom variation is the default.
-   - Use the **Inspector Controls** to:
-     - Apply Bootstrap classes via `FormTokenField` (e.g., display, margin, padding, position, z-index, blend mode).
-     - Set a unique dropdown option (e.g., text alignment).
-     - For `core/column`, adjust width settings across breakpoints.
-     - Set padding and margins (positive and negative) for each side and breakpoint.
-   - To apply inline styling, select some text and click the “Span” toolbar button. A modal will open where you can choose Bootstrap classes and set text/background colors.
-   - After applying, the `<span>` is saved with the chosen classes and inline styles. When you re-open the modal for that span, your previous selections are repopulated for editing.
+## Key Files (What They Do)
 
-## Key Files & Code Sections
+- `fancy-squares-core-enhancements.php` - plugin bootstrap and hooks setup.
+- `inc/assets.php` - enqueues editor and frontend bundles from `build/`.
+- `inc/render-filters.php` - loads all render filter files in `inc/render-filters/`.
+- `inc/render-filters/*` - server-side output tweaks for lists, cover/video lazy loading, modal buttons, and play overlays.
+- `build/` - compiled assets from `npm run build` (do not edit by hand).
+- `data/bootstrap-classes/` - curated token lists for class pickers (display, spacing, alignment, etc.).
+- `docs/` - local reference docs for block editor APIs (not loaded by the plugin).
+- `src/index.js` - editor entry point; registers extensions and formats.
+- `src/frontend.js` - frontend entry point; boots lazy video and play button behavior.
+- `src/registerExtensions.js` - registers block extensions using `@10up/block-components`.
+- `src/block-enhancements.js` - editor filters and parent class auto-update for columns.
+- `src/utils/helpers.js` - attribute generation, token utilities, and class name composition.
+- `src/config/blockConfig.js` - allowed blocks, per-block configuration, and dropdown options.
+- `src/config/constants.js` - spacing side/type constants used by helpers and controls.
+- `src/components/BlockEdit.js` - inspector UI wiring based on `BLOCK_CONFIG`.
+- `src/components/TokenFields.js` - token field UI for class groups and suggestions.
+- `src/components/WidthControl.js` / `src/components/WidthControls.js` - breakpoint width UI and tabs.
+- `src/components/PaddingControl.js` / `src/components/PaddingControls.js` - padding UI and tabs.
+- `src/components/PositiveMarginControl.js` / `src/components/PositiveMarginControls.js` - margin UI and tabs.
+- `src/components/NegativeMarginControl.js` / `src/components/NegativeMarginControls.js` - negative margin UI and tabs.
+- `src/inspector-controls/` - block-specific toggles (list semantics, lazy video, modal trigger).
+- `src/formats/span-format.js` - RichText span format with inline colors and utility tokens.
+- `src/assets/scss/` - editor/front-end styles for block UI and custom enhancements.
+- `src/assets/js/lazyVideos.js` - lazy video loader.
+- `src/assets/js/customPlayButtons.js` - custom play overlay behavior.
 
-- `ALLOWED_BLOCKS` (`config/blockConfig.js`) – The core blocks to extend.
-- `BLOCK_DROPDOWN_CONFIG` (`config/blockConfig.js`) – Dropdown attribute config per block (key, label, default, options).
-- `BLOCK_CONFIG` (`config/blockConfig.js`) – Configuration for block-specific settings (class options, dropdown, width controls).
-- **Registration**:
-  - `registerExtensions.js` – Registers each block extension using `@10up/block-components`.
-  - `block-enhancements.js` – Adds list role and lazy video options via block filters.
-  - `lazyVideos.js` – Handles IntersectionObserver logic for deferred video sources.
-  - `index.js` – Entry point for editor scripts.
-  - `frontend.js` – Entry point for front-end behavior such as lazy video loading.
-- **Components** (`components/`):
-  - `BlockEdit.js` – Main component for rendering InspectorControls.
-  - `WidthControl.js` – Custom width controls for `core/column`.
-  - `PaddingControl.js` – Range inputs for padding settings.
-  - `PositiveMarginControl.js` – Range inputs for positive margins.
-  - `NegativeMarginControl.js` – Range inputs for negative margins.
-- **Utilities** (`utils/`):
-  - `helpers.js` – Utility functions like `generateAttributes` (dynamically creates padding/margin attributes) and `generateClassName` (generates Bootstrap classes for preview and output).
-- **Constants** (`config/`):
-  - `constants.js` – Centralized definitions for padding and margin side types (`PADDING_SIDE_TYPES`, `MARGIN_SIDE_TYPES`, `NEGATIVE_MARGIN_SIDE_TYPES`).
-- `span-format.js` (`formats/`):
-  - Registers the custom RichText format (`fs/span`) that wraps text in an inline `<span>` with user-defined classes and inline styles.
-  - Uses a modal-based interface with multiple `<FormTokenField>` controls and two color pickers for text and background colors.
-  - Ensures attributes are properly registered so that saved content is parsed back into the modal for editing.
-- **Assets** (`assets/`):
-  - `inc/assets.php` – Enqueues editor and front-end scripts and styles.
-  - `icons/` – Contains icons for breakpoints (desktop, laptop, tablet, mobile) used in width controls.
-- **PHP Render Filters** (`inc/render-filters/`):
-  - `inc/render-filters.php` – Loads all individual filter files.
-  - Individual files like `image.php` and `lazy-video.php` modify specific block markup.
-  - Modify block HTML on the server to add lazy loading and list roles.
+## Notes
 
-## Extensibility & Maintenance
-
-- **Easily Expand**:
-  - Add more blocks to `ALLOWED_BLOCKS` in `config/blockConfig.js`.
-  - Add more attribute arrays (e.g., for typography or color classes) by extending `generateAttributes` in `utils/helpers.js`.
-  - Add new panels or controls in `BlockEdit.js` or create new components in `components/`.
-- **Performance**: Extensions are only applied to blocks listed in `ALLOWED_BLOCKS`, so overhead is minimal.
-- **Conflict Prevention**: Each variation has a unique `name` property to avoid React “key” collisions. The code also uses `'none'` instead of `''` for the “Select one” option, preventing duplication warnings.
-- **Modularity**:
-  - Utility functions (`generateAttributes`, `generateClassName`) reduce code duplication.
-  - Centralized constants (`PADDING_SIDE_TYPES`, `MARGIN_SIDE_TYPES`) in `config/constants.js` make updates easier.
-  - Separated UI components (`WidthControl`, `PaddingControl`, `PositiveMarginControl`, `NegativeMarginControl`) improve maintainability.
-  - Bootstrap option sets are broken into individual files under `data/bootstrap-classes/` for easier updates.
-
-## Known Issues
-
-- **Bootstrap Style for Columns**: Ensure the parent block of `core/column` is set to the "Bootstrap" style to prevent unexpected column breaking. A button in the width controls allows users to set this style.
-- **Negative Margins**: Negative margins do not have a "None" option; resetting them requires setting a positive margin to "None" (which clears the attribute).
+- The editor UI uses Bootstrap-like utilities, but width classes are plugin-specific (`wp-block-column--column-*`).
+- Negative margins treat `0` as a no-op, so no class is emitted for zero values.
+- Spacing controls currently surface Base/Sm/Md/Lg/Xl in the UI; attributes include Xxl for future use.
 
 ## License
 
-This project is licensed under the GPL-2.0-or-later license, as it is a WordPress plugin.
+GPL-2.0-or-later

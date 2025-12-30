@@ -50,7 +50,23 @@ const BlockEdit = ( props ) => {
 		<InspectorControls>
 			{ hasClassOptions && (
 				<PanelBody
-					title="Visibility / Position Classes"
+					title={
+						<span className="fs-panel-title">
+							Visibility / Position Classes
+							{ config.classOptions?.some( ( classType ) => {
+								const classKey = `${ classType }Classes`;
+								return (
+									Array.isArray( attributes[ classKey ] ) &&
+									attributes[ classKey ].length > 0
+								);
+							} ) && (
+								<span
+									className="fs-panel-indicator"
+									aria-hidden="true"
+								/>
+							) }
+						</span>
+					}
 					initialOpen={ false }
 				>
 					<CheckboxControl
@@ -69,7 +85,22 @@ const BlockEdit = ( props ) => {
 				</PanelBody>
 			) }
 			{ dropdownConfig.attributeKey && (
-				<PanelBody title="Block Specific Classes" initialOpen={ false }>
+				<PanelBody
+					title={
+						<span className="fs-panel-title">
+							Block Specific Classes
+							{ uniqueDropdownValue &&
+								uniqueDropdownValue !== 'none' &&
+								uniqueDropdownValue !== '' && (
+									<span
+										className="fs-panel-indicator"
+										aria-hidden="true"
+									/>
+								) }
+						</span>
+					}
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ dropdownConfig.label || 'Unique Option' }
 						value={ uniqueDropdownValue }
@@ -83,7 +114,20 @@ const BlockEdit = ( props ) => {
 				</PanelBody>
 			) }
 			{ config.hasConstrainToggle && (
-				<PanelBody title="Layout" initialOpen={ false }>
+				<PanelBody
+					title={
+						<span className="fs-panel-title">
+							Layout
+							{ attributes.isConstrained && (
+								<span
+									className="fs-panel-indicator"
+									aria-hidden="true"
+								/>
+							) }
+						</span>
+					}
+					initialOpen={ false }
+				>
 					<ToggleControl
 						label="Constrain width"
 						checked={ attributes.isConstrained }
@@ -92,7 +136,7 @@ const BlockEdit = ( props ) => {
 								isConstrained: ! attributes.isConstrained,
 							} )
 						}
-						help="Limit columns max width in a full width container."
+						help="Limit columns max width in a full width container. This will automatically center the block."
 					/>
 				</PanelBody>
 			) }

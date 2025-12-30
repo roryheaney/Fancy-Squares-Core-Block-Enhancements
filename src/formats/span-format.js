@@ -132,16 +132,16 @@ function EditSpan( { isActive, value, onChange } ) {
 
 		// 2) Inline style (e.g., "color: #FFF; background-color: #000;")
 		const styleAttr = activeSpan.attributes?.style || '';
-		if ( styleAttr ) {
-			const colorMatch = styleAttr.match( /color:\s*([^;]+)/ );
-			const bgMatch = styleAttr.match( /background-color:\s*([^;]+)/ );
-
-			setTextColor( colorMatch ? colorMatch[ 1 ].trim() : '' );
-			setBackgroundColor( bgMatch ? bgMatch[ 1 ].trim() : '' );
-		} else {
-			setTextColor( '' );
-			setBackgroundColor( '' );
-		}
+		const getStyleValue = ( style, prop ) => {
+			const match = style.match(
+				new RegExp( `(?:^|;)\\s*${ prop }\\s*:\\s*([^;]+)`, 'i' )
+			);
+			return match ? match[ 1 ].trim() : '';
+		};
+		setTextColor( styleAttr ? getStyleValue( styleAttr, 'color' ) : '' );
+		setBackgroundColor(
+			styleAttr ? getStyleValue( styleAttr, 'background-color' ) : ''
+		);
 
 		openModal();
 	}

@@ -6,9 +6,9 @@
 @use "sass:map";
 @use "settings" as *;
 @use "mixins" as *;
-@use 'assets/scss/admin-styles';
-@use 'assets/scss/cover-block';
-@use 'assets/scss/video-block';
+@use "assets/scss/admin-styles";
+@use "assets/scss/cover-block";
+@use "assets/scss/video-block";
 
 
 // Define column sizes
@@ -41,32 +41,42 @@ $column-breakpoints: (
 
 // Styles for wp-block-column (columnOptionsCore classes)
 .wp-block-column {
+
 	@each $prefix, $breakpoint in $column-breakpoints {
+
 		@if $prefix == "" {
+
 			@each $size-name, $size-value in $column-sizes {
 				// Add dash only if $size-name is not empty
 				@if $size-name == "" {
+
 					&.wp-block-column--column {
+
 						@include make-col($size-value);
 					}
 				} @else {
 					&.wp-block-column--column-#{$size-name} {
+
 						@include make-col($size-value);
 					}
 				}
 			}
 		} @else {
+
 			@include media-breakpoint-up(map.get($column-breakpoints, $prefix)) {
+
 				@each $size-name, $size-value in $column-sizes {
 					// Add dash only if $size-name is not empty
 					@if $size-name == "" {
-							&.wp-block-column--column#{$prefix} {
-								@include make-col($size-value);
-							}
-						} @else {
-							&.wp-block-column--column#{$prefix}-#{$size-name} {
-								@include make-col($size-value);
-							}
+						&.wp-block-column--column#{$prefix} {
+
+							@include make-col($size-value);
+						}
+					} @else {
+						&.wp-block-column--column#{$prefix}-#{$size-name} {
+
+							@include make-col($size-value);
+						}
 					}
 				}
 			}
@@ -75,25 +85,31 @@ $column-breakpoints: (
 }
 
 .wp-block-columns {
+
 	&--constrained {
 		margin-left: auto;
 		margin-right: auto;
 		// max-width: 100%;
 		width: 100%;
+
 		@include media-breakpoint-up(sm) {
-				max-width: 540px;
+			max-width: 540px;
 		}
+
 		@include media-breakpoint-up(md) {
-				max-width: 720px;
+			max-width: 720px;
 		}
+
 		@include media-breakpoint-up(lg) {
-				max-width: 960px;
+			max-width: 960px;
 		}
+
 		@include media-breakpoint-up(xl) {
-				max-width: 1140px;
+			max-width: 1140px;
 		}
+
 		@include media-breakpoint-up(xxl) {
-				max-width: 1320px;
+			max-width: 1320px;
 		}
 	}
 }

@@ -4,6 +4,7 @@
    ────────────────────────────────────────────────────────────── */
 
 .wp-block-cover {
+
 	/* ─────────── Common base styles ─────────── */
 	&.cover-negative-margin-right,
 	&.cover-negative-margin-left {
@@ -28,7 +29,9 @@
 
 	/* ─────────── Push to the RIGHT ─────────── */
 	&.cover-negative-margin-right {
+
 		@media (min-width: 1024px) {
+
 			/* layout math */
 			--container-width: 480px;
 			--negative-margin: calc(var(--container-width) - 50vw - 30px); // negative
@@ -38,17 +41,26 @@
 			> .wp-block-cover__image-background,
 			> .wp-block-cover__video-background {
 				width: calc(100% - var(--negative-margin)); // subtracting a negative = +
+
 				/* anchor on the left side */
 				left: 0;
 			}
 		}
-		@media (min-width: 1200px) { --container-width: 570px; }
-		@media (min-width: 1400px) { --container-width: 660px; }
+
+		@media (min-width: 1200px) {
+			--container-width: 570px;
+		}
+
+		@media (min-width: 1400px) {
+			--container-width: 660px;
+		}
 	}
 
 	/* ─────────── Push to the LEFT ─────────── */
 	&.cover-negative-margin-left {
+
 		@media (min-width: 1024px) {
+
 			/* same math variable - just apply it to the other side */
 			--container-width: 480px;
 			--negative-margin: calc(var(--container-width) - 50vw - 30px); // negative
@@ -57,12 +69,19 @@
 			> .wp-block-cover__image-background,
 			> .wp-block-cover__video-background {
 				width: calc(100% - var(--negative-margin)); // grow wider
+
 				/* anchor on the RIGHT and pull leftward */
 				left: var(--negative-margin);
 			}
 		}
-		@media (min-width: 1200px) { --container-width: 570px; }
-		@media (min-width: 1400px) { --container-width: 660px; }
+
+		@media (min-width: 1200px) {
+			--container-width: 570px;
+		}
+
+		@media (min-width: 1400px) {
+			--container-width: 660px;
+		}
 	}
 }
 
@@ -71,13 +90,20 @@
    ────────────────────────────────────────────────────────────── */
 
 .wp-block-post-content-is-layout-constrained {
+
 	.wp-block-cover {
+
 		&.cover-negative-margin-left,
 		&.cover-negative-margin-right {
 
 			/* override container width only – media rules above react automatically */
-			@media (min-width: 1200px) { --container-width: 530px; }
-			@media (min-width: 1400px) { --container-width: 530px; }
+			@media (min-width: 1200px) {
+				--container-width: 530px;
+			}
+
+			@media (min-width: 1400px) {
+				--container-width: 530px;
+			}
 		}
 	}
 }

@@ -1,0 +1,135 @@
+/* Carousel block styles (editor + front end). */
+
+.wp-block-fs-blocks-carousel-slide {
+	&.are-vertically-aligned-center {
+		margin-top: auto;
+		margin-bottom: auto;
+	}
+
+	&.are-vertically-aligned-bottom {
+		margin-top: auto;
+		margin-bottom: 0;
+	}
+
+	&.swiper-slide-enforced-height {
+		display: flex;
+		flex-direction: column;
+
+		.wp-block-cover {
+			flex: 1 1 auto;
+		}
+	}
+}
+
+.wp-block-fs-blocks-carousel {
+	.swiper-pagination {
+		position: static;
+		margin-top: 14px;
+
+		&-bullet {
+			background-color: #090909;
+		}
+	}
+
+	.wp-block-fs-blocks-carousel-slide {
+		box-sizing: border-box;
+
+		.wp-block-image.aligncenter {
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+
+	.swiper-button-next,
+	.swiper-button-prev {
+		color: #090909;
+	}
+}
+
+.wp-block-fs-blocks-carousel {
+	> .block-editor-inner-blocks {
+		> .block-editor-block-list__layout {
+			display: flex;
+			flex-wrap: nowrap;
+			overflow: hidden;
+			padding: 2px;
+
+			> .block-list-appender {
+				margin: 0 0 0 32px;
+				position: static;
+			}
+
+			> [data-type='fs-blocks/carousel-slide'] {
+				box-sizing: border-box;
+				flex: 1;
+				flex-basis: 100%;
+				max-width: 100%;
+				min-width: 100%;
+
+				&.are-vertically-aligned-center {
+					margin-top: auto;
+					margin-bottom: auto;
+				}
+
+				&.are-vertically-aligned-bottom {
+					margin-top: auto;
+					margin-bottom: 0;
+				}
+
+				&:first-child {
+					margin-left: 0 !important;
+				}
+			}
+
+			&:focus,
+			&:hover {
+				overflow-x: auto;
+				padding-bottom: 15px;
+			}
+
+			&::-webkit-scrollbar {
+				-webkit-appearance: none;
+				background-color: rgba( 0, 0, 0, 0.15 );
+				height: 12px;
+
+				&-thumb {
+					background-color: rgba( 0, 0, 0, 0.38 );
+					border-radius: 0;
+
+					&:hover {
+						background-color: rgba( 0, 0, 0, 0.48 );
+					}
+				}
+			}
+		}
+	}
+
+	&.fs-carousel-show-scrollbar {
+		> .block-editor-inner-blocks {
+			> .block-editor-block-list__layout {
+				&:focus,
+				&:hover {
+					overflow-x: auto;
+					padding-bottom: 15px;
+				}
+			}
+		}
+	}
+
+	> .components-resizable-box__container {
+		&::-webkit-scrollbar {
+			-webkit-appearance: none;
+			background-color: rgba( 0, 0, 0, 0.15 );
+			height: 12px;
+
+			&-thumb {
+				background-color: rgba( 0, 0, 0, 0.38 );
+				border-radius: 0;
+
+				&:hover {
+					background-color: rgba( 0, 0, 0, 0.48 );
+				}
+			}
+		}
+	}
+}

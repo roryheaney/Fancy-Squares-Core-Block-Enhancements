@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/alert",
+	"title": "FS Alert",
+	"category": "widgets",
+	"icon": "warning",
+	"description": "Bootstrap-style alert with selectable variant and spacing controls.",
+	"supports": {
+		"html": false,
+		"anchor": true
+	},
+	"attributes": {
+		"alertStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"alertContent": {
+			"type": "string",
+			"default": ""
+		},
+		"additionalClasses": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		}
+	},
+	"textdomain": "fancy-squares-core-enhancements",
+	"render": "file:./render.php"
+}

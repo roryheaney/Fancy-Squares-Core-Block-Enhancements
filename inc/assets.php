@@ -23,24 +23,44 @@ function fs_core_enhancements_editor_assets() {
                 ];
         }
 
-        // Enqueue the JavaScript (editor only).
-        wp_enqueue_script(
-                'fs-core-enhancements',
-                $plugin_url . 'build/index.js',
-                $asset['dependencies'],
-                $asset['version'],
-                true
-        );
+	// Enqueue the JavaScript (editor only).
+	wp_enqueue_script(
+		'fs-core-enhancements',
+		$plugin_url . 'build/index.js',
+		$asset['dependencies'],
+		$asset['version'],
+		true
+	);
 
-        // Enqueue the CSS (editor).
-        wp_enqueue_style(
-                'fs-core-enhancements-editor',
+	$enabled_blocks = function_exists( 'fs_core_enhancements_get_enabled_blocks' )
+		? fs_core_enhancements_get_enabled_blocks()
+		: [];
+	wp_add_inline_script(
+		'fs-core-enhancements',
+		'window.fsCoreEnhancements = window.fsCoreEnhancements || {};' .
+			'window.fsCoreEnhancements.enabledBlocks = ' .
+			wp_json_encode( $enabled_blocks ) .
+			';',
+		'before'
+	);
+
+	// Enqueue the CSS (editor).
+	wp_enqueue_style(
+		'fs-core-enhancements-editor',
                 $plugin_url . 'build/index.css',
                 [],
                 $asset['version']
         );
 }
 add_action( 'enqueue_block_editor_assets', 'fs_core_enhancements_editor_assets' );
+
+function fs_core_enhancements_should_enqueue_swiper() {
+	if ( function_exists( 'has_block' ) && has_block( 'fs-blocks/carousel' ) ) {
+		return true;
+	}
+
+	return (bool) apply_filters( 'fs_core_enhancements_enqueue_swiper', false );
+}
 
 /**
  * Enqueue the styles for the front end.
@@ -59,14 +79,35 @@ function fs_core_enhancements_frontend_assets() {
                 ];
         }
 
-        // Enqueue the JavaScript for the front end.
-       wp_enqueue_script(
-               'fs-core-enhancements-frontend',
-               $plugin_url . 'build/frontend.js',
-               $asset['dependencies'] ?? [],
-               $asset['version'],
-               true
-       );
+	$script_dependencies = $asset['dependencies'] ?? [];
+
+	if ( fs_core_enhancements_should_enqueue_swiper() ) {
+		wp_enqueue_style(
+			'fs-core-enhancements-swiper',
+			'https://cdn.jsdelivr.net/npm/swiper@11.1.1/swiper-bundle.min.css',
+			[],
+			'11.1.1'
+		);
+		wp_register_script(
+			'fs-core-enhancements-swiper',
+			'https://cdn.jsdelivr.net/npm/swiper@11.1.1/swiper-bundle.min.js',
+			[],
+			'11.1.1',
+			true
+		);
+		$script_dependencies[] = 'fs-core-enhancements-swiper';
+	}
+
+	$script_dependencies = array_values( array_unique( $script_dependencies ) );
+
+	// Enqueue the JavaScript for the front end.
+	wp_enqueue_script(
+		'fs-core-enhancements-frontend',
+		$plugin_url . 'build/frontend.js',
+		$script_dependencies,
+		$asset['version'],
+		true
+	);
 
         // Enqueue the CSS (front end).
         wp_enqueue_style(

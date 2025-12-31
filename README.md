@@ -12,7 +12,8 @@ Extend core blocks with Bootstrap-style utility classes, breakpoint width contro
 1. Install dependencies: `npm install`
 2. Build assets: `npm run build` (or `npm run start` for watch mode)
 3. Activate the plugin in WordPress.
-4. In the editor, select a supported block and open the inspector to apply classes.
+4. (Optional) Enable custom blocks under Settings > Fancy Squares Blocks.
+5. In the editor, select a supported block and open the inspector to apply classes.
 
 ## Editor Usage
 
@@ -48,7 +49,9 @@ Use the "Span" toolbar button to apply inline utility classes and optional text/
 
 ## Allowed Blocks (Configuration)
 
-Allowed blocks are defined in `src/config/blockConfig.js` under `ALLOWED_BLOCKS`. Each block entry in `BLOCK_CONFIG` controls which panels appear (token groups, dropdowns, spacing controls, width controls, and layout toggles).
+Allowed blocks are defined in `src/config/blockConfig.js` under `ALLOWED_BLOCKS`. Each block entry in `BLOCK_CONFIG` controls which panels appear (token groups, dropdowns, spacing controls, width controls, and layout toggles). Custom blocks (for example `fs-blocks/index-block`) can also use entries in `BLOCK_CONFIG`, even though they are registered separately.
+
+Custom blocks under `src/blocks/` are disabled by default. Use Settings > Fancy Squares Blocks to enable them globally.
 
 ## How to Add or Update Settings
 
@@ -91,6 +94,14 @@ Allowed blocks are defined in `src/config/blockConfig.js` under `ALLOWED_BLOCKS`
 - `core/group`: tokens (display, position, zindex, gap spacing).
 - `core/button`: Modal Settings (trigger modal + modal ID).
 - `core/image`: render filter adds `loading="lazy"` and `decoding="async"`.
+- `fs-blocks/index-block`: tokens (position, zindex); padding, margin, negative margin (top/right/bottom/left); auto index display inside columns.
+- `fs-blocks/content-wrapper`: tokens (display, order, selfAlignment, position, zindex); padding/margin/negative margin; optional width controls; wrapper element (div/section). Note: layout dropdown is currently disabled in config.
+- `fs-blocks/dynamic-picture-block`: responsive picture element with optional aspect ratio, border, and radius utilities.
+- `fs-blocks/alert`: alert variant selector; display tokens; padding and positive margin controls; RichText message content.
+- `fs-blocks/tabs`: tabbed container with responsive accordion option; display/position/zindex tokens; padding and positive margin controls.
+- `fs-blocks/tab-item`: child block for tabs; stores tab title and content.
+- `fs-blocks/carousel`: carousel container with Swiper-powered navigation, autoplay, and responsive breakpoints; display/position/zindex tokens; padding and positive margin controls.
+- `fs-blocks/carousel-slide`: child slide block with vertical alignment and core block content.
 
 Note: `core/button` and `core/image` are enhanced via filters and inspector controls but are not part of the token-based block extension list.
 
@@ -103,6 +114,7 @@ Note: `core/button` and `core/image` are enhanced via filters and inspector cont
 - Lazy video adds `data-fs-lazy-video` and `data-src` while clearing `src`; `src/frontend.js` swaps the source in when visible.
 - Custom play button inserts a `.fs-video-overlay` when a poster is present and starts playback on click.
 - Modal Settings converts `core/button` markup into a `<button>` with `data-bs-toggle="modal"` and `data-bs-target="#modal-id"`.
+- Carousel outputs Swiper markup with `data-swiper` configuration; Swiper assets are loaded on the front end only when the carousel block is present.
 
 ## Development
 
@@ -118,6 +130,7 @@ Scripts:
 
 - `fancy-squares-core-enhancements.php` - plugin bootstrap and hooks setup.
 - `inc/assets.php` - enqueues editor and frontend bundles from `build/`.
+- `inc/admin.php` - settings page for enabling custom blocks.
 - `inc/render-filters.php` - loads all render filter files in `inc/render-filters/`.
 - `inc/render-filters/*` - server-side output tweaks for lists, cover/video lazy loading, modal buttons, and play overlays.
 - `build/` - compiled assets from `npm run build` (do not edit by hand).

@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/tabs",
+	"title": "FS Tabs",
+	"category": "layout",
+	"icon": "admin-page",
+	"description": "Bootstrap-style tabbed content container.",
+	"keywords": [ "tabs", "navigation" ],
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"__experimentalLayout": true
+	},
+	"attributes": {
+		"blockId": {
+			"type": "string",
+			"default": ""
+		},
+		"activeTab": {
+			"type": "string",
+			"default": ""
+		},
+		"responsiveTabs": {
+			"type": "boolean",
+			"default": false
+		},
+		"additionalClasses": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		}
+	},
+	"textdomain": "fancy-squares-core-enhancements",
+	"render": "file:./render.php"
+}

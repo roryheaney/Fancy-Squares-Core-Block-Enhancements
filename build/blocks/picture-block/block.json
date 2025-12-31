@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "fs-blocks/dynamic-picture-block",
+  "title": "FS Dynamic Picture Block",
+  "category": "media",
+  "icon": "format-image",
+  "description": "Outputs a picture element with responsive sources pulled from media selections.",
+  "attributes": {
+    "defaultImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "defaultImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "smallImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "smallImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "mediumImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "mediumImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "largeImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "largeImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "aspectRatio": {
+      "type": "string",
+      "default": "none"
+    },
+    "fillerAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "borderClass": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "borderRadiusClass": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "supports": {
+    "align": true,
+    "anchor": true
+  },
+  "textdomain": "fancy-squares-core-enhancements",
+  "render": "file:./render.php"
+}

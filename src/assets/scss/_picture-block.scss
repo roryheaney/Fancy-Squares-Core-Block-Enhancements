@@ -1,0 +1,58 @@
+.fs-block-image {
+	display: block;
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+
+	&--no-aspect-ratio {
+		max-width: 100%;
+		height: auto;
+	}
+
+	&--has-aspect-ratio {
+		img,
+		picture {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+		picture {
+			width: 100%;
+		}
+
+		img {
+			object-fit: cover;
+			max-width: 100%;
+			height: 100% !important;
+		}
+
+		&.is-aspect-ratio-1-1 {
+			aspect-ratio: 1 / 1;
+		}
+
+		&.is-aspect-ratio-4-3 {
+			aspect-ratio: 4 / 3;
+		}
+
+		&.is-aspect-ratio-3-4 {
+			aspect-ratio: 3 / 4;
+		}
+
+		&.is-aspect-ratio-3-2 {
+			aspect-ratio: 3 / 2;
+		}
+
+		&.is-aspect-ratio-2-3 {
+			aspect-ratio: 2 / 3;
+		}
+
+		&.is-aspect-ratio-16-9 {
+			aspect-ratio: 16 / 9;
+		}
+
+		&.is-aspect-ratio-9-16 {
+			aspect-ratio: 9 / 16;
+		}
+	}
+}

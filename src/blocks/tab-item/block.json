@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/tab-item",
+	"title": "Tab Item",
+	"category": "layout",
+	"parent": [ "fs-blocks/tabs" ],
+	"icon": "admin-page",
+	"description": "Single tab content pane.",
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"__experimentalLayout": true
+	},
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "New Tab"
+		},
+		"tabId": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"textdomain": "fancy-squares-core-enhancements",
+	"render": "file:./render.php"
+}

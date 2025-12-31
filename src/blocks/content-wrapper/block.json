@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/content-wrapper",
+	"title": "Content Wrapper",
+	"category": "layout",
+	"icon": "screenoptions",
+	"description": "A wrapper block that can hold inner blocks, choosing either div or section as the element tag.",
+	"keywords": [ "wrapper", "layout" ],
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"align": [ "wide", "full" ],
+		"color": {
+			"text": true,
+			"background": true,
+			"gradients": true
+		}
+	},
+	"attributes": {
+		"elementTag": {
+			"type": "string",
+			"default": "div"
+		},
+		"additionalClasses": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		},
+		"singularSelectClass": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"textdomain": "fancy-squares-core-enhancements",
+	"render": "file:./render.php"
+}

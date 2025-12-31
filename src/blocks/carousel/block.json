@@ -1,0 +1,97 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/carousel",
+	"title": "FS Carousel",
+	"category": "design",
+	"description": "A dynamic carousel container block.",
+	"icon": "slides",
+	"supports": {
+		"align": [ "wide", "full" ],
+		"html": false,
+		"anchor": true
+	},
+	"attributes": {
+		"templateLock": {
+			"type": [ "string", "boolean" ],
+			"enum": [ "all", "insert", "contentOnly", false ]
+		},
+		"slidesToShow": {
+			"type": "number",
+			"default": 3
+		},
+		"columnGap": {
+			"type": "number",
+			"default": 30
+		},
+		"pagination": {
+			"type": "boolean",
+			"default": false
+		},
+		"navigation": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"delay": {
+			"type": "number",
+			"default": 2000
+		},
+		"loop": {
+			"type": "boolean",
+			"default": false
+		},
+		"breakpoints": {
+			"type": "array",
+			"default": []
+		},
+		"speed": {
+			"type": "number",
+			"default": 300
+		},
+		"enableFade": {
+			"type": "boolean",
+			"default": false
+		},
+		"fractionalSlidesEnabled": {
+			"type": "boolean",
+			"default": false
+		},
+		"fractionalSlidesValue": {
+			"type": "number",
+			"default": 0.25
+		},
+		"showPlayPauseButton": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoHeight": {
+			"type": "boolean",
+			"default": false
+		},
+		"enforceHeight": {
+			"type": "boolean",
+			"default": false
+		},
+		"elementTag": {
+			"type": "string",
+			"default": "div"
+		},
+		"blockId": {
+			"type": "string",
+			"default": ""
+		},
+		"additionalClasses": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		}
+	},
+	"textdomain": "fancy-squares-core-enhancements",
+	"render": "file:./render.php"
+}

@@ -111,10 +111,10 @@ $initial_context = [
 				class="fs-tabs__panel"
 				data-wp-context='<?php echo wp_json_encode( [ 'tabId' => $tab['id'] ] ); ?>'
 				data-wp-class--is-active="state.isActive"
-				data-wp-bind--hidden="state.isHidden"
+
 				role="tabpanel"
 				aria-labelledby="<?php echo esc_attr( $tab_button_id ); ?>"
-				<?php echo $is_active ? '' : 'hidden'; ?>
+
 			>
 				<?php if ( $responsive_enabled ) : ?>
 					<button

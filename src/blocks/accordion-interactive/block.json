@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/accordion-interactive",
+	"version": "1.0.0",
+	"title": "Accordion (Interactive)",
+	"category": "layout",
+	"icon": "list-view",
+	"description": "An accordion container using WordPress Interactivity API with Bootstrap 5-quality animations.",
+	"keywords": [
+		"accordion",
+		"collapse",
+		"interactive",
+		"animation"
+	],
+	"textdomain": "fancy-squares-core-enhancements",
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"align": [
+			"wide",
+			"full"
+		],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"interactivity": true
+	},
+	"attributes": {
+		"blockId": {
+			"type": "string",
+			"default": ""
+		},
+		"activeItem": {
+			"type": "string",
+			"default": ""
+		},
+		"openFirstItem": {
+			"type": "boolean",
+			"default": false
+		},
+		"additionalClasses": {
+			"type": "array",
+			"default": []
+		}
+	},
+	"providesContext": {
+		"fs-blocks/accordion-interactive/activeItem": "activeItem"
+	},
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php"
+}

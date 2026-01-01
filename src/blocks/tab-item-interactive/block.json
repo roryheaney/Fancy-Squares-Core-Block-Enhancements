@@ -1,12 +1,12 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "fs-blocks/tab-item",
-	"title": "Tab Item",
+	"name": "fs-blocks/tab-item-interactive",
+	"title": "Tab Item (Interactive)",
 	"category": "layout",
-	"parent": [ "fs-blocks/tabs" ],
+	"parent": [ "fs-blocks/tabs-interactive" ],
 	"icon": "admin-page",
-	"description": "Single tab content pane.",
+	"description": "Single tab content pane for interactive tabs.",
 	"supports": {
 		"html": false,
 		"anchor": true,

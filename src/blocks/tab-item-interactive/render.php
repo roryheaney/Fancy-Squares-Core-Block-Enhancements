@@ -1,6 +1,6 @@
 <?php
 /**
- * Render callback for the Tab Item block.
+ * Render callback for the Interactive Tab Item block.
  *
  * Note: The parent Tabs block renders the wrapper markup and nav controls.
  *

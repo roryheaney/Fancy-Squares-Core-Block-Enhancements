@@ -15,8 +15,8 @@ import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
-const TEMPLATE = [ [ 'fs-blocks/tab-item' ] ];
-const ALLOWED_BLOCKS = [ 'fs-blocks/tab-item' ];
+const TEMPLATE = [ [ 'fs-blocks/tab-item-interactive' ] ];
+const ALLOWED_BLOCKS = [ 'fs-blocks/tab-item-interactive' ];
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
@@ -93,7 +93,7 @@ export default function Edit( props ) {
 	const blockProps = useBlockProps( {
 		className: [
 			'fs-tabs',
-			'wp-block-fs-blocks-tabs',
+			'wp-block-fs-blocks-tabs-interactive',
 			generatedClassName,
 			responsiveTabs ? 'fs-tabs--responsive' : '',
 		]
@@ -102,7 +102,7 @@ export default function Edit( props ) {
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'fs-tabs__panes' },
+		{ className: 'fs-tabs__panels' },
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
 			template: TEMPLATE,
@@ -134,35 +134,27 @@ export default function Edit( props ) {
 			</InspectorControls>
 			<div { ...blockProps }>
 				<div className="wp-block-fs-blocks-tabs-editor">
-					<ul className="fs-tabs__nav" role="tablist">
+					<div className="fs-tabs__tablist" role="tablist">
 						{ tabs.map( ( tab ) => (
-							<li
+							<button
 								key={ tab.clientId }
-								className="fs-tabs__nav-item"
+								type="button"
+								className={ `fs-tabs__tab ${
+									activeTab === tab.tabId ? 'is-active' : ''
+								}` }
+								onClick={ () => handleTabClick( tab ) }
+								role="tab"
+								aria-selected={
+									activeTab === tab.tabId ? 'true' : 'false'
+								}
 							>
-								<button
-									type="button"
-									className={ `fs-tabs__nav-button ${
-										activeTab === tab.tabId
-											? 'is-active'
-											: ''
-									}` }
-									onClick={ () => handleTabClick( tab ) }
-									role="tab"
-									aria-selected={
-										activeTab === tab.tabId
-											? 'true'
-											: 'false'
-									}
-								>
-									{ tab.title }
-								</button>
-							</li>
+								{ tab.title }
+							</button>
 						) ) }
-						<li className="fs-tabs__nav-item">
+						<div className="fs-tabs__tab-appender">
 							<InnerBlocks.ButtonBlockAppender />
-						</li>
-					</ul>
+						</div>
+					</div>
 					<div { ...innerBlocksProps } />
 				</div>
 			</div>

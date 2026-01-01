@@ -34,7 +34,8 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 	);
 
 	const blockProps = useBlockProps( {
-		className: isActiveTab ? 'is-active-tab' : '',
+		className: `fs-tabs__panel ${ isActiveTab ? 'is-active' : '' }`,
+		hidden: ! isActiveTab,
 	} );
 
 	return (
@@ -49,7 +50,9 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 				}
 				placeholder={ __( 'Tab Title', TEXT_DOMAIN ) }
 			/>
-			<InnerBlocks />
+			<div className="fs-tabs__panel-content">
+				<InnerBlocks />
+			</div>
 		</div>
 	);
 }

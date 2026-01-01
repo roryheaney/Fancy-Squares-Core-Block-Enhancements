@@ -20,8 +20,8 @@ import { registerIndexBlock } from './blocks/index-block';
 import { registerContentWrapperBlock } from './blocks/content-wrapper';
 import { registerPictureBlock } from './blocks/picture-block';
 import { registerAlertBlock } from './blocks/alert';
-import { registerTabsBlock } from './blocks/tabs';
-import { registerTabItemBlock } from './blocks/tab-item';
+import { registerTabsInteractiveBlock } from './blocks/tabs-interactive';
+import { registerTabItemInteractiveBlock } from './blocks/tab-item-interactive';
 import { registerCarouselBlock } from './blocks/carousel';
 import { registerCarouselSlideBlock } from './blocks/carousel-slide';
 
@@ -51,9 +51,12 @@ if (
 if ( Array.isArray( enabledBlocks ) && enabledBlocks.includes( 'alert' ) ) {
 	registerAlertBlock();
 }
-if ( Array.isArray( enabledBlocks ) && enabledBlocks.includes( 'tabs' ) ) {
-	registerTabsBlock();
-	registerTabItemBlock();
+if (
+	Array.isArray( enabledBlocks ) &&
+	enabledBlocks.includes( 'tabs-interactive' )
+) {
+	registerTabsInteractiveBlock();
+	registerTabItemInteractiveBlock();
 }
 if ( Array.isArray( enabledBlocks ) && enabledBlocks.includes( 'carousel' ) ) {
 	registerCarouselBlock();

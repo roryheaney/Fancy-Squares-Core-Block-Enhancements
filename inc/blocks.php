@@ -9,7 +9,42 @@ if ( ! defined( 'FS_CORE_ENHANCEMENTS_OPTION_ENABLED_BLOCKS' ) ) {
 	define( 'FS_CORE_ENHANCEMENTS_OPTION_ENABLED_BLOCKS', 'fs_core_enhancements_enabled_blocks' );
 }
 
+function fs_core_enhancements_register_interactivity_module() {
+	if ( ! function_exists( 'wp_register_script_module' ) ) {
+		return;
+	}
+
+	if ( wp_script_is( '@wordpress/interactivity', 'registered' ) ) {
+		return;
+	}
+
+	wp_register_script_module(
+		'@wordpress/interactivity',
+		includes_url( 'js/dist/interactivity.min.js' ),
+		[],
+		get_bloginfo( 'version' )
+	);
+}
+add_action(
+	'init',
+	'fs_core_enhancements_register_interactivity_module',
+	5
+);
+
 function fs_core_enhancements_get_custom_blocks() {
+	$base_dir = dirname( __DIR__ );
+	$build_dir = $base_dir . '/build/blocks';
+	$src_dir = $base_dir . '/src/blocks';
+
+	$get_block_path = static function( $slug ) use ( $build_dir, $src_dir ) {
+		$build_path = $build_dir . '/' . $slug;
+		if ( file_exists( $build_path . '/block.json' ) ) {
+			return $build_path;
+		}
+
+		return $src_dir . '/' . $slug;
+	};
+
 	return [
 		'index-block' => [
 			'name' => 'fs-blocks/index-block',
@@ -18,7 +53,7 @@ function fs_core_enhancements_get_custom_blocks() {
 				'Shows the column index inside core/columns.',
 				'fancy-squares-core-enhancements'
 			),
-			'path' => dirname( __DIR__ ) . '/src/blocks/index-block',
+			'path' => $get_block_path( 'index-block' ),
 		],
 		'content-wrapper' => [
 			'name' => 'fs-blocks/content-wrapper',
@@ -30,7 +65,7 @@ function fs_core_enhancements_get_custom_blocks() {
 				'Adds a wrapper with selectable HTML tag and utility classes.',
 				'fancy-squares-core-enhancements'
 			),
-			'path' => dirname( __DIR__ ) . '/src/blocks/content-wrapper',
+			'path' => $get_block_path( 'content-wrapper' ),
 		],
 		'picture-block' => [
 			'name' => 'fs-blocks/dynamic-picture-block',
@@ -42,7 +77,7 @@ function fs_core_enhancements_get_custom_blocks() {
 				'Outputs a picture element with responsive image sources.',
 				'fancy-squares-core-enhancements'
 			),
-			'path' => dirname( __DIR__ ) . '/src/blocks/picture-block',
+			'path' => $get_block_path( 'picture-block' ),
 		],
 		'alert' => [
 			'name' => 'fs-blocks/alert',
@@ -51,16 +86,19 @@ function fs_core_enhancements_get_custom_blocks() {
 				'Bootstrap-style alert with selectable variant and spacing.',
 				'fancy-squares-core-enhancements'
 			),
-			'path' => dirname( __DIR__ ) . '/src/blocks/alert',
+			'path' => $get_block_path( 'alert' ),
 		],
-		'tabs' => [
-			'name' => 'fs-blocks/tabs',
-			'label' => __( 'Tabs', 'fancy-squares-core-enhancements' ),
-			'description' => __(
-				'Tabbed content container with nested tab items.',
+		'tabs-interactive' => [
+			'name' => 'fs-blocks/tabs-interactive',
+			'label' => __(
+				'Tabs (Interactive)',
 				'fancy-squares-core-enhancements'
 			),
-			'path' => dirname( __DIR__ ) . '/src/blocks/tabs',
+			'description' => __(
+				'Interactivity API-driven tabs with local state.',
+				'fancy-squares-core-enhancements'
+			),
+			'path' => $get_block_path( 'tabs-interactive' ),
 		],
 		'carousel' => [
 			'name' => 'fs-blocks/carousel',
@@ -69,7 +107,7 @@ function fs_core_enhancements_get_custom_blocks() {
 				'Carousel container with optional navigation and autoplay.',
 				'fancy-squares-core-enhancements'
 			),
-			'path' => dirname( __DIR__ ) . '/src/blocks/carousel',
+			'path' => $get_block_path( 'carousel' ),
 		],
 	];
 }
@@ -101,11 +139,25 @@ function fs_core_enhancements_register_blocks() {
 		if ( isset( $blocks[ $slug ]['path'] ) ) {
 			register_block_type( $blocks[ $slug ]['path'] );
 		}
-		if ( 'tabs' === $slug ) {
-			register_block_type( dirname( __DIR__ ) . '/src/blocks/tab-item' );
+		if ( 'tabs-interactive' === $slug ) {
+			$tab_item_path =
+				fs_core_enhancements_get_custom_blocks()['tabs-interactive']['path'];
+			$tab_item_path = str_replace(
+				'/tabs-interactive',
+				'/tab-item-interactive',
+				$tab_item_path
+			);
+			register_block_type( $tab_item_path );
 		}
 		if ( 'carousel' === $slug ) {
-			register_block_type( dirname( __DIR__ ) . '/src/blocks/carousel-slide' );
+			$carousel_path =
+				fs_core_enhancements_get_custom_blocks()['carousel']['path'];
+			$carousel_slide_path = str_replace(
+				'/carousel',
+				'/carousel-slide',
+				$carousel_path
+			);
+			register_block_type( $carousel_slide_path );
 		}
 	}
 }

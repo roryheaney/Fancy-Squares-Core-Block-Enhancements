@@ -172,7 +172,7 @@ export const BLOCK_CONFIG = {
 		// 	options: [ { label: 'Select one', value: 'none' } ],
 		// },
 	},
-	'fs-blocks/tabs': {
+	'fs-blocks/tabs-interactive': {
 		classOptions: [ 'display', 'position', 'zindex' ],
 		allowedPaddingControls: [
 			'all',

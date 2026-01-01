@@ -10,13 +10,12 @@
 @use "assets/scss/cover-block";
 @use "assets/scss/video-block";
 @use "assets/scss/picture-block";
-@use "assets/scss/tabs-block";
 @use "assets/scss/carousel-block";
-
 
 // Define column sizes
 $column-sizes: (
-	"": false, // Default .wp-block-column--column
+	"": false,
+	// Default .wp-block-column--column
 	"auto": auto,
 	"1": 1,
 	"2": 2,
@@ -29,55 +28,48 @@ $column-sizes: (
 	"9": 9,
 	"10": 10,
 	"11": 11,
-	"12": 12
+	"12": 12,
 );
 
 // Define breakpoints matching $grid-breakpoints
 $column-breakpoints: (
-	"": xs,  // Base (no prefix)
+	"": xs,
+	// Base (no prefix)
 	"-sm": sm,
 	"-md": md,
 	"-lg": lg,
 	"-xl": xl,
-	"-xxl": xxl
+	"-xxl": xxl,
 );
 
 // Styles for wp-block-column (columnOptionsCore classes)
 .wp-block-column {
-
 	@each $prefix, $breakpoint in $column-breakpoints {
-
 		@if $prefix == "" {
-
 			@each $size-name, $size-value in $column-sizes {
 				// Add dash only if $size-name is not empty
 				@if $size-name == "" {
-
 					&.wp-block-column--column {
-
 						@include make-col($size-value);
 					}
 				} @else {
 					&.wp-block-column--column-#{$size-name} {
-
 						@include make-col($size-value);
 					}
 				}
 			}
 		} @else {
-
-			@include media-breakpoint-up(map.get($column-breakpoints, $prefix)) {
-
+			@include media-breakpoint-up(
+				map.get($column-breakpoints, $prefix)
+			) {
 				@each $size-name, $size-value in $column-sizes {
 					// Add dash only if $size-name is not empty
 					@if $size-name == "" {
 						&.wp-block-column--column#{$prefix} {
-
 							@include make-col($size-value);
 						}
 					} @else {
 						&.wp-block-column--column#{$prefix}-#{$size-name} {
-
 							@include make-col($size-value);
 						}
 					}
@@ -88,7 +80,6 @@ $column-breakpoints: (
 }
 
 .wp-block-columns {
-
 	&--constrained {
 		margin-left: auto;
 		margin-right: auto;

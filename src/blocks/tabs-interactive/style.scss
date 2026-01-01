@@ -1,0 +1,174 @@
+/**
+ * Frontend styles for Interactive Tabs
+ */
+
+.wp-block-fs-blocks-tabs-interactive {
+	// Tab list - horizontal tabs at top
+	.fs-tabs__tablist {
+		display: flex;
+		gap: 0.5rem;
+		border-bottom: 2px solid #ddd;
+		margin-bottom: 1.5rem;
+	}
+
+	// Hide tabs on mobile when responsive mode is enabled
+	&.fs-tabs--responsive .fs-tabs__tablist {
+		@media (max-width: 767px) {
+			display: none;
+		}
+	}
+
+	.fs-tabs__tab {
+		padding: 0.75rem 1.25rem;
+		background: transparent;
+		border: none;
+		border-bottom: 3px solid transparent;
+		cursor: pointer;
+		font-size: 1rem;
+		color: #555;
+		transition: all 0.15s ease-in-out;
+
+		&:hover {
+			color: #000;
+			background: #f5f5f5;
+		}
+
+		&.is-active {
+			color: #000;
+			border-bottom-color: #0073aa;
+			font-weight: 600;
+		}
+
+		&:focus-visible {
+			outline: 2px solid #0073aa;
+			outline-offset: 2px;
+		}
+	}
+
+	// Panels container - add border on mobile when responsive
+	&.fs-tabs--responsive .fs-tabs__panels {
+		@media (max-width: 767px) {
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+	}
+
+	.fs-tabs__panel {
+		// Desktop: use opacity for smooth fade
+		transition: opacity 0.15s linear;
+
+		// Inactive panels on desktop - fade out and remove from flow
+		&:not(.is-active) {
+			opacity: 0;
+			pointer-events: none;
+			position: absolute; // Remove from layout flow
+			visibility: hidden; // Hide from screen readers
+			width: 100%; // Maintain full width when absolute
+		}
+
+		// Active panel is visible in normal flow
+		&.is-active {
+			opacity: 1;
+			pointer-events: auto;
+			position: relative;
+			visibility: visible;
+		}
+	}
+
+	// Mobile accordion styles when responsive mode is enabled
+	&.fs-tabs--responsive .fs-tabs__panel {
+		@media (max-width: 767px) {
+			border-bottom: 1px solid #ddd;
+
+			&:last-child {
+				border-bottom: none;
+			}
+
+			// Mobile: restore all panels to normal flow, full opacity
+			&:not(.is-active) {
+				opacity: 1;
+				pointer-events: auto;
+				position: static !important; // Back in normal flow
+				visibility: visible !important; // Visible to screen readers
+			}
+
+			// Active panels also in normal flow
+			&.is-active {
+				position: static !important;
+			}
+		}
+	}
+
+	// Accordion trigger (only when responsive mode is enabled)
+	&.fs-tabs--responsive .fs-tabs__accordion-trigger {
+		width: 100%;
+		padding: 1rem;
+		background: #fff;
+		border: none;
+		text-align: left;
+		cursor: pointer;
+		font-size: 1rem;
+		font-weight: 600;
+		justify-content: space-between;
+		align-items: center;
+		transition: background 0.15s ease-in-out;
+		display: none !important; // Hidden on desktop
+
+		@media (max-width: 767px) {
+			display: flex !important; // Show on mobile
+		}
+
+		&::after {
+			content: "▼";
+			font-size: 0.75rem;
+			transition: transform 0.15s ease-in-out;
+		}
+
+		&.is-active::after {
+			transform: rotate(180deg);
+		}
+
+		&:hover {
+			background: #f5f5f5;
+		}
+
+		&:focus-visible {
+			outline: 2px solid #0073aa;
+			outline-offset: -2px;
+		}
+	}
+
+	// Panel content - default padding for desktop tabs
+	.fs-tabs__panel-content {
+		padding: 1.5rem 0;
+	}
+
+	// Mobile accordion collapse behavior when responsive mode is enabled
+	&.fs-tabs--responsive .fs-tabs__panel-content {
+		@media (max-width: 767px) {
+			overflow: hidden;
+			height: 0;
+			opacity: 0;
+			padding: 0; // No padding on collapsing element
+			transition:
+				height 0.35s ease,
+				opacity 0.35s ease;
+
+			// Padding goes on inner content (gets clipped when height: 0)
+			> * {
+				padding: 1rem;
+			}
+		}
+	}
+
+	// Mobile: expand active panel content when responsive mode is enabled
+	&.fs-tabs--responsive {
+		@media (max-width: 767px) {
+			.fs-tabs__panel.is-active .fs-tabs__panel-content {
+				height: auto;
+				opacity: 1;
+				// Padding is on inner content via > * selector above
+			}
+		}
+	}
+}

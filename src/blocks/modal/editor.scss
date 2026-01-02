@@ -1,0 +1,49 @@
+.modal-editor-wrapper {
+	border: 2px dashed #ccc;
+	padding: 20px;
+	background: #f9f9f9;
+	border-radius: 4px;
+}
+
+.modal-editor-preview {
+	background: white;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.modal-header-preview {
+	padding: 16px 20px;
+	border-bottom: 1px solid #dee2e6;
+
+	h5 {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 500;
+		color: #333;
+	}
+}
+
+.modal-body-preview {
+	padding: 20px;
+}
+
+.modal-footer-preview {
+	padding: 16px 20px;
+	border-top: 1px solid #dee2e6;
+	background: #f8f9fa;
+
+	.editor-note {
+		margin: 0;
+		font-size: 0.875rem;
+		color: #666;
+		font-style: italic;
+	}
+}
+
+.modal-content-editor {
+	// Allow inner blocks to be styled normally
+	min-height: 50px;
+}

@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "fs-blocks/accordion-item-interactive",
 	"version": "1.0.0",
-	"title": "Accordion Item (Interactive)",
+	"title": "FS Accordion Item (Interactive)",
 	"category": "layout",
 	"icon": "minus",
 	"description": "A single accordion item with collapsible content.",

@@ -7,15 +7,9 @@
 	"category": "layout",
 	"icon": "minus",
 	"description": "A single accordion item with collapsible content.",
-	"keywords": [
-		"accordion",
-		"item",
-		"panel"
-	],
+	"keywords": [ "accordion", "item", "panel" ],
 	"textdomain": "fancy-squares-core-enhancements",
-	"parent": [
-		"fs-blocks/accordion-interactive"
-	],
+	"parent": [ "fs-blocks/accordion-interactive" ],
 	"supports": {
 		"html": false,
 		"reusable": false,

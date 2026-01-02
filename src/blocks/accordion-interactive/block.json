@@ -7,20 +7,12 @@
 	"category": "layout",
 	"icon": "list-view",
 	"description": "An accordion container using WordPress Interactivity API with Bootstrap 5-quality animations.",
-	"keywords": [
-		"accordion",
-		"collapse",
-		"interactive",
-		"animation"
-	],
+	"keywords": [ "accordion", "collapse", "interactive", "animation" ],
 	"textdomain": "fancy-squares-core-enhancements",
 	"supports": {
 		"html": false,
 		"anchor": true,
-		"align": [
-			"wide",
-			"full"
-		],
+		"align": [ "wide", "full" ],
 		"spacing": {
 			"margin": true,
 			"padding": true

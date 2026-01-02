@@ -46,13 +46,8 @@ $classes = array_map( 'sanitize_html_class', $classes );
 $wrapper_attributes = get_block_wrapper_attributes( [ 'class' => implode( ' ', $classes ) ] );
 
 $initial_context = [
-	'blockId'             => $block_id,
-	'activeItem'          => $active_item,
-	'transitioningItem'   => null,
-	'closingItem'         => null,
-	'transitionHeight'    => '',
-	'closingHeight'       => '',
-	'transitionDirection' => null,
+	'blockId'    => $block_id,
+	'activeItem' => $active_item,
 ];
 
 // Define derived state for isActive (computed from context)

@@ -46,11 +46,8 @@ export default function Edit( {
 
 	// Handle clicks on the trigger for editor UI only (not persisted to post_content)
 	const handleTriggerClick = ( e ) => {
-		// Don't toggle if clicking on RichText or inside content area
-		if (
-			e.target.closest( '.fs-accordion__content' ) ||
-			e.target.closest( '.block-editor-rich-text__editable' )
-		) {
+		// Don't toggle if clicking on the title (RichText)
+		if ( e.target.closest( '.block-editor-rich-text__editable' ) ) {
 			return;
 		}
 
@@ -74,6 +71,8 @@ export default function Edit( {
 					className="fs-accordion__trigger"
 					onClick={ handleTriggerClick }
 					style={ { cursor: 'pointer' } }
+					role="button"
+					tabIndex={ 0 }
 				>
 					<RichText
 						tagName="span"
@@ -86,11 +85,21 @@ export default function Edit( {
 							TEXT_DOMAIN
 						) }
 						allowedFormats={ [] }
+						onClick={ ( e ) => e.stopPropagation() }
 					/>
 				</div>
 			</h3>
-			<div className="fs-accordion__content">
-				<InnerBlocks />
+			<div
+				className={ `fs-accordion__content${
+					isActiveItem ? ' is-open' : ''
+				}` }
+				style={ {
+					display: isActiveItem ? 'block' : 'none',
+				} }
+			>
+				<div className="fs-accordion__body">
+					<InnerBlocks />
+				</div>
 			</div>
 		</div>
 	);

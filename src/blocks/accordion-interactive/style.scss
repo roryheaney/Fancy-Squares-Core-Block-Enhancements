@@ -1,0 +1,37 @@
+.fs-accordion__content {
+	margin: 0;
+
+	// Bootstrap 5 collapse base
+	&.collapse:not(.show) {
+		display: none;
+	}
+
+	&.collapsing {
+		height: 0;
+		overflow: hidden;
+		transition: height 0.35s ease;
+	}
+
+	&.collapse.show {
+		display: block;
+	}
+}
+
+.fs-accordion__trigger {
+	width: 100%;
+	text-align: left;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 1rem;
+	border: 1px solid #dee2e6;
+
+	&:focus {
+		outline: 2px solid #0d6efd;
+		outline-offset: 2px;
+	}
+}
+
+.fs-accordion__body {
+	padding: 1rem;
+}

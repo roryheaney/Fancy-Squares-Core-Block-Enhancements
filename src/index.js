@@ -22,6 +22,8 @@ import { registerPictureBlock } from './blocks/picture-block';
 import { registerAlertBlock } from './blocks/alert';
 import { registerTabsInteractiveBlock } from './blocks/tabs-interactive';
 import { registerTabItemInteractiveBlock } from './blocks/tab-item-interactive';
+import { registerAccordionInteractiveBlock } from './blocks/accordion-interactive';
+import { registerAccordionItemInteractiveBlock } from './blocks/accordion-item-interactive';
 import { registerCarouselBlock } from './blocks/carousel';
 import { registerCarouselSlideBlock } from './blocks/carousel-slide';
 
@@ -57,6 +59,13 @@ if (
 ) {
 	registerTabsInteractiveBlock();
 	registerTabItemInteractiveBlock();
+}
+if (
+	Array.isArray( enabledBlocks ) &&
+	enabledBlocks.includes( 'accordion-interactive' )
+) {
+	registerAccordionInteractiveBlock();
+	registerAccordionItemInteractiveBlock();
 }
 if ( Array.isArray( enabledBlocks ) && enabledBlocks.includes( 'carousel' ) ) {
 	registerCarouselBlock();

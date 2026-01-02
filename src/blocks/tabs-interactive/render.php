@@ -22,8 +22,9 @@ if ( '' === $block_id ) {
 	$block_id = 'fs-tabs-interactive-' . $block_id;
 }
 
-$active_tab = isset( $attributes['activeTab'] ) ? $attributes['activeTab'] : '';
-$active_tab = sanitize_html_class( $active_tab );
+// activeTab is transient editor state only - ignore saved value
+// Always default to first tab on frontend
+$active_tab = '';
 
 $tabs = [];
 if ( isset( $block ) && $block instanceof WP_Block ) {

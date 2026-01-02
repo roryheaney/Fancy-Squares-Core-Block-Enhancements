@@ -24,6 +24,12 @@ export const ALLOWED_BLOCKS = [
 	'core/cover',
 	'core/video',
 	'core/group',
+	'fs-blocks/tabs-interactive',
+	'fs-blocks/accordion-interactive',
+	'fs-blocks/carousel',
+	'fs-blocks/alert',
+	'fs-blocks/index-block',
+	'fs-blocks/content-wrapper',
 ];
 
 export const BREAKPOINT_DIMENSIONS = {
@@ -173,6 +179,27 @@ export const BLOCK_CONFIG = {
 		// },
 	},
 	'fs-blocks/tabs-interactive': {
+		classOptions: [ 'display', 'position', 'zindex' ],
+		allowedPaddingControls: [
+			'all',
+			'horizontal',
+			'vertical',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		],
+		allowedPositiveMarginControls: [
+			'all',
+			'horizontal',
+			'vertical',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		],
+	},
+	'fs-blocks/accordion-interactive': {
 		classOptions: [ 'display', 'position', 'zindex' ],
 		allowedPaddingControls: [
 			'all',

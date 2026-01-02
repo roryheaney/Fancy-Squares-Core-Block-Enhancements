@@ -100,6 +100,18 @@ function fs_core_enhancements_get_custom_blocks() {
 			),
 			'path' => $get_block_path( 'tabs-interactive' ),
 		],
+		'accordion-interactive' => [
+			'name' => 'fs-blocks/accordion-interactive',
+			'label' => __(
+				'Accordion (Interactive)',
+				'fancy-squares-core-enhancements'
+			),
+			'description' => __(
+				'Interactivity API-driven accordion with Bootstrap 5-quality animations.',
+				'fancy-squares-core-enhancements'
+			),
+			'path' => $get_block_path( 'accordion-interactive' ),
+		],
 		'carousel' => [
 			'name' => 'fs-blocks/carousel',
 			'label' => __( 'Carousel', 'fancy-squares-core-enhancements' ),
@@ -149,6 +161,16 @@ function fs_core_enhancements_register_blocks() {
 			);
 			register_block_type( $tab_item_path );
 		}
+		if ( 'accordion-interactive' === $slug ) {
+			$accordion_item_path =
+				fs_core_enhancements_get_custom_blocks()['accordion-interactive']['path'];
+			$accordion_item_path = str_replace(
+				'/accordion-interactive',
+				'/accordion-item-interactive',
+				$accordion_item_path
+			);
+			register_block_type( $accordion_item_path );
+		}
 		if ( 'carousel' === $slug ) {
 			$carousel_path =
 				fs_core_enhancements_get_custom_blocks()['carousel']['path'];
@@ -162,3 +184,37 @@ function fs_core_enhancements_register_blocks() {
 	}
 }
 add_action( 'init', 'fs_core_enhancements_register_blocks' );
+
+/**
+ * Fix accordion-interactive activeItem in context passed to children.
+ * This ensures providesContext passes the correct value.
+ */
+function fs_core_enhancements_fix_accordion_context( $context, $parsed_block, $parent_block ) {
+	// Only modify context for accordion-item-interactive children
+	if ( empty( $parent_block ) || 'fs-blocks/accordion-interactive' !== $parent_block->name ) {
+		return $context;
+	}
+
+	// Check if parent wants first item open
+	$parent_attrs = $parent_block->parsed_block['attrs'] ?? [];
+	$open_first_item = ! empty( $parent_attrs['openFirstItem'] );
+
+	// Compute correct activeItem if needed
+	if ( $open_first_item && empty( $context['fs-blocks/accordion-interactive/activeItem'] ) ) {
+		$inner_blocks = $parent_block->parsed_block['innerBlocks'] ?? [];
+		if ( ! empty( $inner_blocks ) ) {
+			foreach ( $inner_blocks as $inner_block ) {
+				if ( 'fs-blocks/accordion-item-interactive' === $inner_block['blockName'] ) {
+					$active_item = isset( $inner_block['attrs']['itemId'] ) ? $inner_block['attrs']['itemId'] : '';
+					if ( $active_item ) {
+						$context['fs-blocks/accordion-interactive/activeItem'] = $active_item;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return $context;
+}
+add_filter( 'render_block_context', 'fs_core_enhancements_fix_accordion_context', 10, 3 );

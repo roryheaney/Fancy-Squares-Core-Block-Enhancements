@@ -1,0 +1,35 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/accordion-item-interactive",
+	"version": "1.0.0",
+	"title": "Accordion Item (Interactive)",
+	"category": "layout",
+	"icon": "minus",
+	"description": "A single accordion item with collapsible content.",
+	"keywords": [ "accordion", "item", "panel" ],
+	"textdomain": "fancy-squares-core-enhancements",
+	"parent": [ "fs-blocks/accordion-interactive" ],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"anchor": true,
+		"__experimentalLayout": true,
+		"interactivity": true
+	},
+	"attributes": {
+		"itemId": {
+			"type": "string",
+			"default": ""
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"usesContext": [
+		"fs-blocks/accordion-interactive/activeItem",
+		"fs-blocks/accordion-interactive/allowMultiple"
+	],
+	"render": "file:./render.php"
+}

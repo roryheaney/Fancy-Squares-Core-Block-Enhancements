@@ -62,6 +62,7 @@ export default function Edit( props ) {
 		}
 	}, [ blockId, clientId, setAttributes ] );
 
+	const hasInitializedRef = useRef( false );
 	useEffect( () => {
 		if ( tabs.length === 0 ) {
 			if ( activeTab ) {
@@ -69,9 +70,20 @@ export default function Edit( props ) {
 			}
 			return;
 		}
-		const tabIds = tabs.map( ( tab ) => tab.tabId );
-		if ( ! activeTab || ! tabIds.includes( activeTab ) ) {
-			setAttributes( { activeTab: tabs[ 0 ].tabId } );
+
+		// Only reset to first tab on initial mount
+		if ( ! hasInitializedRef.current ) {
+			hasInitializedRef.current = true;
+			const firstTabId = tabs[ 0 ].tabId;
+			if ( activeTab !== firstTabId ) {
+				setAttributes( { activeTab: firstTabId } );
+			}
+		} else {
+			// After initialization, just validate activeTab exists in current tabs
+			const tabIds = tabs.map( ( tab ) => tab.tabId );
+			if ( ! activeTab || ! tabIds.includes( activeTab ) ) {
+				setAttributes( { activeTab: tabs[ 0 ].tabId } );
+			}
 		}
 	}, [ activeTab, setAttributes, tabs ] );
 

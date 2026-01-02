@@ -4,9 +4,7 @@
 	"name": "fs-blocks/tab-item-interactive",
 	"title": "Tab Item (Interactive)",
 	"category": "layout",
-	"parent": [
-		"fs-blocks/tabs-interactive"
-	],
+	"parent": [ "fs-blocks/tabs-interactive" ],
 	"icon": "admin-page",
 	"description": "Single tab content pane for interactive tabs.",
 	"supports": {

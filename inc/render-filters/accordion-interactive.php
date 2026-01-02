@@ -8,7 +8,7 @@ defined('ABSPATH') || exit;
 /**
  * Fix accordion activeItem attribute before rendering.
  * This ensures that providesContext passes the correct value to children based on openFirstItem setting.
- * 
+ *
  * Without this filter, the saved activeItem value from the editor would persist to frontend,
  * causing the wrong item to open or items to open when they should all be collapsed.
  *
@@ -20,7 +20,7 @@ defined('ABSPATH') || exit;
 function fs_accordion_interactive_render_block_data($parsed_block, $source_block, $parent_block) {
 	if ('fs-blocks/accordion-interactive' === $parsed_block['blockName']) {
 		$open_first_item = !empty($parsed_block['attrs']['openFirstItem']);
-		
+
 		if ($open_first_item && !empty($parsed_block['innerBlocks'])) {
 			// Find the first accordion item and set it as active
 			foreach ($parsed_block['innerBlocks'] as $inner_block) {

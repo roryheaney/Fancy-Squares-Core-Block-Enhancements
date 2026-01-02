@@ -186,31 +186,35 @@ function fs_core_enhancements_register_blocks() {
 add_action( 'init', 'fs_core_enhancements_register_blocks' );
 
 /**
- * Fix accordion-interactive activeItem before rendering.
- * This ensures providesContext passes the correct value to children.
+ * Fix accordion-interactive activeItem in context passed to children.
+ * This ensures providesContext passes the correct value.
  */
-function fs_core_enhancements_fix_accordion_active_item( $parsed_block, $source_block, $parent_block ) {
-	// Only process accordion-interactive blocks
-	if ( 'fs-blocks/accordion-interactive' !== $parsed_block['blockName'] ) {
-		return $parsed_block;
+function fs_core_enhancements_fix_accordion_context( $context, $parsed_block, $parent_block ) {
+	// Only modify context for accordion-item-interactive children
+	if ( empty( $parent_block ) || 'fs-blocks/accordion-interactive' !== $parent_block->name ) {
+		return $context;
 	}
 
-	$open_first_item = ! empty( $parsed_block['attrs']['openFirstItem'] );
-	
-	// activeItem is transient editor state - compute correct value for frontend
-	$active_item = '';
-	if ( $open_first_item && ! empty( $parsed_block['innerBlocks'] ) ) {
-		foreach ( $parsed_block['innerBlocks'] as $inner_block ) {
-			if ( 'fs-blocks/accordion-item-interactive' === $inner_block['blockName'] ) {
-				$active_item = isset( $inner_block['attrs']['itemId'] ) ? $inner_block['attrs']['itemId'] : '';
-				break;
+	// Check if parent wants first item open
+	$parent_attrs = $parent_block->parsed_block['attrs'] ?? [];
+	$open_first_item = ! empty( $parent_attrs['openFirstItem'] );
+
+	// Compute correct activeItem if needed
+	if ( $open_first_item && empty( $context['fs-blocks/accordion-interactive/activeItem'] ) ) {
+		$inner_blocks = $parent_block->parsed_block['innerBlocks'] ?? [];
+		if ( ! empty( $inner_blocks ) ) {
+			foreach ( $inner_blocks as $inner_block ) {
+				if ( 'fs-blocks/accordion-item-interactive' === $inner_block['blockName'] ) {
+					$active_item = isset( $inner_block['attrs']['itemId'] ) ? $inner_block['attrs']['itemId'] : '';
+					if ( $active_item ) {
+						$context['fs-blocks/accordion-interactive/activeItem'] = $active_item;
+						break;
+					}
+				}
 			}
 		}
 	}
 
-	// Override the saved activeItem with the computed value
-	$parsed_block['attrs']['activeItem'] = $active_item;
-
-	return $parsed_block;
+	return $context;
 }
-add_filter( 'render_block_data', 'fs_core_enhancements_fix_accordion_active_item', 10, 3 );
+add_filter( 'render_block_context', 'fs_core_enhancements_fix_accordion_context', 10, 3 );

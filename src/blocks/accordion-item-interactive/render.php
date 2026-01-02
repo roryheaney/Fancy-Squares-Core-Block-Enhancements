@@ -26,21 +26,20 @@ $is_active = $active_item === $item_id;
 $trigger_id = 'fs-accordion-trigger-' . $item_id;
 $content_id = 'fs-accordion-content-' . $item_id;
 
-// Build initial classes
-$wrapper_classes = 'fs-accordion__item';
-if ( $is_active ) {
-	$wrapper_classes .= ' is-active';
-}
+// Get base wrapper attributes (is-active class added via render_block filter)
+$wrapper_attributes = get_block_wrapper_attributes();
 
-// Add inline style to prevent FOUC for active items
-$inline_style = '';
-if ( $is_active ) {
-	$inline_style = ' style="--accordion-content-height: auto; --accordion-content-opacity: 1;"';
-}
+// Item-level context with only itemId
+$item_context = [
+	'itemId' => $item_id,
+];
+
 ?>
 <div
-	class="<?php echo esc_attr( $wrapper_classes ); ?>"<?php echo $inline_style; ?>
-	data-wp-context='<?php echo wp_json_encode( [ 'itemId' => $item_id ] ); ?>'
+	<?php echo $wrapper_attributes; ?>
+	data-wp-interactive="fancySquaresAccordionInteractive"
+	<?php echo wp_interactivity_data_wp_context( $item_context ); ?>
+	data-wp-class--is-active="state.isActive"
 >
 	<h3 class="fs-accordion__header">
 		<button
@@ -49,8 +48,8 @@ if ( $is_active ) {
 			class="fs-accordion__trigger"
 			aria-controls="<?php echo esc_attr( $content_id ); ?>"
 			aria-expanded="<?php echo $is_active ? 'true' : 'false'; ?>"
-			data-wp-bind--aria-expanded="state.ariaExpanded"
-			data-wp-on--click="actions.toggleItem"
+			data-wp-bind--aria-expanded="state.isActive"
+			data-wp-on-async--click="actions.toggleItem"
 			data-wp-on--keydown="actions.handleKeydown"
 		>
 			<span><?php echo wp_kses_post( $title ); ?></span>
@@ -59,12 +58,15 @@ if ( $is_active ) {
 
 	<div
 		id="<?php echo esc_attr( $content_id ); ?>"
-		class="fs-accordion__content"
+		class="fs-accordion__content collapse<?php echo $is_active ? ' show' : ''; ?>"
 		role="region"
 		aria-labelledby="<?php echo esc_attr( $trigger_id ); ?>"
 		aria-hidden="<?php echo $is_active ? 'false' : 'true'; ?>"
-		data-wp-bind--aria-hidden="state.ariaHidden"
+		data-wp-bind--aria-hidden="!state.isActive"
+		data-item-id="<?php echo esc_attr( $item_id ); ?>"
 	>
-		<?php echo $content; ?>
+		<div class="fs-accordion__body">
+			<?php echo $content; ?>
+		</div>
 	</div>
 </div>

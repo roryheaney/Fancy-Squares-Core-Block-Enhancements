@@ -1,4 +1,10 @@
-import { store, getContext, getElement } from '@wordpress/interactivity';
+import {
+	store,
+	getContext,
+	getElement,
+	withScope,
+	withSyncEvent,
+} from '@wordpress/interactivity';
 
 store( 'fancySquaresAccordionInteractive', {
 	state: {
@@ -6,43 +12,148 @@ store( 'fancySquaresAccordionInteractive', {
 			const context = getContext();
 			return context.activeItem === context.itemId;
 		},
-		get ariaExpanded() {
-			const context = getContext();
-			return context.activeItem === context.itemId ? 'true' : 'false';
-		},
-		get ariaHidden() {
-			const context = getContext();
-			return context.activeItem === context.itemId ? 'false' : 'true';
-		},
 		get isCollapsing() {
 			const context = getContext();
-			return context.collapsing === context.itemId;
+			return context.transitioningItem === context.itemId;
 		},
 	},
 	actions: {
-		handleKeydown( event ) {
+		toggleItem() {
+			const context = getContext();
+			const { ref } = getElement();
+
+			// Get content element
+			const item = ref.closest(
+				'[data-wp-interactive="fancySquaresAccordionInteractive"]'
+			);
+			if ( ! item ) return;
+
+			const content = item.querySelector( '.fs-accordion__content' );
+			if ( ! content ) return;
+
+			// If clicking active item, close it
+			if ( context.activeItem === context.itemId ) {
+				// Bootstrap 5 hide() sequence
+				const height = content.getBoundingClientRect().height;
+				content.style.height = height + 'px';
+				content.offsetHeight; // Force reflow
+
+				// Add collapsing class manually, remove collapse and show
+				content.classList.add( 'collapsing' );
+				content.classList.remove( 'collapse', 'show' );
+
+				// Set height to empty (NOT 0px) - this is the Bootstrap way
+				content.style.height = '';
+
+				// Wait for transition to complete
+				const handleTransitionEnd = () => {
+					content.classList.remove( 'collapsing' );
+					content.classList.add( 'collapse' );
+					context.activeItem = ''; // Remove active item AFTER transition
+					content.removeEventListener(
+						'transitionend',
+						handleTransitionEnd
+					);
+				};
+				content.addEventListener(
+					'transitionend',
+					handleTransitionEnd,
+					{
+						once: true,
+					}
+				);
+			} else {
+				// Open this item
+				const previousItemId = context.activeItem;
+
+				// Close previous item with transition if it exists
+				if ( previousItemId ) {
+					const accordion = ref.closest( '.fs-accordion' );
+					if ( accordion ) {
+						const previousItem = accordion.querySelector(
+							`[data-item-id="${ previousItemId }"]`
+						);
+						if ( previousItem ) {
+							// Bootstrap 5 hide() sequence
+							const prevHeight =
+								previousItem.getBoundingClientRect().height;
+							previousItem.style.height = prevHeight + 'px';
+							previousItem.offsetHeight; // Force reflow
+
+							// Manually add/remove classes
+							previousItem.classList.add( 'collapsing' );
+							previousItem.classList.remove( 'collapse', 'show' );
+
+							// Set to empty string (NOT 0px)
+							previousItem.style.height = '';
+
+							const handlePrevTransitionEnd = () => {
+								previousItem.classList.remove( 'collapsing' );
+								previousItem.classList.add( 'collapse' );
+								previousItem.removeEventListener(
+									'transitionend',
+									handlePrevTransitionEnd
+								);
+							};
+							previousItem.addEventListener(
+								'transitionend',
+								handlePrevTransitionEnd,
+								{
+									once: true,
+								}
+							);
+						}
+					}
+				}
+
+				// Open new item with transition
+				context.activeItem = context.itemId;
+
+				// Bootstrap 5 show() sequence
+				// Remove collapse, add collapsing
+				content.classList.remove( 'collapse' );
+				content.classList.add( 'collapsing' );
+
+				// Set to 0 initially
+				content.style.height = '0px';
+				content.offsetHeight; // Force reflow
+
+				// Transition to full height
+				const scrollHeight = content.scrollHeight;
+				content.style.height = scrollHeight + 'px';
+
+				const handleTransitionEnd = () => {
+					content.classList.remove( 'collapsing' );
+					content.classList.add( 'collapse', 'show' );
+					content.style.height = '';
+					content.removeEventListener(
+						'transitionend',
+						handleTransitionEnd
+					);
+				};
+				content.addEventListener(
+					'transitionend',
+					handleTransitionEnd,
+					{ once: true }
+				);
+			}
+		},
+
+		handleKeydown: withSyncEvent( ( event ) => {
 			const { ref } = getElement();
 			const key = event.key;
-
-			// Only handle arrow keys, Home, and End
 			if ( ! [ 'ArrowUp', 'ArrowDown', 'Home', 'End' ].includes( key ) ) {
 				return;
 			}
-
 			event.preventDefault();
-
 			const accordion = ref.closest( '.fs-accordion' );
 			if ( ! accordion ) return;
-
 			const triggers = Array.from(
 				accordion.querySelectorAll( '.fs-accordion__trigger' )
 			);
 			const currentIndex = triggers.indexOf( ref );
-
 			if ( currentIndex === -1 ) return;
-
 			let targetIndex;
-
 			switch ( key ) {
 				case 'ArrowDown':
 					targetIndex =
@@ -63,135 +174,9 @@ store( 'fancySquaresAccordionInteractive', {
 					targetIndex = triggers.length - 1;
 					break;
 			}
-
 			if ( targetIndex !== undefined ) {
 				triggers[ targetIndex ]?.focus();
 			}
-		},
-		toggleItem() {
-			const context = getContext();
-			const { ref } = getElement();
-
-			if ( ! context.itemId ) return;
-
-			const isCurrentlyActive = context.activeItem === context.itemId;
-			const itemWrapper = ref.closest( '.fs-accordion__item' );
-			const contentElement = itemWrapper?.querySelector(
-				'.fs-accordion__content'
-			);
-
-			if ( ! contentElement ) return;
-
-			if ( isCurrentlyActive ) {
-				// COLLAPSE: Active → Collapsing → Collapsed
-				const height = contentElement.scrollHeight;
-				contentElement.style.height = height + 'px';
-				contentElement.offsetHeight; // Force reflow
-
-				// Add .is-collapsing class for transition
-				contentElement.classList.add( 'is-collapsing' );
-				context.collapsing = context.itemId;
-				context.activeItem = null; // Remove active state
-
-				requestAnimationFrame( () => {
-					contentElement.style.height = '0px';
-
-					const handleTransitionEnd = () => {
-						contentElement.style.height = '';
-						contentElement.classList.remove( 'is-collapsing' );
-						if ( context.collapsing === context.itemId ) {
-							context.collapsing = null;
-						}
-						contentElement.removeEventListener(
-							'transitionend',
-							handleTransitionEnd
-						);
-					};
-					contentElement.addEventListener(
-						'transitionend',
-						handleTransitionEnd,
-						{ once: true }
-					);
-				} );
-			} else {
-				// EXPAND: Collapsed → Collapsing → Expanded
-				const previousActive = context.activeItem;
-
-				// Close previous item
-				if ( previousActive ) {
-					const previousItem = document.querySelector(
-						`[data-wp-context*='"itemId":"${ previousActive }"'].fs-accordion__item`
-					);
-					if ( previousItem ) {
-						const previousContent = previousItem.querySelector(
-							'.fs-accordion__content'
-						);
-						if ( previousContent ) {
-							// Collapse previous item
-							const height = previousContent.scrollHeight;
-							previousContent.style.height = height + 'px';
-							previousContent.offsetHeight;
-
-							previousContent.classList.add( 'is-collapsing' );
-
-							requestAnimationFrame( () => {
-								previousContent.style.height = '0px';
-
-								const handleEnd = () => {
-									previousContent.style.height = '';
-									previousContent.classList.remove(
-										'is-collapsing'
-									);
-									previousContent.removeEventListener(
-										'transitionend',
-										handleEnd
-									);
-								};
-								previousContent.addEventListener(
-									'transitionend',
-									handleEnd,
-									{ once: true }
-								);
-							} );
-						}
-					}
-				}
-
-				// Open current item
-				context.activeItem = context.itemId;
-				contentElement.style.height = '0px';
-				contentElement.offsetHeight;
-
-				// Add .is-collapsing class for transition
-				contentElement.classList.add( 'is-collapsing' );
-				context.collapsing = context.itemId;
-
-				requestAnimationFrame( () => {
-					const scrollHeight = contentElement.scrollHeight;
-					contentElement.style.height = scrollHeight + 'px';
-
-					const handleTransitionEnd = () => {
-						contentElement.style.height = '';
-						contentElement.classList.remove( 'is-collapsing' );
-						if ( context.collapsing === context.itemId ) {
-							context.collapsing = null;
-						}
-						contentElement.removeEventListener(
-							'transitionend',
-							handleTransitionEnd
-						);
-					};
-					contentElement.addEventListener(
-						'transitionend',
-						handleTransitionEnd,
-						{ once: true }
-					);
-				} );
-			}
-
-			if ( ref ) {
-				ref.focus();
-			}
-		},
+		} ),
 	},
 } );

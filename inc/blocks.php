@@ -121,6 +121,15 @@ function fs_core_enhancements_get_custom_blocks() {
 			),
 			'path' => $get_block_path( 'carousel' ),
 		],
+		'modal' => [
+			'name' => 'fs-blocks/modal',
+			'label' => __( 'Modal', 'fancy-squares-core-enhancements' ),
+			'description' => __(
+				'Modal dialog using WordPress Interactivity API with Bootstrap 5 animations.',
+				'fancy-squares-core-enhancements'
+			),
+			'path' => $get_block_path( 'modal' ),
+		],
 	];
 }
 

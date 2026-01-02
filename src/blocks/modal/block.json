@@ -1,0 +1,58 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/modal",
+	"version": "1.0.0",
+	"title": "FS Modal (Interactive)",
+	"category": "layout",
+	"icon": "welcome-view-site",
+	"description": "A modal dialog using WordPress Interactivity API with Bootstrap 5 animations.",
+	"keywords": [ "modal", "dialog", "popup", "interactive", "overlay" ],
+	"textdomain": "fancy-squares-core-enhancements",
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"align": false,
+		"interactivity": true
+	},
+	"attributes": {
+		"modalId": {
+			"type": "string",
+			"default": ""
+		},
+		"size": {
+			"type": "string",
+			"default": "default"
+		},
+		"centered": {
+			"type": "boolean",
+			"default": false
+		},
+		"scrollable": {
+			"type": "boolean",
+			"default": false
+		},
+		"staticBackdrop": {
+			"type": "boolean",
+			"default": false
+		},
+		"closeOnEscape": {
+			"type": "boolean",
+			"default": true
+		},
+		"showHeader": {
+			"type": "boolean",
+			"default": true
+		},
+		"title": {
+			"type": "string",
+			"default": "Modal Title"
+		},
+		"additionalClasses": {
+			"type": "array",
+			"default": []
+		}
+	},
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php"
+}

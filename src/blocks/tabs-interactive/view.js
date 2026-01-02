@@ -366,10 +366,10 @@ document.addEventListener('shown.fs.tabs', (e) => {
   const tabButton = e.target;
   const tabPanel = document.getElementById(tabButton.getAttribute('aria-controls'));
   const contentArea = tabPanel?.querySelector('.fs-tabs__panel-content');
-  
+
   if (contentArea && !contentArea.dataset.loaded) {
     console.log(`📥 Loading content for ${e.detail.to}...`);
-    
+
     setTimeout(() => {
       const newContent = document.createElement('div');
       newContent.className = 'lazy-loaded-content';

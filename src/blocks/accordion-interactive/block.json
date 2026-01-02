@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "fs-blocks/accordion-interactive",
 	"version": "1.0.0",
-	"title": "Accordion (Interactive)",
+	"title": "FS Accordion (Interactive)",
 	"category": "layout",
 	"icon": "list-view",
 	"description": "An accordion container using WordPress Interactivity API with Bootstrap 5-quality animations.",

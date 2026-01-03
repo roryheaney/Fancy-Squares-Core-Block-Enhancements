@@ -26,6 +26,7 @@ import { registerAccordionInteractiveBlock } from './blocks/accordion-interactiv
 import { registerAccordionItemInteractiveBlock } from './blocks/accordion-item-interactive';
 import { registerCarouselBlock } from './blocks/carousel';
 import { registerCarouselSlideBlock } from './blocks/carousel-slide';
+import { registerModalBlock } from './blocks/modal';
 
 registerExtensions();
 
@@ -70,4 +71,7 @@ if (
 if ( Array.isArray( enabledBlocks ) && enabledBlocks.includes( 'carousel' ) ) {
 	registerCarouselBlock();
 	registerCarouselSlideBlock();
+}
+if ( Array.isArray( enabledBlocks ) && enabledBlocks.includes( 'modal' ) ) {
+	registerModalBlock();
 }

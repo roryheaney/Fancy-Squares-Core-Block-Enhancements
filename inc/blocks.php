@@ -121,6 +121,15 @@ function fs_core_enhancements_get_custom_blocks() {
 			),
 			'path' => $get_block_path( 'carousel' ),
 		],
+		'modal' => [
+			'name' => 'fs-blocks/modal',
+			'label' => __( 'Modal', 'fancy-squares-core-enhancements' ),
+			'description' => __(
+				'Modal dialog using WordPress Interactivity API with Bootstrap 5 animations.',
+				'fancy-squares-core-enhancements'
+			),
+			'path' => $get_block_path( 'modal' ),
+		],
 	];
 }
 
@@ -184,37 +193,3 @@ function fs_core_enhancements_register_blocks() {
 	}
 }
 add_action( 'init', 'fs_core_enhancements_register_blocks' );
-
-/**
- * Fix accordion-interactive activeItem in context passed to children.
- * This ensures providesContext passes the correct value.
- */
-function fs_core_enhancements_fix_accordion_context( $context, $parsed_block, $parent_block ) {
-	// Only modify context for accordion-item-interactive children
-	if ( empty( $parent_block ) || 'fs-blocks/accordion-interactive' !== $parent_block->name ) {
-		return $context;
-	}
-
-	// Check if parent wants first item open
-	$parent_attrs = $parent_block->parsed_block['attrs'] ?? [];
-	$open_first_item = ! empty( $parent_attrs['openFirstItem'] );
-
-	// Compute correct activeItem if needed
-	if ( $open_first_item && empty( $context['fs-blocks/accordion-interactive/activeItem'] ) ) {
-		$inner_blocks = $parent_block->parsed_block['innerBlocks'] ?? [];
-		if ( ! empty( $inner_blocks ) ) {
-			foreach ( $inner_blocks as $inner_block ) {
-				if ( 'fs-blocks/accordion-item-interactive' === $inner_block['blockName'] ) {
-					$active_item = isset( $inner_block['attrs']['itemId'] ) ? $inner_block['attrs']['itemId'] : '';
-					if ( $active_item ) {
-						$context['fs-blocks/accordion-interactive/activeItem'] = $active_item;
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	return $context;
-}
-add_filter( 'render_block_context', 'fs_core_enhancements_fix_accordion_context', 10, 3 );

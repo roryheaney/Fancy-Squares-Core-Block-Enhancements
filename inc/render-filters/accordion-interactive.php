@@ -6,34 +6,76 @@
 defined('ABSPATH') || exit;
 
 /**
- * Fix accordion activeItem attribute before rendering.
- * This ensures that providesContext passes the correct value to children based on openFirstItem setting.
+ * Add 'show' class to first accordion item when openFirstItem is true.
+ * Uses WP_HTML_Tag_Processor to modify the rendered HTML.
  *
- * Without this filter, the saved activeItem value from the editor would persist to frontend,
- * causing the wrong item to open or items to open when they should all be collapsed.
- *
- * @param array $parsed_block The parsed block data.
- * @param array $source_block The source block.
- * @param WP_Block|null $parent_block The parent block instance.
- * @return array Modified block data.
+ * @param string   $block_content Rendered HTML of the block.
+ * @param array    $block         Parsed block data.
+ * @return string Modified block HTML.
  */
-function fs_accordion_interactive_render_block_data($parsed_block, $source_block, $parent_block) {
-	if ('fs-blocks/accordion-interactive' === $parsed_block['blockName']) {
-		$open_first_item = !empty($parsed_block['attrs']['openFirstItem']);
-
-		if ($open_first_item && !empty($parsed_block['innerBlocks'])) {
-			// Find the first accordion item and set it as active
-			foreach ($parsed_block['innerBlocks'] as $inner_block) {
-				if ('fs-blocks/accordion-item-interactive' === $inner_block['blockName']) {
-					$parsed_block['attrs']['activeItem'] = $inner_block['attrs']['itemId'] ?? '';
-					break;
-				}
-			}
-		} else {
-			// openFirstItem is false, ensure no item is active
-			$parsed_block['attrs']['activeItem'] = '';
-		}
+function fs_accordion_interactive_render_block($block_content, $block) {
+	if ('fs-blocks/accordion-interactive' !== $block['blockName']) {
+		return $block_content;
 	}
-	return $parsed_block;
+
+	$open_first_item = !empty($block['attrs']['openFirstItem']);
+
+	// If openFirstItem is false, nothing to do
+	if (!$open_first_item) {
+		return $block_content;
+	}
+
+	// Use HTML Tag Processor to find and modify the first accordion item
+	$processor = new WP_HTML_Tag_Processor($block_content);
+
+	// Find parent accordion wrapper and bookmark it
+	if (!$processor->next_tag(['tag_name' => 'div', 'class_name' => 'fs-accordion'])) {
+		return $block_content;
+	}
+	$processor->set_bookmark('accordion-wrapper');
+
+	// Find first accordion item and extract its itemId
+	if (!$processor->next_tag(['tag_name' => 'div', 'class_name' => 'wp-block-fs-blocks-accordion-item-interactive'])) {
+		return $block_content;
+	}
+
+	$item_context_json = $processor->get_attribute('data-wp-context');
+	if (!$item_context_json) {
+		return $block_content;
+	}
+
+	$item_context = json_decode($item_context_json, true);
+	$first_item_id = $item_context['itemId'] ?? '';
+	if (!$first_item_id) {
+		return $block_content;
+	}
+
+	// Bookmark the first item position
+	$processor->set_bookmark('first-item');
+
+	// Find and modify the button within this item
+	if ($processor->next_tag(['tag_name' => 'button', 'class_name' => 'fs-accordion__trigger'])) {
+		$processor->set_attribute('aria-expanded', 'true');
+	}
+
+	// Find and modify the content div within this item
+	if ($processor->next_tag(['tag_name' => 'div', 'class_name' => 'fs-accordion__content'])) {
+		$processor->add_class('show');
+		$processor->set_attribute('aria-hidden', 'false');
+	}
+
+	// Seek back to parent accordion wrapper and update its context
+	if ($processor->seek('accordion-wrapper')) {
+		$context_json = $processor->get_attribute('data-wp-context');
+		$context = $context_json ? json_decode($context_json, true) : [];
+		$context['activeItem'] = $first_item_id;
+		$processor->set_attribute('data-wp-context', wp_json_encode($context));
+	}
+
+	// Clean up bookmarks
+	$processor->release_bookmark('accordion-wrapper');
+	$processor->release_bookmark('first-item');
+
+	return $processor->get_updated_html();
 }
-add_filter('render_block_data', 'fs_accordion_interactive_render_block_data', 10, 3);
+add_filter('render_block', 'fs_accordion_interactive_render_block', 10, 2);

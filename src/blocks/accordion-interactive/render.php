@@ -17,20 +17,9 @@ if ( '' === $block_id ) {
 	$block_id = 'fs-accordion-interactive-' . $block_id;
 }
 
-// Compute activeItem: if openFirstItem is true and activeItem is empty, use first child's itemId
-$active_item = isset( $attributes['activeItem'] ) ? $attributes['activeItem'] : '';
-$open_first_item = ! empty( $attributes['openFirstItem'] );
-
-if ( $open_first_item && empty( $active_item ) && ! empty( $block->parsed_block['innerBlocks'] ) ) {
-	foreach ( $block->parsed_block['innerBlocks'] as $inner_block ) {
-		if ( 'fs-blocks/accordion-item-interactive' === $inner_block['blockName'] ) {
-			$active_item = isset( $inner_block['attrs']['itemId'] ) ? $inner_block['attrs']['itemId'] : '';
-			if ( $active_item ) {
-				break;
-			}
-		}
-	}
-}
+// activeItem should ALWAYS be empty on initial render
+// The render_block filter will set it if openFirstItem is true
+$active_item = '';
 
 $classes = [ 'fs-accordion', 'wp-block-fs-blocks-accordion-interactive' ];
 

@@ -27,9 +27,6 @@
 			"default": ""
 		}
 	},
-	"usesContext": [
-		"fs-blocks/accordion-interactive/activeItem",
-		"fs-blocks/accordion-interactive/allowMultiple"
-	],
+	"usesContext": [ "fs-blocks/accordion-interactive/activeItem" ],
 	"render": "file:./render.php"
 }

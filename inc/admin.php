@@ -163,8 +163,12 @@ function fs_core_enhancements_render_settings_page() {
 								</option>
 								<option value="both" <?php selected( $bootstrap_setting, 'both' ); ?>>
 									<?php echo esc_html__( 'Editor + front end', 'fancy-squares-core-enhancements' ); ?>
-						tr>
-						<th scope="row">
+							</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
 							<?php
 							echo esc_html__(
 								'Load Bootstrap Utilities CSS',
@@ -203,10 +207,6 @@ function fs_core_enhancements_render_settings_page() {
 								);
 								?>
 							</p>
-						</td>
-					</tr>
-					<		</option>
-							</select>
 						</td>
 					</tr>
 					<?php foreach ( $blocks as $slug => $block ) : ?>

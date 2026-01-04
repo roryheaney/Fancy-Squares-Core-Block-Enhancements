@@ -4,6 +4,13 @@
 	"description": "Extends core blocks with custom classes and dropdowns",
 	"author": "Rory Heaney",
 	"license": "GPL-2.0-or-later",
+	"files": [
+		"build",
+		"data",
+		"inc",
+		"fancy-squares-core-enhancements.php",
+		"README.md"
+	],
 	"scripts": {
 		"build": "wp-scripts build --experimental-modules",
 		"start": "wp-scripts start --experimental-modules",

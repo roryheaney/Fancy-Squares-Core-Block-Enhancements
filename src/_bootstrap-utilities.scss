@@ -1,0 +1,551 @@
+// ==========================================
+// File: _bootstrap-utilities.scss
+// Mixins & functions for Bootstrap utility classes
+// ==========================================
+//
+// CURRENT STATUS: CSS GENERATION ENABLED via utilities.scss
+// Generates Bootstrap utility classes (~78KB minified) when enabled in WordPress admin
+//
+// UTILITIES GENERATED:
+// - Spacing: Margin/padding with negative and auto variants (1,584 classes)
+// - Display: All display types including inline-grid (66 classes)
+// - Flexbox: justify-content, align-items, align-self, order (138 classes)
+// - Gap: gap, row-gap, column-gap with responsive support (198 classes)
+// - Position: position, top/bottom/start/end, translate helpers (20 classes)
+// - Z-index: 5 levels from -1 to 3 (5 classes)
+// - Blend modes: 16 mix-blend-mode utilities (16 classes)
+//
+// All utilities include consistent breakpoint coverage: xs, sm, md, lg, xl, xxl
+// ==========================================
+
+@use "sass:map";
+@use "sass:list";
+@use "sass:meta";
+@use "settings" as *;
+
+// ==========================================
+// SPACING UTILITIES (Margin & Padding)
+// ==========================================
+
+// Spacing scale (Extended to match data/bootstrap-classes)
+$spacers: (
+	0: 0,
+	1: 0.25rem,
+	2: 0.5rem,
+	3: 1rem,
+	4: 1.5rem,
+	5: 3rem,
+	6: 4.5rem,
+	7: 6rem,
+	8: 9rem,
+	9: 12rem,
+	10: 15rem,
+) !default;
+
+// Spacing properties
+$spacing-properties: (
+	m: margin,
+	p: padding,
+) !default;
+
+// Spacing sides
+$spacing-sides: (
+	t: top,
+	b: bottom,
+	s: left,
+	// start (left in LTR)
+	e: right,
+	// end (right in LTR)
+	x:
+		(
+			left,
+			right,
+		),
+	y: (
+		top,
+		bottom,
+	),
+) !default;
+
+/// Generate margin/padding utilities
+/// @example .m-0, .mt-1, .px-2, .mb-3, etc.
+@mixin generate-spacing-utilities() {
+	@each $prop-key, $prop in $spacing-properties {
+		@each $size-key, $size in $spacers {
+			// All sides: .m-0, .p-1
+			.#{$prop-key}-#{$size-key} {
+				#{$prop}: $size !important;
+			}
+
+			// Individual sides and axes
+			@each $side-key, $side in $spacing-sides {
+				@if meta.type-of($side) == "list" {
+					// Axis (x/y): .mx-0, .py-1
+					.#{$prop-key}#{$side-key}-#{$size-key} {
+						@each $s in $side {
+							#{$prop}-#{$s}: $size !important;
+						}
+					}
+				} @else {
+					// Single side: .mt-0, .pb-1
+					.#{$prop-key}#{$side-key}-#{$size-key} {
+						#{$prop}-#{$side}: $size !important;
+					}
+				}
+			}
+		}
+
+		// Negative margins only
+		@if $prop-key == m {
+			@each $size-key, $size in $spacers {
+				@if $size-key != 0 {
+					// All sides
+					.#{$prop-key}-n#{$size-key} {
+						#{$prop}: -$size !important;
+					}
+
+					// Individual sides and axes
+					@each $side-key, $side in $spacing-sides {
+						@if meta.type-of($side) == "list" {
+							.#{$prop-key}#{$side-key}-n#{$size-key} {
+								@each $s in $side {
+									#{$prop}-#{$s}: -$size !important;
+								}
+							}
+						} @else {
+							.#{$prop-key}#{$side-key}-n#{$size-key} {
+								#{$prop}-#{$side}: -$size !important;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Auto margins
+	.m-auto {
+		margin: auto !important;
+	}
+	.mx-auto {
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+	.my-auto {
+		margin-top: auto !important;
+		margin-bottom: auto !important;
+	}
+	.mt-auto {
+		margin-top: auto !important;
+	}
+	.mb-auto {
+		margin-bottom: auto !important;
+	}
+	.ms-auto {
+		margin-left: auto !important;
+	}
+	.me-auto {
+		margin-right: auto !important;
+	}
+}
+
+/// Generate responsive spacing utilities
+/// @example .m-sm-0, .mt-md-1, .px-lg-2
+@mixin generate-responsive-spacing() {
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+		@if $breakpoint-key != xs {
+			@media (min-width: $breakpoint-value) {
+				@each $prop-key, $prop in $spacing-properties {
+					@each $size-key, $size in $spacers {
+						.#{$prop-key}-#{$breakpoint-key}-#{$size-key} {
+							#{$prop}: $size !important;
+						}
+
+						@each $side-key, $side in $spacing-sides {
+							@if meta.type-of($side) == "list" {
+								.#{$prop-key}#{$side-key}-#{$breakpoint-key}-#{$size-key} {
+									@each $s in $side {
+										#{$prop}-#{$s}: $size !important;
+									}
+								}
+							} @else {
+								.#{$prop-key}#{$side-key}-#{$breakpoint-key}-#{$size-key} {
+									#{$prop}-#{$side}: $size !important;
+								}
+							}
+						}
+					}
+
+					// Negative margins
+					@if $prop-key == m {
+						@each $size-key, $size in $spacers {
+							@if $size-key != 0 {
+								.#{$prop-key}-#{$breakpoint-key}-n#{$size-key} {
+									#{$prop}: -$size !important;
+								}
+
+								@each $side-key, $side in $spacing-sides {
+									@if meta.type-of($side) == "list" {
+										.#{$prop-key}#{$side-key}-#{$breakpoint-key}-n#{$size-key} {
+											@each $s in $side {
+												#{$prop}-#{$s}: -$size !important;
+											}
+										}
+									} @else {
+										.#{$prop-key}#{$side-key}-#{$breakpoint-key}-n#{$size-key} {
+											#{$prop}-#{$side}: -$size !important;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				// Auto margins
+				.m-#{$breakpoint-key}-auto {
+					margin: auto !important;
+				}
+				.mx-#{$breakpoint-key}-auto {
+					margin-left: auto !important;
+					margin-right: auto !important;
+				}
+				.my-#{$breakpoint-key}-auto {
+					margin-top: auto !important;
+					margin-bottom: auto !important;
+				}
+				.mt-#{$breakpoint-key}-auto {
+					margin-top: auto !important;
+				}
+				.mb-#{$breakpoint-key}-auto {
+					margin-bottom: auto !important;
+				}
+				.ms-#{$breakpoint-key}-auto {
+					margin-left: auto !important;
+				}
+				.me-#{$breakpoint-key}-auto {
+					margin-right: auto !important;
+				}
+			}
+		}
+	}
+}
+
+// ==========================================
+// DISPLAY UTILITIES
+// ==========================================
+
+$displays: none, inline, inline-block, block, grid, inline-grid, table,
+	table-row, table-cell, flex, inline-flex !default;
+
+/// Generate display utilities
+/// @example .d-none, .d-block, .d-flex
+@mixin generate-display-utilities() {
+	@each $display in $displays {
+		.d-#{$display} {
+			display: $display !important;
+		}
+	}
+}
+
+/// Generate responsive display utilities
+/// @example .d-sm-none, .d-md-flex
+@mixin generate-responsive-display() {
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+		@if $breakpoint-key != xs {
+			@media (min-width: $breakpoint-value) {
+				@each $display in $displays {
+					.d-#{$breakpoint-key}-#{$display} {
+						display: $display !important;
+					}
+				}
+			}
+		}
+	}
+}
+
+// ==========================================
+// FLEXBOX UTILITIES
+// ==========================================
+
+/// Generate flex utilities
+@mixin generate-flex-utilities() {
+	// Justify content
+	.justify-content-start {
+		justify-content: flex-start !important;
+	}
+	.justify-content-end {
+		justify-content: flex-end !important;
+	}
+	.justify-content-center {
+		justify-content: center !important;
+	}
+	.justify-content-between {
+		justify-content: space-between !important;
+	}
+
+	// Align items
+	.align-items-start {
+		align-items: flex-start !important;
+	}
+	.align-items-end {
+		align-items: flex-end !important;
+	}
+	.align-items-center {
+		align-items: center !important;
+	}
+	.align-items-baseline {
+		align-items: baseline !important;
+	}
+	.align-items-stretch {
+		align-items: stretch !important;
+	}
+
+	// Align self
+	.align-self-auto {
+		align-self: auto !important;
+	}
+	.align-self-start {
+		align-self: flex-start !important;
+	}
+	.align-self-end {
+		align-self: flex-end !important;
+	}
+	.align-self-center {
+		align-self: center !important;
+	}
+	.align-self-baseline {
+		align-self: baseline !important;
+	}
+	.align-self-stretch {
+		align-self: stretch !important;
+	}
+
+	// Order
+	@for $i from 0 through 5 {
+		.order-#{$i} {
+			order: $i !important;
+		}
+	}
+	.order-first {
+		order: -1 !important;
+	}
+	.order-last {
+		order: 6 !important;
+	}
+}
+
+/// Generate responsive flex utilities
+/// NOTE: All flexbox utilities include ALL breakpoints (sm, md, lg, xl, xxl) for consistency
+@mixin generate-responsive-flex() {
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+		@if $breakpoint-key != xs {
+			@media (min-width: $breakpoint-value) {
+				// Justify content
+				.justify-content-#{$breakpoint-key}-start {
+					justify-content: flex-start !important;
+				}
+				.justify-content-#{$breakpoint-key}-end {
+					justify-content: flex-end !important;
+				}
+				.justify-content-#{$breakpoint-key}-center {
+					justify-content: center !important;
+				}
+				.justify-content-#{$breakpoint-key}-between {
+					justify-content: space-between !important;
+				}
+
+				// Align items
+				.align-items-#{$breakpoint-key}-start {
+					align-items: flex-start !important;
+				}
+				.align-items-#{$breakpoint-key}-end {
+					align-items: flex-end !important;
+				}
+				.align-items-#{$breakpoint-key}-center {
+					align-items: center !important;
+				}
+				.align-items-#{$breakpoint-key}-baseline {
+					align-items: baseline !important;
+				}
+				.align-items-#{$breakpoint-key}-stretch {
+					align-items: stretch !important;
+				}
+
+				// Align self
+				.align-self-#{$breakpoint-key}-auto {
+					align-self: auto !important;
+				}
+				.align-self-#{$breakpoint-key}-start {
+					align-self: flex-start !important;
+				}
+				.align-self-#{$breakpoint-key}-end {
+					align-self: flex-end !important;
+				}
+				.align-self-#{$breakpoint-key}-center {
+					align-self: center !important;
+				}
+				.align-self-#{$breakpoint-key}-baseline {
+					align-self: baseline !important;
+				}
+				.align-self-#{$breakpoint-key}-stretch {
+					align-self: stretch !important;
+				}
+
+				// Order
+				@for $i from 0 through 5 {
+					.order-#{$breakpoint-key}-#{$i} {
+						order: $i !important;
+					}
+				}
+				.order-#{$breakpoint-key}-first {
+					order: -1 !important;
+				}
+				.order-#{$breakpoint-key}-last {
+					order: 6 !important;
+				}
+			}
+		}
+	}
+}
+
+// ==========================================
+// GAP UTILITIES
+// ==========================================
+
+/// Generate gap utilities
+/// @example .gap-0, .gap-1, .gap-2
+@mixin generate-gap-utilities() {
+	@each $size-key, $size in $spacers {
+		.gap-#{$size-key} {
+			gap: $size !important;
+		}
+		.row-gap-#{$size-key} {
+			row-gap: $size !important;
+		}
+		.column-gap-#{$size-key} {
+			column-gap: $size !important;
+		}
+	}
+}
+
+/// Generate responsive gap utilities
+@mixin generate-responsive-gap() {
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+		@if $breakpoint-key != xs {
+			@media (min-width: $breakpoint-value) {
+				@each $size-key, $size in $spacers {
+					.gap-#{$breakpoint-key}-#{$size-key} {
+						gap: $size !important;
+					}
+					.row-gap-#{$breakpoint-key}-#{$size-key} {
+						row-gap: $size !important;
+					}
+					.column-gap-#{$breakpoint-key}-#{$size-key} {
+						column-gap: $size !important;
+					}
+				}
+			}
+		}
+	}
+}
+
+// ==========================================
+// POSITION UTILITIES
+// ==========================================
+
+$positions: static, relative, absolute, fixed, sticky !default;
+$position-values: (
+	0: 0,
+	50: 50%,
+	100: 100%,
+) !default;
+
+/// Generate position utilities
+@mixin generate-position-utilities() {
+	@each $position in $positions {
+		.position-#{$position} {
+			position: $position !important;
+		}
+	}
+
+	// Top/bottom/start/end
+	@each $key, $value in $position-values {
+		.top-#{$key} {
+			top: $value !important;
+		}
+		.bottom-#{$key} {
+			bottom: $value !important;
+		}
+		.start-#{$key} {
+			left: $value !important;
+		}
+		.end-#{$key} {
+			right: $value !important;
+		}
+	}
+
+	// Translate middle
+	.translate-middle {
+		transform: translate(-50%, -50%) !important;
+	}
+	.translate-middle-x {
+		transform: translateX(-50%) !important;
+	}
+	.translate-middle-y {
+		transform: translateY(-50%) !important;
+	}
+}
+
+// ==========================================
+// Z-INDEX UTILITIES
+// ==========================================
+
+$zindex-levels: (
+	n1: -1,
+	0: 0,
+	1: 1,
+	2: 2,
+	3: 3,
+) !default;
+
+/// Generate z-index utilities
+@mixin generate-zindex-utilities() {
+	@each $key, $value in $zindex-levels {
+		.z-#{$key} {
+			z-index: $value !important;
+		}
+	}
+}
+
+// ==========================================
+// BLEND MODE UTILITIES
+// ==========================================
+
+$blend-modes: normal, multiply, screen, overlay, darken, lighten, color-dodge,
+	color-burn, hard-light, soft-light, difference, exclusion, hue, saturation,
+	color, luminosity !default;
+
+/// Generate blend mode utilities
+@mixin generate-blend-utilities() {
+	@each $mode in $blend-modes {
+		.mix-blend-#{$mode} {
+			mix-blend-mode: $mode !important;
+		}
+	}
+}
+
+// ==========================================
+// USAGE
+// ==========================================
+//
+// These mixins are invoked in utilities.scss to generate all utility classes.
+// The generated CSS is conditionally loaded via WordPress admin settings:
+// - Off: No utilities loaded (site provides its own)
+// - Editor only: Loaded in block editor only
+// - Editor + Frontend: Loaded everywhere
+//
+// Build command: npm run build
+// Output: build/utilities.css (78KB minified)
+//
+// ==========================================

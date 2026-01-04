@@ -1,0 +1,25 @@
+// ==========================================
+// File: utilities.scss
+// Bootstrap utility classes generator
+// ==========================================
+//
+// This file generates Bootstrap utility classes (78KB minified)
+// that match the options available in the block editor.
+//
+// Enqueued conditionally based on plugin settings.
+// ==========================================
+
+@use "bootstrap-utilities" as utils;
+
+// Generate all utility classes
+@include utils.generate-spacing-utilities();
+@include utils.generate-responsive-spacing();
+@include utils.generate-display-utilities();
+@include utils.generate-responsive-display();
+@include utils.generate-flex-utilities();
+@include utils.generate-responsive-flex();
+@include utils.generate-gap-utilities();
+@include utils.generate-responsive-gap();
+@include utils.generate-position-utilities();
+@include utils.generate-zindex-utilities();
+@include utils.generate-blend-utilities();

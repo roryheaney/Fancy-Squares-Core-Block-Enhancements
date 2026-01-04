@@ -26,6 +26,24 @@ store( 'fancySquaresAccordionInteractive', {
 			const content = item.querySelector( '.fs-accordion__content' );
 			if ( ! content ) return;
 
+			// Bootstrap 5 approach: Check if ANY sibling is transitioning
+			// If so, abort to prevent race conditions
+			const accordion = ref.closest( '.fs-accordion' );
+			if ( accordion ) {
+				const allItems = accordion.querySelectorAll(
+					'.fs-accordion__content'
+				);
+				for ( const otherContent of allItems ) {
+					if (
+						otherContent !== content &&
+						otherContent.classList.contains( 'collapsing' )
+					) {
+						// Another item is transitioning, abort
+						return;
+					}
+				}
+			}
+
 			// If clicking active item, close it
 			if ( context.activeItem === context.itemId ) {
 				// Dispatch hide event (cancelable)
@@ -152,6 +170,9 @@ store( 'fancySquaresAccordionInteractive', {
 									'transitionend',
 									handlePrevTransitionEnd
 								);
+
+								// NOTE: Do NOT clear transitioning flag here
+								// The opening item's transition will clear it when complete
 							};
 							previousItem.addEventListener(
 								'transitionend',
@@ -267,6 +288,8 @@ store( 'fancySquaresAccordionInteractive', {
 		} ),
 	},
 } );
+
+console.log( '✅ Accordion store registered successfully' );
 
 // ============================================================================
 // EVENT TESTING & EXAMPLES

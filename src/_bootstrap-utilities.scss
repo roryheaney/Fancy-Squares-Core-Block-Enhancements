@@ -3,25 +3,24 @@
 // Mixins & functions for Bootstrap utility classes
 // ==========================================
 //
-// CURRENT STATUS: These utilities are UI-ONLY (no CSS generated)
-// This file contains mixins to generate actual CSS if/when needed
+// CURRENT STATUS: CSS GENERATION ENABLED via utilities.scss
+// Generates Bootstrap utility classes (~78KB minified) when enabled in WordPress admin
 //
-// OPTIONS WITH NO CSS (rely on external Bootstrap):
-// - displayOptions (72 classes)
-// - marginOptions (159 classes)
-// - paddingOptions (176 classes)
-// - positionOptions (19 classes)
-// - zindexOptions (5 classes)
-// - blendModeOptions (16 classes)
-// - alignItemsOptions (25 classes)
-// - selfAlignmentOptions (25 classes)
-// - justifyContentOptions (20 classes)
-// - orderOptions (48 classes)
-// - gapOptions (27 classes)
+// UTILITIES GENERATED:
+// - Spacing: Margin/padding with negative and auto variants (1,584 classes)
+// - Display: All display types including inline-grid (66 classes)
+// - Flexbox: justify-content, align-items, align-self, order (138 classes)
+// - Gap: gap, row-gap, column-gap with responsive support (198 classes)
+// - Position: position, top/bottom/start/end, translate helpers (20 classes)
+// - Z-index: 5 levels from -1 to 3 (5 classes)
+// - Blend modes: 16 mix-blend-mode utilities (16 classes)
+//
+// All utilities include consistent breakpoint coverage: xs, sm, md, lg, xl, xxl
 // ==========================================
 
 @use "sass:map";
 @use "sass:list";
+@use "sass:meta";
 @use "settings" as *;
 
 // ==========================================
@@ -80,7 +79,7 @@ $spacing-sides: (
 
 			// Individual sides and axes
 			@each $side-key, $side in $spacing-sides {
-				@if type-of($side) == "list" {
+				@if meta.type-of($side) == "list" {
 					// Axis (x/y): .mx-0, .py-1
 					.#{$prop-key}#{$side-key}-#{$size-key} {
 						@each $s in $side {
@@ -107,7 +106,7 @@ $spacing-sides: (
 
 					// Individual sides and axes
 					@each $side-key, $side in $spacing-sides {
-						@if type-of($side) == "list" {
+						@if meta.type-of($side) == "list" {
 							.#{$prop-key}#{$side-key}-n#{$size-key} {
 								@each $s in $side {
 									#{$prop}-#{$s}: -$size !important;
@@ -163,7 +162,7 @@ $spacing-sides: (
 						}
 
 						@each $side-key, $side in $spacing-sides {
-							@if type-of($side) == "list" {
+							@if meta.type-of($side) == "list" {
 								.#{$prop-key}#{$side-key}-#{$breakpoint-key}-#{$size-key} {
 									@each $s in $side {
 										#{$prop}-#{$s}: $size !important;
@@ -186,7 +185,7 @@ $spacing-sides: (
 								}
 
 								@each $side-key, $side in $spacing-sides {
-									@if type-of($side) == "list" {
+									@if meta.type-of($side) == "list" {
 										.#{$prop-key}#{$side-key}-#{$breakpoint-key}-n#{$size-key} {
 											@each $s in $side {
 												#{$prop}-#{$s}: -$size !important;
@@ -537,26 +536,16 @@ $blend-modes: normal, multiply, screen, overlay, darken, lighten, color-dodge,
 }
 
 // ==========================================
-// USAGE EXAMPLE
+// USAGE
 // ==========================================
 //
-// To generate ALL utility classes, uncomment in your main SCSS file:
+// These mixins are invoked in utilities.scss to generate all utility classes.
+// The generated CSS is conditionally loaded via WordPress admin settings:
+// - Off: No utilities loaded (site provides its own)
+// - Editor only: Loaded in block editor only
+// - Editor + Frontend: Loaded everywhere
 //
-// @use "bootstrap-utilities" as utils;
-//
-// @include utils.generate-spacing-utilities();
-// @include utils.generate-responsive-spacing();
-// @include utils.generate-display-utilities();
-// @include utils.generate-responsive-display();
-// @include utils.generate-flex-utilities();
-// @include utils.generate-responsive-flex();
-// @include utils.generate-gap-utilities();
-// @include utils.generate-responsive-gap();
-// @include utils.generate-position-utilities();
-// @include utils.generate-zindex-utilities();
-// @include utils.generate-blend-utilities();
-//
-// WARNING: This will generate ~590+ additional CSS classes
-// and significantly increase your build file size.
+// Build command: npm run build
+// Output: build/utilities.css (78KB minified)
 //
 // ==========================================

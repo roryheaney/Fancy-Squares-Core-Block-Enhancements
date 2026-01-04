@@ -202,7 +202,7 @@ function fs_core_enhancements_render_settings_page() {
 							<p class="description">
 								<?php
 								echo esc_html__(
-									'Generates ~590 utility classes (m-*, p-*, d-flex, etc.). Only enable if needed.',
+									'Generates utility classes (m-*, p-*, d-flex, etc.). Only enable if needed.',
 									'fancy-squares-core-enhancements'
 								);
 								?>

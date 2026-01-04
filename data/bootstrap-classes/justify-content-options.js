@@ -1,15 +1,21 @@
 export const justifyContentOptions = [
 	{ label: 'Justify Start', value: 'justify-content-start' },
+	{ label: 'Small Screen Justify Start', value: 'justify-content-sm-start' },
 	{ label: 'Medium Screen Justify Start', value: 'justify-content-md-start' },
 	{ label: 'Large Screen Justify Start', value: 'justify-content-lg-start' },
 	{ label: 'Extra Large Justify Start', value: 'justify-content-xl-start' },
 	{ label: 'XXL Justify Start', value: 'justify-content-xxl-start' },
 	{ label: 'Justify End', value: 'justify-content-end' },
+	{ label: 'Small Screen Justify End', value: 'justify-content-sm-end' },
 	{ label: 'Medium Screen Justify End', value: 'justify-content-md-end' },
 	{ label: 'Large Screen Justify End', value: 'justify-content-lg-end' },
 	{ label: 'Extra Large Justify End', value: 'justify-content-xl-end' },
 	{ label: 'XXL Justify End', value: 'justify-content-xxl-end' },
 	{ label: 'Justify Center', value: 'justify-content-center' },
+	{
+		label: 'Small Screen Justify Center',
+		value: 'justify-content-sm-center',
+	},
 	{
 		label: 'Medium Screen Justify Center',
 		value: 'justify-content-md-center',
@@ -21,6 +27,10 @@ export const justifyContentOptions = [
 	{ label: 'Extra Large Justify Center', value: 'justify-content-xl-center' },
 	{ label: 'XXL Justify Center', value: 'justify-content-xxl-center' },
 	{ label: 'Justify Between', value: 'justify-content-between' },
+	{
+		label: 'Small Screen Justify Between',
+		value: 'justify-content-sm-between',
+	},
 	{
 		label: 'Medium Screen Justify Between',
 		value: 'justify-content-md-between',

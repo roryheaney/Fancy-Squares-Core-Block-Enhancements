@@ -12,6 +12,13 @@ if ( ! defined( 'FS_CORE_ENHANCEMENTS_OPTION_BOOTSTRAP' ) ) {
 	);
 }
 
+if ( ! defined( 'FS_CORE_ENHANCEMENTS_OPTION_UTILITIES' ) ) {
+	define(
+		'FS_CORE_ENHANCEMENTS_OPTION_UTILITIES',
+		'fs_core_enhancements_utilities_css'
+	);
+}
+
 function fs_core_enhancements_sanitize_enabled_blocks( $value ) {
 	if ( ! is_array( $value ) ) {
 		return [];
@@ -31,6 +38,17 @@ function fs_core_enhancements_sanitize_enabled_blocks( $value ) {
 }
 
 function fs_core_enhancements_sanitize_bootstrap_cdn( $value ) {
+	$value = sanitize_key( $value );
+	$allowed = [ 'off', 'editor', 'both' ];
+
+	if ( ! in_array( $value, $allowed, true ) ) {
+		return 'off';
+	}
+
+	return $value;
+}
+
+function fs_core_enhancements_sanitize_utilities_css( $value ) {
 	$value = sanitize_key( $value );
 	$allowed = [ 'off', 'editor', 'both' ];
 
@@ -61,6 +79,16 @@ function fs_core_enhancements_register_settings() {
 				'fs_core_enhancements_sanitize_bootstrap_cdn',
 		]
 	);
+	register_setting(
+		'fs_core_enhancements_settings',
+		FS_CORE_ENHANCEMENTS_OPTION_UTILITIES,
+		[
+			'type' => 'string',
+			'default' => 'off',
+			'sanitize_callback' =>
+				'fs_core_enhancements_sanitize_utilities_css',
+		]
+	);
 }
 add_action( 'admin_init', 'fs_core_enhancements_register_settings' );
 
@@ -76,6 +104,10 @@ function fs_core_enhancements_add_settings_page() {
 add_action( 'admin_menu', 'fs_core_enhancements_add_settings_page' );
 
 function fs_core_enhancements_render_settings_page() {
+	$utilities_setting = get_option(
+		FS_CORE_ENHANCEMENTS_OPTION_UTILITIES,
+		'off'
+	);
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
@@ -131,7 +163,49 @@ function fs_core_enhancements_render_settings_page() {
 								</option>
 								<option value="both" <?php selected( $bootstrap_setting, 'both' ); ?>>
 									<?php echo esc_html__( 'Editor + front end', 'fancy-squares-core-enhancements' ); ?>
+						tr>
+						<th scope="row">
+							<?php
+							echo esc_html__(
+								'Load Bootstrap Utilities CSS',
+								'fancy-squares-core-enhancements'
+							);
+							?>
+						</th>
+						<td>
+							<label for="fs-core-enhancements-utilities">
+								<?php
+								echo esc_html__(
+									'Enable if your site does not have Bootstrap utilities (margins, padding, display, flexbox, etc.).',
+									'fancy-squares-core-enhancements'
+								);
+								?>
+							</label>
+							<select
+								id="fs-core-enhancements-utilities"
+								name="<?php echo esc_attr( FS_CORE_ENHANCEMENTS_OPTION_UTILITIES ); ?>"
+							>
+								<option value="off" <?php selected( $utilities_setting, 'off' ); ?>>
+									<?php echo esc_html__( 'Off (site provides utilities)', 'fancy-squares-core-enhancements' ); ?>
 								</option>
+								<option value="editor" <?php selected( $utilities_setting, 'editor' ); ?>>
+									<?php echo esc_html__( 'Editor only', 'fancy-squares-core-enhancements' ); ?>
+								</option>
+								<option value="both" <?php selected( $utilities_setting, 'both' ); ?>>
+									<?php echo esc_html__( 'Editor + front end', 'fancy-squares-core-enhancements' ); ?>
+								</option>
+							</select>
+							<p class="description">
+								<?php
+								echo esc_html__(
+									'Generates ~590 utility classes (m-*, p-*, d-flex, etc.). Only enable if needed.',
+									'fancy-squares-core-enhancements'
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+					<		</option>
 							</select>
 						</td>
 					</tr>
@@ -192,4 +266,47 @@ function fs_core_enhancements_enqueue_bootstrap_cdn() {
 add_action(
 	'enqueue_block_assets',
 	'fs_core_enhancements_enqueue_bootstrap_cdn'
+);
+
+function fs_core_enhancements_enqueue_utilities_css() {
+	$utilities_setting = get_option(
+		FS_CORE_ENHANCEMENTS_OPTION_UTILITIES,
+		'off'
+	);
+
+	if ( 'off' === $utilities_setting ) {
+		return;
+	}
+
+	if ( 'editor' === $utilities_setting && ! is_admin() ) {
+		return;
+	}
+
+	$plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
+	$plugin_dir = plugin_dir_path( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
+
+	// Check if utilities CSS exists
+	if ( ! file_exists( $plugin_dir . 'build/utilities.css' ) ) {
+		return;
+	}
+
+	// Load asset file for version
+	$asset_file = $plugin_dir . 'build/utilities.asset.php';
+	if ( file_exists( $asset_file ) ) {
+		$asset = include $asset_file;
+		$version = $asset['version'] ?? '1.0.0';
+	} else {
+		$version = '1.0.0';
+	}
+
+	wp_enqueue_style(
+		'fs-core-enhancements-utilities',
+		$plugin_url . 'build/utilities.css',
+		[],
+		$version
+	);
+}
+add_action(
+	'enqueue_block_assets',
+	'fs_core_enhancements_enqueue_utilities_css'
 );

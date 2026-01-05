@@ -289,7 +289,7 @@ store( 'fancySquaresAccordionInteractive', {
 	},
 } );
 
-console.log( '✅ Accordion store registered successfully' );
+// console.log( '✅ Accordion store registered successfully' );
 
 // ============================================================================
 // EVENT TESTING & EXAMPLES

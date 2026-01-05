@@ -109,14 +109,6 @@ function fs_core_enhancements_frontend_assets() {
 		true
 	);
 
-        // Enqueue the CSS (front end).
-        wp_enqueue_style(
-                'fs-core-enhancements-frontend',
-                $plugin_url . 'build/index.css',
-                [],
-                $asset['version']
-        );
-
         // Enqueue block-specific frontend styles
         if ( file_exists( $plugin_dir . 'build/style-index.css' ) ) {
         	wp_enqueue_style(

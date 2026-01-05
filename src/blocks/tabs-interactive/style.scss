@@ -1,6 +1,8 @@
 /**
  * Frontend styles for Interactive Tabs
  */
+@use "sass:map";
+@use "../../settings" as *;
 
 .wp-block-fs-blocks-tabs-interactive {
 	// Tab list - horizontal tabs at top
@@ -13,8 +15,10 @@
 
 	// Hide tabs on mobile when responsive mode is enabled
 	&.fs-tabs--responsive .fs-tabs__tablist {
-		@media (max-width: 767px) {
-			display: none;
+		display: none; // Mobile: hidden by default
+
+		@media (min-width: map.get($grid-breakpoints, md)) {
+			display: flex; // Desktop: show tabs
 		}
 	}
 
@@ -47,9 +51,12 @@
 
 	// Panels container - add border on mobile when responsive
 	&.fs-tabs--responsive .fs-tabs__panels {
-		@media (max-width: 767px) {
-			border: 1px solid #ddd;
-			border-radius: 4px;
+		border: 1px solid #ddd; // Mobile: border
+		border-radius: 4px;
+
+		@media (min-width: map.get($grid-breakpoints, md)) {
+			border: none; // Desktop: no border
+			border-radius: 0;
 		}
 	}
 
@@ -77,24 +84,43 @@
 
 	// Mobile accordion styles when responsive mode is enabled
 	&.fs-tabs--responsive .fs-tabs__panel {
-		@media (max-width: 767px) {
-			border-bottom: 1px solid #ddd;
+		border-bottom: 1px solid #ddd; // Mobile: borders
 
-			&:last-child {
-				border-bottom: none;
+		&:last-child {
+			border-bottom: none;
+		}
+
+		// Mobile: all panels in normal flow
+		&:not(.is-active) {
+			opacity: 1;
+			pointer-events: auto;
+			position: static;
+			visibility: visible;
+		}
+
+		&.is-active {
+			position: static;
+		}
+
+		// Desktop: fade panels, absolute positioning
+		@media (min-width: map.get($grid-breakpoints, md)) {
+			border-bottom: none; // Remove accordion borders
+
+			// Inactive panels fade out and remove from flow
+			&:not(.is-active) {
+				opacity: 0;
+				pointer-events: none;
+				position: absolute;
+				visibility: hidden;
+				width: 100%;
 			}
 
-			// Mobile: restore all panels to normal flow, full opacity
-			&:not(.is-active) {
+			// Active panel visible in normal flow
+			&.is-active {
 				opacity: 1;
 				pointer-events: auto;
-				position: static !important; // Back in normal flow
-				visibility: visible !important; // Visible to screen readers
-			}
-
-			// Active panels also in normal flow
-			&.is-active {
-				position: static !important;
+				position: relative;
+				visibility: visible;
 			}
 		}
 	}
@@ -112,10 +138,10 @@
 		justify-content: space-between;
 		align-items: center;
 		transition: background 0.15s ease-in-out;
-		display: none !important; // Hidden on desktop
+		display: flex; // Mobile: show triggers
 
-		@media (max-width: 767px) {
-			display: flex !important; // Show on mobile
+		@media (min-width: map.get($grid-breakpoints, md)) {
+			display: none; // Desktop: hide triggers
 		}
 
 		&::after {
@@ -145,30 +171,40 @@
 
 	// Mobile accordion collapse behavior when responsive mode is enabled
 	&.fs-tabs--responsive .fs-tabs__panel-content {
-		@media (max-width: 767px) {
-			overflow: hidden;
-			height: 0;
-			opacity: 0;
-			padding: 0; // No padding on collapsing element
-			transition:
-				height 0.35s ease,
-				opacity 0.35s ease;
+		overflow: hidden; // Mobile: collapsible
+		height: 0;
+		opacity: 0;
+		padding: 0;
+		transition:
+			height 0.35s ease,
+			opacity 0.35s ease;
 
-			// Padding goes on inner content (gets clipped when height: 0)
+		// Padding goes on inner content (gets clipped when height: 0)
+		> * {
+			padding: 1rem;
+		}
+
+		// Desktop: normal padding, no collapse
+		@media (min-width: map.get($grid-breakpoints, md)) {
+			overflow: visible;
+			height: auto;
+			opacity: 1;
+			padding: 1.5rem 0;
+			transition: none;
+
 			> * {
-				padding: 1rem;
+				padding: 0;
 			}
 		}
 	}
 
 	// Mobile: expand active panel content when responsive mode is enabled
-	&.fs-tabs--responsive {
-		@media (max-width: 767px) {
-			.fs-tabs__panel.is-active .fs-tabs__panel-content {
-				height: auto;
-				opacity: 1;
-				// Padding is on inner content via > * selector above
-			}
+	&.fs-tabs--responsive .fs-tabs__panel.is-active .fs-tabs__panel-content {
+		height: auto; // Mobile: expand when active
+		opacity: 1;
+
+		@media (min-width: map.get($grid-breakpoints, md)) {
+			// Desktop handles this via normal flow already
 		}
 	}
 }

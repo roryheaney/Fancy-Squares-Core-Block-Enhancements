@@ -126,7 +126,6 @@ export default function Edit( props ) {
 
 	const blockProps = useBlockProps( {
 		className: [
-			generatedClassName,
 			`fs-carousel-shows-${ previewSlides }-slides`,
 			hasChildBlocks
 				? 'fs-carousel-show-scrollbar'
@@ -157,7 +156,6 @@ export default function Edit( props ) {
 
 	return (
 		<>
-			<BlockEdit { ...props } />
 			<InspectorControls>
 				<PanelBody
 					title={ __( 'Carousel Settings', TEXT_DOMAIN ) }

@@ -6,26 +6,14 @@ import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
-const BASE_CLASSES = [ 'wp-block-fs-blocks-index-block', 'custom-index-block' ];
+const BLOCK_CLASSES = [
+	'wp-block-fs-blocks-index-block',
+	'custom-index-block',
+];
 
 export default function Edit( props ) {
-	const { attributes, setAttributes, name, clientId } = props;
-	const { blockIndex, additionalClasses } = attributes;
-
-	const generatedClassName = useMemo(
-		() => generateClassName( attributes, name, BLOCK_CONFIG ),
-		[ attributes, name ]
-	);
-
-	useEffect( () => {
-		const nextClasses = generatedClassName.split( /\s+/ ).filter( Boolean );
-		const currentClasses = Array.isArray( additionalClasses )
-			? additionalClasses
-			: [];
-		if ( currentClasses.join( ' ' ) !== nextClasses.join( ' ' ) ) {
-			setAttributes( { additionalClasses: nextClasses } );
-		}
-	}, [ additionalClasses, generatedClassName, setAttributes ] );
+	const { attributes, setAttributes, clientId } = props;
+	const { blockIndex } = attributes;
 
 	const oneBasedIndex = useSelect(
 		( select ) => {
@@ -55,7 +43,7 @@ export default function Edit( props ) {
 	}, [ blockIndex, oneBasedIndex, setAttributes ] );
 
 	const blockProps = useBlockProps( {
-		className: [ ...BASE_CLASSES, generatedClassName ]
+		className: [ ...BLOCK_CLASSES, generatedClassName ]
 			.filter( Boolean )
 			.join( ' ' ),
 	} );

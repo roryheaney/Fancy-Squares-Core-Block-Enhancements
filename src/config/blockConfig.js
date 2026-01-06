@@ -24,12 +24,6 @@ export const ALLOWED_BLOCKS = [
 	'core/cover',
 	'core/video',
 	'core/group',
-	'fs-blocks/tabs-interactive',
-	'fs-blocks/accordion-interactive',
-	'fs-blocks/carousel',
-	'fs-blocks/alert',
-	'fs-blocks/index-block',
-	'fs-blocks/content-wrapper',
 ];
 
 export const BREAKPOINT_DIMENSIONS = {

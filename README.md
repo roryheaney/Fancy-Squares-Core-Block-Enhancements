@@ -54,20 +54,125 @@ Padding, Margin, and Negative Margin panels appear only on blocks configured in 
 
 Use the "Span" toolbar button to apply inline utility classes and optional text/background colors. The format adds a `fs-span-base` class and stores selected tokens and inline styles on the span.
 
-## Allowed Blocks (Configuration)
+## Architecture: How Block Extensions Work
 
-Allowed blocks are defined in `src/config/blockConfig.js` under `ALLOWED_BLOCKS`. Each block entry in `BLOCK_CONFIG` controls which panels appear (token groups, dropdowns, spacing controls, width controls, and layout toggles). Custom blocks (for example `fs-blocks/index-block`) can also use entries in `BLOCK_CONFIG`, even though they are registered separately.
+This plugin uses two different approaches for extending blocks, depending on whether they are core WordPress blocks or custom blocks:
+
+### Core Blocks (Extended via registerBlockExtension)
+
+Core blocks like `core/heading`, `core/paragraph`, `core/columns`, etc. are extended using `@10up/block-components`'s `registerBlockExtension()` function:
+
+1. **Configuration**: Core blocks are listed in `ALLOWED_BLOCKS` in `src/config/blockConfig.js`
+2. **Extension Registration**: `src/registerExtensions.js` loops through `ALLOWED_BLOCKS` and calls `registerBlockExtension()` for each one
+3. **Attributes Added**: The extension system dynamically adds attributes (padding, margin, class arrays, etc.) to the core block
+4. **Inspector Controls**: The `BlockEdit` component is injected via the extension, adding inspector panels
+5. **Class Generation**: A `classNameGenerator` function creates CSS classes from the attributes
+6. **Frontend Output**: Core blocks use WordPress's built-in rendering, so classes are applied via the block's `className` attribute
+
+### Custom Blocks (Direct BlockEdit Usage)
+
+Custom blocks (`fs-blocks/*`) are registered separately and render `<BlockEdit />` directly in their edit components:
+
+1. **Block Registration**: Each custom block has its own `index.js` that calls `registerBlockType()`
+2. **Attributes**: Attributes are defined in the block's registration (including padding, margin, `additionalClasses`, etc.)
+3. **Configuration**: Custom blocks have entries in `BLOCK_CONFIG` (but are NOT in `ALLOWED_BLOCKS`)
+4. **Edit Component**: The block's edit component imports and renders `<BlockEdit {...props} />`
+5. **BlockEdit Component**: Reads `BLOCK_CONFIG[props.name]` to determine which controls to show
+6. **Class Generation**: Edit component uses `generateClassName()` to create CSS classes from attributes
+7. **Sync to Attributes**: A `useEffect` hook syncs generated classes to the `additionalClasses` attribute array
+8. **Frontend Output**: The block's PHP `render.php` file reads `$attributes['additionalClasses']` and outputs them
+
+### Example: Custom Block Pattern
+
+```javascript
+// In edit.js for a custom block
+import BlockEdit from '../../components/BlockEdit';
+import { generateClassName } from '../../utils/helpers';
+import { BLOCK_CONFIG } from '../../config/blockConfig';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useEffect, useMemo } from '@wordpress/element';
+
+export default function Edit( props ) {
+	const { attributes, setAttributes, name } = props;
+	const { additionalClasses } = attributes;
+
+	// Generate classes from all attributes
+	const generatedClassName = useMemo(
+		() => generateClassName( attributes, name, BLOCK_CONFIG ),
+		[ attributes, name ]
+	);
+
+	// Sync to additionalClasses for PHP rendering
+	useEffect( () => {
+		const currentClasses = Array.isArray( additionalClasses )
+			? additionalClasses
+			: [];
+		const nextClasses = generatedClassName.split( ' ' ).filter( Boolean );
+		if (
+			JSON.stringify( currentClasses ) !== JSON.stringify( nextClasses )
+		) {
+			setAttributes( { additionalClasses: nextClasses } );
+		}
+	}, [ additionalClasses, generatedClassName, setAttributes ] );
+
+	const blockProps = useBlockProps( {
+		className: generatedClassName, // Show in editor
+	} );
+
+	return (
+		<>
+			<BlockEdit { ...props } /> { /* Renders inspector controls */ }
+			<InspectorControls>
+				{ /* Block-specific settings */ }
+			</InspectorControls>
+			<div { ...blockProps }>{ /* Block content */ }</div>
+		</>
+	);
+}
+```
+
+```php
+// In render.php for a custom block
+$classes = [];
+if ( ! empty( $attributes['additionalClasses'] ) && is_array( $attributes['additionalClasses'] ) ) {
+    $classes = $attributes['additionalClasses'];
+}
+$classes = array_map( 'sanitize_html_class', $classes );
+$wrapper_attributes = get_block_wrapper_attributes( [
+    'class' => implode( ' ', $classes ),
+] );
+// Output: <div <?php echo $wrapper_attributes; ?>>...</div>
+```
+
+### Configuration Files
+
+-   **`ALLOWED_BLOCKS`**: Only contains core WordPress blocks that should be extended via `registerBlockExtension()`
+-   **`BLOCK_CONFIG`**: Contains configuration for BOTH core and custom blocks, defining which controls appear in the inspector
 
 Custom blocks under `src/blocks/` are disabled by default. Use Settings > Fancy Squares Blocks to enable them globally.
 
 ## How to Add or Update Settings
 
-### Add a new block to the extension UI
+### Add a new CORE block to the extension UI
 
-1. Add the block name to `ALLOWED_BLOCKS` in `src/config/blockConfig.js`.
+1. Add the block name (e.g., `core/quote`) to `ALLOWED_BLOCKS` in `src/config/blockConfig.js`.
 2. Add a matching entry in `BLOCK_CONFIG` describing which controls should appear.
 3. If you need new token groups, add options in `data/bootstrap-classes/` and wire them into `CLASS_OPTIONS_MAP`.
 4. Run `npm run build` and verify the inspector panels in the editor.
+
+### Add a new CUSTOM block with extension controls
+
+1. Create the block in `src/blocks/your-block/` with `index.js`, `edit.js`, `block.json`, and `render.php`.
+2. In `index.js`, register all needed attributes (including those from `generateAttributes()` and `additionalClasses`).
+3. In `edit.js`:
+    - Import `BlockEdit`, `generateClassName`, and `BLOCK_CONFIG`
+    - Render `<BlockEdit {...props} />` in the component
+    - Use `useMemo` to generate classes: `generateClassName(attributes, name, BLOCK_CONFIG)`
+    - Use `useEffect` to sync generated classes to `additionalClasses` attribute
+    - Apply `generatedClassName` to `blockProps`
+4. In `render.php`, read `$attributes['additionalClasses']` and output to the wrapper element.
+5. Add an entry in `BLOCK_CONFIG` (but NOT in `ALLOWED_BLOCKS`) describing which controls should appear.
+6. Run `npm run build` and verify the inspector panels in the editor.
 
 ### Add or adjust token options
 
@@ -154,12 +259,12 @@ Scripts:
 -   `docs/` - local reference docs for block editor APIs (not loaded by the plugin).
 -   `src/index.js` - editor entry point; registers extensions and formats.
 -   `src/frontend.js` - frontend entry point; boots lazy video and play button behavior.
--   `src/registerExtensions.js` - registers block extensions using `@10up/block-components`.
+-   `src/registerExtensions.js` - registers block extensions for CORE blocks using `@10up/block-components`.
 -   `src/block-enhancements.js` - editor filters and parent class auto-update for columns.
--   `src/utils/helpers.js` - attribute generation, token utilities, and class name composition.
--   `src/config/blockConfig.js` - allowed blocks, per-block configuration, and dropdown options.
+-   `src/utils/helpers.js` - attribute generation, token utilities, and class name composition (`generateClassName()`).
+-   `src/config/blockConfig.js` - `ALLOWED_BLOCKS` (core blocks only), `BLOCK_CONFIG` (core + custom blocks), and dropdown options.
 -   `src/config/constants.js` - spacing side/type constants used by helpers and controls.
--   `src/components/BlockEdit.js` - inspector UI wiring based on `BLOCK_CONFIG`.
+-   `src/components/BlockEdit.js` - reusable inspector UI component that reads `BLOCK_CONFIG` to render controls.
 -   `src/components/TokenFields.js` - token field UI for class groups and suggestions.
 -   `src/components/WidthControl.js` / `src/components/WidthControls.js` - breakpoint width UI and tabs.
 -   `src/components/PaddingControl.js` / `src/components/PaddingControls.js` - padding UI and tabs.
@@ -167,6 +272,9 @@ Scripts:
 -   `src/components/NegativeMarginControl.js` / `src/components/NegativeMarginControls.js` - negative margin UI and tabs.
 -   `src/inspector-controls/` - block-specific toggles (list semantics, lazy video, modal trigger).
 -   `src/formats/span-format.js` - RichText span format with inline colors and utility tokens.
+-   `src/blocks/*/index.js` - custom block registration with attributes.
+-   `src/blocks/*/edit.js` - custom block edit components that render `<BlockEdit />` and sync classes to `additionalClasses`.
+-   `src/blocks/*/render.php` - custom block PHP rendering that outputs `$attributes['additionalClasses']` to frontend.
 -   `src/assets/scss/` - editor/front-end styles for block UI and custom enhancements.
 -   `src/assets/js/lazyVideos.js` - lazy video loader.
 -   `src/assets/js/customPlayButtons.js` - custom play overlay behavior.

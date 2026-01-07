@@ -4,7 +4,7 @@ Extend core blocks with Bootstrap-style utility classes, breakpoint width contro
 
 ## Requirements
 
--   WordPress 6.3+
+-   WordPress 6.5+
 -   Node/npm to build assets (via `@wordpress/scripts`)
 
 ## Quick Start

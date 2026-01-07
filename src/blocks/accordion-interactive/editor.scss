@@ -5,3 +5,9 @@
 
 // Forward all styles from the main stylesheet
 @forward "./style.scss";
+
+.fs-accordion {
+	&__header {
+		margin: 0;
+	}
+}

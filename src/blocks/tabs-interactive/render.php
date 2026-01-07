@@ -59,8 +59,25 @@ if ( '' === $active_tab || ! in_array( $active_tab, $tab_ids, true ) ) {
 }
 
 $responsive_enabled = isset( $attributes['responsiveTabs'] ) && $attributes['responsiveTabs'];
-$wrapper_classes = $responsive_enabled ? 'fs-tabs--responsive' : '';
-$wrapper_attributes = get_block_wrapper_attributes( [ 'class' => $wrapper_classes ] );
+$classes = [];
+if ( $responsive_enabled ) {
+	$classes[] = 'fs-tabs--responsive';
+}
+
+// Add custom classes from block extensions
+if (
+	! empty( $attributes['additionalClasses'] ) &&
+	is_array( $attributes['additionalClasses'] )
+) {
+	$classes = array_merge( $classes, $attributes['additionalClasses'] );
+}
+
+$classes = array_map( 'sanitize_html_class', $classes );
+$wrapper_attributes = get_block_wrapper_attributes(
+	[
+		'class' => implode( ' ', $classes ),
+	]
+);
 
 // Initialize context for Interactivity API
 $initial_context = [

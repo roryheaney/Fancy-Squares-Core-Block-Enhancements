@@ -41,21 +41,6 @@ export default function Edit( props ) {
 		[ childBlocks ]
 	);
 
-	const generatedClassName = useMemo(
-		() => generateClassName( attributes, name, BLOCK_CONFIG ),
-		[ attributes, name ]
-	);
-
-	useEffect( () => {
-		const nextClasses = generatedClassName.split( /\s+/ ).filter( Boolean );
-		const currentClasses = Array.isArray( additionalClasses )
-			? additionalClasses
-			: [];
-		if ( currentClasses.join( ' ' ) !== nextClasses.join( ' ' ) ) {
-			setAttributes( { additionalClasses: nextClasses } );
-		}
-	}, [ additionalClasses, generatedClassName, setAttributes ] );
-
 	useEffect( () => {
 		if ( ! blockId ) {
 			setAttributes( { blockId: clientId } );
@@ -102,12 +87,30 @@ export default function Edit( props ) {
 		selectBlock( tab.clientId );
 	};
 
+	// Sync generated classes to additionalClasses for frontend rendering
+	const generatedClassName = useMemo(
+		() => generateClassName( attributes, name, BLOCK_CONFIG ),
+		[ attributes, name ]
+	);
+
+	useEffect( () => {
+		const currentClasses = Array.isArray( additionalClasses )
+			? additionalClasses
+			: [];
+		const nextClasses = generatedClassName.split( ' ' ).filter( Boolean );
+		if (
+			JSON.stringify( currentClasses ) !== JSON.stringify( nextClasses )
+		) {
+			setAttributes( { additionalClasses: nextClasses } );
+		}
+	}, [ additionalClasses, generatedClassName, setAttributes ] );
+
 	const blockProps = useBlockProps( {
 		className: [
 			'fs-tabs',
 			'wp-block-fs-blocks-tabs-interactive',
-			generatedClassName,
 			responsiveTabs ? 'fs-tabs--responsive' : '',
+			generatedClassName,
 		]
 			.filter( Boolean )
 			.join( ' ' ),

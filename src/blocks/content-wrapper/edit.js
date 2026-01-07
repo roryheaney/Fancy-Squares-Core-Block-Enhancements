@@ -24,17 +24,20 @@ export default function Edit( props ) {
 	const { attributes, setAttributes, name } = props;
 	const { elementTag, additionalClasses } = attributes;
 
+	// Sync generated classes to additionalClasses for frontend rendering
 	const generatedClassName = useMemo(
 		() => generateClassName( attributes, name, BLOCK_CONFIG ),
 		[ attributes, name ]
 	);
 
 	useEffect( () => {
-		const nextClasses = generatedClassName.split( /\s+/ ).filter( Boolean );
 		const currentClasses = Array.isArray( additionalClasses )
 			? additionalClasses
 			: [];
-		if ( currentClasses.join( ' ' ) !== nextClasses.join( ' ' ) ) {
+		const nextClasses = generatedClassName.split( ' ' ).filter( Boolean );
+		if (
+			JSON.stringify( currentClasses ) !== JSON.stringify( nextClasses )
+		) {
 			setAttributes( { additionalClasses: nextClasses } );
 		}
 	}, [ additionalClasses, generatedClassName, setAttributes ] );

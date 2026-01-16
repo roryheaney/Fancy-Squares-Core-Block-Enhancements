@@ -24,5 +24,6 @@
 		}
 	},
 	"textdomain": "fancy-squares-core-enhancements",
+	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

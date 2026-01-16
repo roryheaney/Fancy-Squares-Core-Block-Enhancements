@@ -12,8 +12,8 @@
 		"README.md"
 	],
 	"scripts": {
-		"build": "wp-scripts build --experimental-modules",
-		"start": "wp-scripts start --experimental-modules",
+		"build": "rimraf build && wp-scripts build --source-path=src --experimental-modules",
+		"start": "wp-scripts start --source-path=src --experimental-modules",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",

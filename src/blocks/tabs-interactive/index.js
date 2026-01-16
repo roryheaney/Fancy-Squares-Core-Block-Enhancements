@@ -34,3 +34,5 @@ export const registerTabsInteractiveBlock = () => {
 		save: () => <InnerBlocks.Content />,
 	} );
 };
+
+registerTabsInteractiveBlock();

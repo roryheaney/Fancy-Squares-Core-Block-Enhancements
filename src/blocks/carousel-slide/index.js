@@ -10,3 +10,5 @@ export const registerCarouselSlideBlock = () => {
 		save: () => <InnerBlocks.Content />,
 	} );
 };
+
+registerCarouselSlideBlock();

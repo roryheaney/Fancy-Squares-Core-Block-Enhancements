@@ -28,5 +28,6 @@
 		}
 	},
 	"usesContext": [ "fs-blocks/accordion-interactive/activeItem" ],
+	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

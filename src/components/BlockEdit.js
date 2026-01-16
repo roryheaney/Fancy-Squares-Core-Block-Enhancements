@@ -11,9 +11,7 @@ import { useSelect } from '@wordpress/data';
 
 import TokenFields from './TokenFields';
 import WidthControls from './WidthControls';
-import PaddingControls from './PaddingControls';
-import PositiveMarginControls from './PositiveMarginControls';
-import NegativeMarginControls from './NegativeMarginControls';
+import SpacingControls from './SpacingControls';
 import { BLOCK_CONFIG } from '../config/blockConfig';
 
 const BlockEdit = ( props ) => {
@@ -149,21 +147,24 @@ const BlockEdit = ( props ) => {
 				config={ config }
 			/>
 			{ showPaddingControls && (
-				<PaddingControls
+				<SpacingControls
+					type="padding"
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					allowedControls={ config.allowedPaddingControls }
 				/>
 			) }
 			{ showPositiveMarginControls && (
-				<PositiveMarginControls
+				<SpacingControls
+					type="margin"
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					allowedControls={ config.allowedPositiveMarginControls }
 				/>
 			) }
 			{ showNegativeMarginControls && (
-				<NegativeMarginControls
+				<SpacingControls
+					type="negativeMargin"
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					allowedControls={ config.allowedNegativeMarginControls }

@@ -153,6 +153,15 @@ export const BLOCK_CONFIG = {
 			options: [ { label: 'Inherit from Columns', value: '' } ],
 		},
 		hasWidthControls: true,
+		allowedPaddingControls: [
+			'all',
+			'horizontal',
+			'vertical',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		],
 	},
 	'core/cover': {
 		classOptions: [ 'display', 'position', 'zindex', 'bleedCoverOptions' ],

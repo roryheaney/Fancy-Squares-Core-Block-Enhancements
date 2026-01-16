@@ -1,4 +1,4 @@
-// components/PaddingControls.js
+// components/SpacingControls.js
 import { PanelBody, TabPanel, Icon } from '@wordpress/components';
 import {
 	sidesAll,
@@ -9,7 +9,7 @@ import {
 	sidesBottom,
 	sidesLeft,
 } from '@wordpress/icons';
-import PaddingControl from './PaddingControl';
+import SpacingControl from './SpacingControl';
 
 const CONTROL_OPTIONS = [
 	{ name: 'all', label: 'All Sides', icon: sidesAll },
@@ -21,51 +21,100 @@ const CONTROL_OPTIONS = [
 	{ name: 'left', label: 'Left', icon: sidesLeft },
 ];
 
-const capitalize = ( str ) => str.charAt( 0 ).toUpperCase() + str.slice( 1 );
-const isSetValue = ( value ) =>
-	value !== '' && value !== undefined && value !== null;
+/**
+ * Configuration for different spacing types
+ */
+const SPACING_TYPE_CONFIG = {
+	padding: {
+		title: 'Padding Settings',
+		subLabel: 'Padding',
+		className: 'padding-tabs',
+		attributePrefix: 'padding',
+		isSetValue: ( value ) =>
+			value !== '' && value !== undefined && value !== null,
+	},
+	margin: {
+		title: 'Margin Settings',
+		subLabel: 'Margin',
+		className: 'positive-margin-tabs',
+		attributePrefix: 'margin',
+		isSetValue: ( value ) =>
+			value !== '' && value !== undefined && value !== null,
+	},
+	negativeMargin: {
+		title: 'Negative Margin Settings',
+		subLabel: 'Negative Margin',
+		className: 'negative-margin-tabs',
+		attributePrefix: 'negativeMargin',
+		isSetValue: ( value ) =>
+			value !== '' &&
+			value !== undefined &&
+			value !== null &&
+			value !== '0' &&
+			value !== 0,
+	},
+};
 
-const PaddingControls = ( {
+const capitalize = ( str ) => str.charAt( 0 ).toUpperCase() + str.slice( 1 );
+
+/**
+ * Unified spacing controls component
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.type - Type of spacing: 'padding', 'margin', or 'negativeMargin'
+ * @param {Object} props.attributes - Block attributes
+ * @param {Function} props.setAttributes - Function to update block attributes
+ * @param {Array} props.allowedControls - Array of allowed control names
+ */
+const SpacingControls = ( {
+	type = 'padding',
 	attributes,
 	setAttributes,
 	allowedControls = CONTROL_OPTIONS.map( ( o ) => o.name ),
 } ) => {
+	const config = SPACING_TYPE_CONFIG[ type ];
+	const { title, subLabel, className, attributePrefix, isSetValue } = config;
+
 	const tabs = CONTROL_OPTIONS.filter( ( option ) =>
 		allowedControls.includes( option.name )
 	);
+
 	const getKeys = ( name ) => {
-		const type = capitalize( name );
+		const capitalizedType = capitalize( name );
 		return [
-			`padding${ type }Base`,
-			`padding${ type }Sm`,
-			`padding${ type }Md`,
-			`padding${ type }Lg`,
-			`padding${ type }Xl`,
+			`${ attributePrefix }${ capitalizedType }Base`,
+			`${ attributePrefix }${ capitalizedType }Sm`,
+			`${ attributePrefix }${ capitalizedType }Md`,
+			`${ attributePrefix }${ capitalizedType }Lg`,
+			`${ attributePrefix }${ capitalizedType }Xl`,
 		];
 	};
+
 	const isTabActive = ( option ) =>
 		getKeys( option.name ).some( ( key ) =>
 			isSetValue( attributes[ key ] )
 		);
+
 	const activeLabels = tabs
 		.filter( ( option ) => isTabActive( option ) )
 		.map( ( option ) => option.label );
+
 	const hasActive = activeLabels.length > 0;
 
 	const renderControl = ( option ) => {
-		const type = capitalize( option.name );
-		const baseKey = `padding${ type }Base`;
-		const smKey = `padding${ type }Sm`;
-		const mdKey = `padding${ type }Md`;
-		const lgKey = `padding${ type }Lg`;
-		const xlKey = `padding${ type }Xl`;
+		const capitalizedType = capitalize( option.name );
+		const baseKey = `${ attributePrefix }${ capitalizedType }Base`;
+		const smKey = `${ attributePrefix }${ capitalizedType }Sm`;
+		const mdKey = `${ attributePrefix }${ capitalizedType }Md`;
+		const lgKey = `${ attributePrefix }${ capitalizedType }Lg`;
+		const xlKey = `${ attributePrefix }${ capitalizedType }Xl`;
 
 		return (
-			<PaddingControl
+			<SpacingControl
+				type={ type }
 				label={ option.label }
-				subLabel="Padding"
+				subLabel={ subLabel }
 				icon={ option.icon }
-				sideType={ option.name }
 				baseValue={ attributes[ baseKey ] }
 				smValue={ attributes[ smKey ] }
 				mdValue={ attributes[ mdKey ] }
@@ -94,7 +143,7 @@ const PaddingControls = ( {
 		<PanelBody
 			title={
 				<span className="fs-panel-title">
-					Padding Settings
+					{ title }
 					{ hasActive && (
 						<span
 							className="fs-panel-indicator"
@@ -111,7 +160,7 @@ const PaddingControls = ( {
 				</p>
 			) }
 			<TabPanel
-				className="padding-tabs"
+				className={ className }
 				tabs={ tabs.map( ( option ) => ( {
 					name: option.name,
 					title: (
@@ -135,4 +184,4 @@ const PaddingControls = ( {
 	);
 };
 
-export default PaddingControls;
+export default SpacingControls;

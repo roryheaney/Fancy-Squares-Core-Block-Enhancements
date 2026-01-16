@@ -21,3 +21,5 @@ export const registerAlertBlock = () => {
 		save: () => null,
 	} );
 };
+
+registerAlertBlock();

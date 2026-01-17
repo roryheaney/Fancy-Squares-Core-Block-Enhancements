@@ -48,3 +48,5 @@ export const registerContentWrapperBlock = () => {
 		save: () => <InnerBlocks.Content />,
 	} );
 };
+
+registerContentWrapperBlock();

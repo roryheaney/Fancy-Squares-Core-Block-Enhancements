@@ -11,3 +11,5 @@ export function registerAccordionItemInteractiveBlock() {
 		save: () => <InnerBlocks.Content />,
 	} );
 }
+
+registerAccordionItemInteractiveBlock();

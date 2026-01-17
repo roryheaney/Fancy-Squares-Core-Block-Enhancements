@@ -107,3 +107,10 @@ $column-breakpoints: (
 		}
 	}
 }
+
+// Fix for Bootstrap style columns
+.is-style-bootstrap {
+	&.wp-block-columns {
+		flex-wrap: wrap !important;
+	}
+}

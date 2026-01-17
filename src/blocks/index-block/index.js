@@ -26,3 +26,5 @@ export const registerIndexBlock = () => {
 		save: () => null,
 	} );
 };
+
+registerIndexBlock();

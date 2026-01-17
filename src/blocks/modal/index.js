@@ -20,3 +20,5 @@ export function registerModalBlock() {
 		save: () => <InnerBlocks.Content />,
 	} );
 }
+
+registerModalBlock();

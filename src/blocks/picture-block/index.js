@@ -9,3 +9,5 @@ export const registerPictureBlock = () => {
 		save: () => null,
 	} );
 };
+
+registerPictureBlock();

@@ -44,13 +44,16 @@ function fs_core_enhancements_editor_assets() {
 		'before'
 	);
 
-	// Enqueue the CSS (editor).
+	// Enqueue the CSS (editor) - includes column widths.
 	wp_enqueue_style(
 		'fs-core-enhancements-editor',
                 $plugin_url . 'build/index.css',
                 [],
                 $asset['version']
         );
+
+	// Note: Per-block styles (tabs, accordion, modal) are automatically
+	// enqueued by WordPress via the "style" field in each block.json.
 }
 add_action( 'enqueue_block_editor_assets', 'fs_core_enhancements_editor_assets' );
 
@@ -109,14 +112,18 @@ function fs_core_enhancements_frontend_assets() {
 		true
 	);
 
-        // Enqueue block-specific frontend styles
-        if ( file_exists( $plugin_dir . 'build/style-index.css' ) ) {
-        	wp_enqueue_style(
-        		'fs-core-enhancements-blocks-style',
-        		$plugin_url . 'build/style-index.css',
-        		[],
-        		$asset['version']
-        	);
-        }
+	// Enqueue column width styles on frontend.
+	if ( file_exists( $plugin_dir . 'build/index.css' ) ) {
+		wp_enqueue_style(
+			'fs-core-enhancements-column-widths',
+			$plugin_url . 'build/index.css',
+			[],
+			$asset['version']
+		);
+	}
+
+	// Note: Per-block styles (tabs, accordion, modal) are automatically
+	// enqueued by WordPress via the "style" field in each block.json.
+	// WordPress lazy-loads these styles only when the blocks are used.
 }
 add_action( 'wp_enqueue_scripts', 'fs_core_enhancements_frontend_assets' );

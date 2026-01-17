@@ -32,3 +32,5 @@ export const registerCarouselBlock = () => {
 		save: () => <InnerBlocks.Content />,
 	} );
 };
+
+registerCarouselBlock();

@@ -59,9 +59,13 @@ if ( '' === $active_tab || ! in_array( $active_tab, $tab_ids, true ) ) {
 }
 
 $responsive_enabled = isset( $attributes['responsiveTabs'] ) && $attributes['responsiveTabs'];
+$vertical_enabled = isset( $attributes['verticalTabs'] ) && $attributes['verticalTabs'];
 $classes = [];
 if ( $responsive_enabled ) {
 	$classes[] = 'fs-tabs--responsive';
+}
+if ( $vertical_enabled ) {
+	$classes[] = 'fs-tabs--vertical';
 }
 
 // Add custom classes from block extensions

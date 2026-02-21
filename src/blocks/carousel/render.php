@@ -115,7 +115,11 @@ if ( ! empty( $attributes['autoHeight'] ) ) {
 
 $pause_pagination_classes = [ 'swiper-pause-pagination' ];
 $show_play_pause = ! empty( $attributes['showPlayPauseButton'] ) && ! empty( $attributes['autoplay'] );
-if ( ! $show_play_pause && empty( $attributes['pagination'] ) ) {
+if (
+	! $show_play_pause &&
+	empty( $attributes['pagination'] ) &&
+	empty( $attributes['navigation'] )
+) {
 	$pause_pagination_classes[] = 'd-none';
 }
 

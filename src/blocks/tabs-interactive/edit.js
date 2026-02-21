@@ -20,8 +20,13 @@ const ALLOWED_BLOCKS = [ 'fs-blocks/tab-item-interactive' ];
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
-	const { blockId, activeTab, responsiveTabs, additionalClasses } =
-		attributes;
+	const {
+		blockId,
+		activeTab,
+		responsiveTabs,
+		verticalTabs,
+		additionalClasses,
+	} = attributes;
 	const { selectBlock } = useDispatch( blockEditorStore );
 
 	const { childBlocks } = useSelect(
@@ -110,6 +115,7 @@ export default function Edit( props ) {
 			'fs-tabs',
 			'wp-block-fs-blocks-tabs-interactive',
 			responsiveTabs ? 'fs-tabs--responsive' : '',
+			verticalTabs ? 'fs-tabs--vertical' : '',
 			generatedClassName,
 		]
 			.filter( Boolean )
@@ -143,6 +149,17 @@ export default function Edit( props ) {
 						checked={ responsiveTabs }
 						onChange={ ( value ) =>
 							setAttributes( { responsiveTabs: value } )
+						}
+					/>
+					<ToggleControl
+						label={ __( 'Vertical tabs', TEXT_DOMAIN ) }
+						help={ __(
+							'Display tabs vertically on the left.',
+							TEXT_DOMAIN
+						) }
+						checked={ verticalTabs }
+						onChange={ ( value ) =>
+							setAttributes( { verticalTabs: value } )
 						}
 					/>
 				</PanelBody>

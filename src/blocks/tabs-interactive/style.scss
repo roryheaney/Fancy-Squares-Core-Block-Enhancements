@@ -164,6 +164,56 @@
 		}
 	}
 
+	// Vertical tabs layout
+	&.fs-tabs--vertical {
+		display: flex;
+		flex-direction: row;
+		gap: 1.5rem;
+
+		.fs-tabs__tablist {
+			flex-direction: column;
+			flex-shrink: 0;
+			min-width: 200px;
+			border-bottom: none;
+			border-right: 2px solid #ddd;
+			margin-bottom: 0;
+			padding-right: 0.5rem;
+		}
+
+		.fs-tabs__tab {
+			text-align: left;
+			border-bottom: none;
+			border-right: 3px solid transparent;
+
+			&.is-active {
+				border-right-color: #0073aa;
+				border-bottom-color: transparent;
+			}
+		}
+
+		.fs-tabs__panels {
+			flex: 1;
+			min-width: 0;
+		}
+
+		// Hide vertical tabs on mobile when responsive mode is also enabled
+		&.fs-tabs--responsive .fs-tabs__tablist {
+			display: none; // Mobile: hidden
+
+			@media (min-width: map.get($grid-breakpoints, md)) {
+				display: flex; // Desktop: show vertical tabs
+			}
+		}
+
+		// Keep flex layout on desktop even with responsive mode
+		&.fs-tabs--responsive {
+			@media (min-width: map.get($grid-breakpoints, md)) {
+				display: flex;
+				flex-direction: row;
+			}
+		}
+	}
+
 	// Panel content - default padding for desktop tabs
 	.fs-tabs__panel-content {
 		padding: 1.5rem 0;

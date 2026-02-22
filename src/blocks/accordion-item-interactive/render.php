@@ -11,6 +11,9 @@ defined( 'ABSPATH' ) || exit;
 
 $item_id = isset( $attributes['itemId'] ) ? sanitize_html_class( $attributes['itemId'] ) : '';
 $title   = isset( $attributes['title'] ) ? $attributes['title'] : '';
+$showcase_media_id = ! empty( $attributes['showcaseMediaId'] )
+	? (int) $attributes['showcaseMediaId']
+	: 0;
 
 if ( '' === $item_id ) {
 	$item_id = wp_unique_id( 'accordion-item-' );
@@ -26,6 +29,42 @@ $wrapper_attributes = get_block_wrapper_attributes();
 $item_context = [
 	'itemId' => $item_id,
 ];
+
+$showcase_media_markup = '';
+if ( $showcase_media_id ) {
+	$media_type = wp_attachment_is( 'video', $showcase_media_id )
+		? 'video'
+		: 'image';
+	ob_start();
+	?>
+	<div class="fs-accordion-item__showcase-media">
+		<?php if ( 'video' === $media_type ) : ?>
+			<video
+				class="fs-accordion-item__showcase-video"
+				data-fs-lazy-video="true"
+				data-src="<?php echo esc_url( wp_get_attachment_url( $showcase_media_id ) ); ?>"
+				autoplay
+				muted
+				loop
+				playsinline
+			></video>
+		<?php else : ?>
+			<?php
+			echo wp_get_attachment_image(
+				$showcase_media_id,
+				'large',
+				false,
+				[
+					'loading' => 'lazy',
+					'decoding' => 'async',
+				]
+			);
+			?>
+		<?php endif; ?>
+	</div>
+	<?php
+	$showcase_media_markup = ob_get_clean();
+}
 
 ?>
 <div
@@ -59,6 +98,7 @@ $item_context = [
 		data-item-id="<?php echo esc_attr( $item_id ); ?>"
 	>
 		<div class="fs-accordion__body">
+			<?php echo $showcase_media_markup; ?>
 			<?php echo $content; ?>
 		</div>
 	</div>

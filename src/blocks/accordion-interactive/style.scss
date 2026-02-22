@@ -44,3 +44,25 @@
 		padding: 1rem;
 	}
 }
+
+.fs-accordion-item__showcase-media {
+	display: block;
+	margin-bottom: 1rem;
+
+	img,
+	video {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+}
+
+.wp-block-fs-blocks-content-showcase {
+	.fs-accordion-item__showcase-media {
+		display: block;
+
+		@media ( min-width: 768px ) {
+			display: none;
+		}
+	}
+}

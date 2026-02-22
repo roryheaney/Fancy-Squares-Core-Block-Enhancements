@@ -112,6 +112,18 @@ function fs_core_enhancements_get_custom_blocks() {
 			),
 			'path' => $get_block_path( 'accordion-interactive' ),
 		],
+		'content-showcase' => [
+			'name' => 'fs-blocks/content-showcase',
+			'label' => __(
+				'Content Showcase',
+				'fancy-squares-core-enhancements'
+			),
+			'description' => __(
+				'Syncs an interactive source with a showcase gallery.',
+				'fancy-squares-core-enhancements'
+			),
+			'path' => $get_block_path( 'content-showcase' ),
+		],
 		'carousel' => [
 			'name' => 'fs-blocks/carousel',
 			'label' => __( 'Carousel', 'fancy-squares-core-enhancements' ),
@@ -179,6 +191,16 @@ function fs_core_enhancements_register_blocks() {
 				$accordion_item_path
 			);
 			register_block_type( $accordion_item_path );
+		}
+		if ( 'content-showcase' === $slug ) {
+			$showcase_gallery_path =
+				fs_core_enhancements_get_custom_blocks()['content-showcase']['path'];
+			$showcase_gallery_path = str_replace(
+				'/content-showcase',
+				'/showcase-gallery',
+				$showcase_gallery_path
+			);
+			register_block_type( $showcase_gallery_path );
 		}
 		if ( 'carousel' === $slug ) {
 			$carousel_path =

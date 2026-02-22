@@ -25,9 +25,24 @@
 		"title": {
 			"type": "string",
 			"default": ""
+		},
+		"showcaseMedia": {
+			"type": "object",
+			"default": {}
+		},
+		"showcaseMediaId": {
+			"type": "number",
+			"default": 0
+		},
+		"showcaseMediaType": {
+			"type": "string",
+			"default": ""
 		}
 	},
-	"usesContext": [ "fs-blocks/accordion-interactive/activeItem" ],
+	"usesContext": [
+		"fs-blocks/accordion-interactive/activeItem",
+		"fs-blocks/content-showcase/isShowcase"
+	],
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"
 }

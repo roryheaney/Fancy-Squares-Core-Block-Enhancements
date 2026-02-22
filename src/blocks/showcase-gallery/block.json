@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/showcase-gallery",
+	"title": "FS Showcase Gallery",
+	"category": "media",
+	"icon": "format-gallery",
+	"description": "Media gallery synced to an interactive source such as an accordion.",
+	"keywords": [ "showcase", "gallery", "media" ],
+	"textdomain": "fancy-squares-core-enhancements",
+	"ancestor": [ "fs-blocks/content-showcase" ],
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"interactivity": true
+	},
+	"attributes": {
+		"transitionType": {
+			"type": "string",
+			"default": "fade"
+		},
+		"transitionDuration": {
+			"type": "number",
+			"default": 300
+		},
+		"additionalClasses": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css",
+	"render": "file:./render.php"
+}

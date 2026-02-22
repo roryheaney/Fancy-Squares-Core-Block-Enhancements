@@ -17,11 +17,8 @@ const TRANSITION_OPTIONS = [
 
 export default function Edit( props ) {
 	const { attributes, setAttributes, name } = props;
-	const {
-		transitionType,
-		transitionDuration,
-		additionalClasses,
-	} = attributes;
+	const { transitionType, transitionDuration, additionalClasses } =
+		attributes;
 
 	const generatedClassName = useMemo(
 		() => generateClassName( attributes, name, BLOCK_CONFIG ),

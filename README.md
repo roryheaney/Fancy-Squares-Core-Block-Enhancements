@@ -35,8 +35,19 @@ Notes:
 -   The gallery is hidden on mobile by default (toggle in Showcase Layout).
 -   The wrapper listens for `shown.fs.accordion` events. You can override the
     event name in Showcase Events if you later swap the source block.
+-   The contract is extendable: any interactive source that emits the configured
+    event with a stable `itemId` (and supports the showcase media field) can
+    drive the gallery.
 -   Each showcase instance is scoped to its wrapper, so multiple showcases on
     a page operate independently.
+
+Extensibility contract:
+
+-   Source block must emit a bubbling CustomEvent with `detail.itemId`.
+-   The wrapper listens on its root element for `sourceEventName` (default:
+    `shown.fs.accordion`).
+-   Each source item must have a stable `itemId` attribute.
+-   The item block must expose the showcase media field (`showcaseMediaId`).
 
 ### Token class selectors
 

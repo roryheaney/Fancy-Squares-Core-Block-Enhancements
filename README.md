@@ -38,6 +38,8 @@ Notes:
 -   The contract is extendable: any interactive source that emits the configured
     event with a stable `itemId` (and supports the showcase media field) can
     drive the gallery.
+-   Existing tabs events emit `detail.from`/`detail.to` (not `detail.itemId`), so
+    tabs must be extended to include `itemId` if you use them as a source.
 -   Each showcase instance is scoped to its wrapper, so multiple showcases on
     a page operate independently.
 
@@ -268,6 +270,7 @@ Note: `core/button` and `core/image` are enhanced via filters and inspector cont
 -   Lazy video adds `data-fs-lazy-video` and `data-src` while clearing `src`; `src/frontend.js` swaps the source in when visible.
 -   Custom play button inserts a `.fs-video-overlay` when a poster is present and starts playback on click.
 -   Modal Settings converts `core/button` markup into a `<button>` with `data-bs-toggle="modal"` and `data-bs-target="#modal-id"`.
+-   Modal Settings converts `core/button` markup into a `<button>` with Interactivity API directives (`data-wp-interactive`, `data-wp-on--click`, `data-wp-bind--aria-expanded`) and `aria-controls` for the target modal.
 -   Carousel outputs Swiper markup with `data-swiper` configuration; Swiper assets are loaded on the front end only when the carousel block is present.
 -   Content Showcase collects accordion item media data on the server and emits it as local context; the showcase wrapper updates `activeItemId` on the `shown.fs.accordion` event.
 -   A render filter maintains a per-render context stack so the showcase gallery can SSR before the wrapper outputs its context.

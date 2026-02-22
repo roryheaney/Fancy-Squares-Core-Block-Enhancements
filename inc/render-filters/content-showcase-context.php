@@ -75,22 +75,8 @@ if ( ! function_exists( 'fs_showcase_collect_accordion_data' ) ) {
 					: 0;
 
 				if ( $media_id ) {
-					$media_type = wp_attachment_is( 'video', $media_id )
-						? 'video'
-						: 'image';
-					$media_url = 'video' === $media_type
-						? wp_get_attachment_url( $media_id )
-						: wp_get_attachment_image_url( $media_id, 'large' );
 					$items_data[ $item_id ] = [
 						'id' => $media_id,
-						'url' => $media_url ? $media_url : '',
-						'type' => $media_type,
-						'alt' => 'image' === $media_type
-							? get_post_meta( $media_id, '_wp_attachment_image_alt', true )
-							: '',
-						'srcset' => 'image' === $media_type
-							? wp_get_attachment_image_srcset( $media_id, 'large' )
-							: '',
 						'hasMedia' => true,
 					];
 					if ( '' === $first_media_item_id ) {

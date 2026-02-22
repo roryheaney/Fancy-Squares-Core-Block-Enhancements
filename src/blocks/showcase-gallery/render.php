@@ -35,13 +35,28 @@ foreach ( $items_data as $item_id => $media_data ) {
 	if ( empty( $media_data['hasMedia'] ) ) {
 		continue;
 	}
+	$media_id = isset( $media_data['id'] ) ? (int) $media_data['id'] : 0;
+	if ( ! $media_id ) {
+		continue;
+	}
+
+	$media_type = wp_attachment_is( 'video', $media_id ) ? 'video' : 'image';
+	$media_url = 'video' === $media_type
+		? wp_get_attachment_url( $media_id )
+		: wp_get_attachment_image_url( $media_id, 'large' );
+	$media_alt = 'image' === $media_type
+		? get_post_meta( $media_id, '_wp_attachment_image_alt', true )
+		: '';
+	$media_srcset = 'image' === $media_type
+		? wp_get_attachment_image_srcset( $media_id, 'large' )
+		: '';
 
 	$items_list[] = [
 		'itemId' => sanitize_html_class( $item_id ),
-		'url' => isset( $media_data['url'] ) ? $media_data['url'] : '',
-		'type' => isset( $media_data['type'] ) ? $media_data['type'] : 'image',
-		'alt' => isset( $media_data['alt'] ) ? $media_data['alt'] : '',
-		'srcset' => isset( $media_data['srcset'] ) ? $media_data['srcset'] : '',
+		'url' => $media_url ? $media_url : '',
+		'type' => $media_type,
+		'alt' => $media_alt,
+		'srcset' => $media_srcset ? $media_srcset : '',
 	];
 }
 

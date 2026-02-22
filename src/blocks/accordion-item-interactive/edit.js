@@ -106,7 +106,17 @@ export default function Edit( {
 			{ isInsideShowcase && (
 				<InspectorControls>
 					<PanelBody
-						title={ __( 'Showcase Media', TEXT_DOMAIN ) }
+						title={
+							<span className="fs-panel-title">
+								{ __( 'Showcase Media', TEXT_DOMAIN ) }
+								{ showcaseMediaId ? (
+									<span
+										className="fs-panel-indicator"
+										aria-hidden="true"
+									/>
+								) : null }
+							</span>
+						}
 						initialOpen={ false }
 					>
 						<MediaUploadCheck>

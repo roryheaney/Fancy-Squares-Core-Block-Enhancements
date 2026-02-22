@@ -4,7 +4,7 @@ Extend core blocks with Bootstrap-style utility classes, breakpoint width contro
 
 ## Requirements
 
--   WordPress 6.5+
+-   WordPress 6.9+
 -   Node/npm to build assets (via `@wordpress/scripts`)
 
 ## Quick Start
@@ -16,6 +16,38 @@ Extend core blocks with Bootstrap-style utility classes, breakpoint width contro
 5. In the editor, select a supported block and open the inspector to apply classes.
 
 ## Editor Usage
+
+### Content Showcase (Accordion + Gallery)
+
+The Content Showcase block provides a two-column layout where an interactive
+source (accordion) drives a synced media gallery. It uses the Interactivity API
+to keep the gallery in sync when the active item changes.
+
+Quick steps:
+
+1. Insert `FS Content Showcase`.
+2. In the left column, insert `FS Accordion (Interactive)` and add items.
+3. On each accordion item, open "Showcase Media" and select an image or video.
+4. In the right column, insert `FS Showcase Gallery` (restricted to the wrapper).
+
+Notes:
+
+-   The gallery is hidden on mobile by default (toggle in Showcase Layout).
+-   The wrapper listens for `shown.fs.accordion` events. You can override the
+    event name in Showcase Events if you later swap the source block.
+-   The contract is extendable: any interactive source that emits the configured
+    event with a stable `itemId` (and supports the showcase media field) can
+    drive the gallery.
+-   Each showcase instance is scoped to its wrapper, so multiple showcases on
+    a page operate independently.
+
+Extensibility contract:
+
+-   Source block must emit a bubbling CustomEvent with `detail.itemId`.
+-   The wrapper listens on its root element for `sourceEventName` (default:
+    `shown.fs.accordion`).
+-   Each source item must have a stable `itemId` attribute.
+-   The item block must expose the showcase media field (`showcaseMediaId`).
 
 ### Token class selectors
 
@@ -216,7 +248,9 @@ Custom blocks under `src/blocks/` are disabled by default. Use Settings > Fancy 
 -   `fs-blocks/dynamic-picture-block`: responsive picture element with optional aspect ratio, border, and radius utilities.
 -   `fs-blocks/alert`: alert variant selector; display tokens; padding and positive margin controls; RichText message content.
 -   `fs-blocks/accordion-interactive`: accordion container using WordPress Interactivity API; display/position/zindex tokens; padding and positive margin controls; optional "Open First Item" toggle; CustomEvents API (hide, hidden, show, shown).
--   `fs-blocks/accordion-item-interactive`: child accordion item with title and content; uses Interactivity API for state management.
+-   `fs-blocks/accordion-item-interactive`: child accordion item with title and content; uses Interactivity API for state management; optional showcase media picker when inside Content Showcase.
+-   `fs-blocks/content-showcase`: wrapper block that provides local context for a synced gallery; layout + mobile hide toggles; Interactivity API store for syncing active media.
+-   `fs-blocks/showcase-gallery`: gallery block that renders media from the showcase context; transition controls (fade/slide/zoom).
 -   `fs-blocks/tabs-interactive`: tabbed container using WordPress Interactivity API; display/position/zindex tokens; padding and positive margin controls; CustomEvents API (hide, hidden, show, shown).
 -   `fs-blocks/tab-item-interactive`: child tab item with title and content; uses Interactivity API for state management.
 -   `fs-blocks/modal`: modal dialog using WordPress Interactivity API with Bootstrap 5 animations; size options (small/default/large/xl/fullscreen); centered positioning; scrollable content; static backdrop; keyboard navigation (Tab/Shift+Tab focus trap, Escape to close); focus management; CustomEvents API (show, shown, hide, hidden); ARIA compliant with always-visible close button.
@@ -235,6 +269,8 @@ Note: `core/button` and `core/image` are enhanced via filters and inspector cont
 -   Custom play button inserts a `.fs-video-overlay` when a poster is present and starts playback on click.
 -   Modal Settings converts `core/button` markup into a `<button>` with `data-bs-toggle="modal"` and `data-bs-target="#modal-id"`.
 -   Carousel outputs Swiper markup with `data-swiper` configuration; Swiper assets are loaded on the front end only when the carousel block is present.
+-   Content Showcase collects accordion item media data on the server and emits it as local context; the showcase wrapper updates `activeItemId` on the `shown.fs.accordion` event.
+-   A render filter maintains a per-render context stack so the showcase gallery can SSR before the wrapper outputs its context.
 
 ## Development
 

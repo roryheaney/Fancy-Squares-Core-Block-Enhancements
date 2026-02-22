@@ -1,0 +1,54 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/content-showcase",
+	"title": "FS Content Showcase",
+	"category": "layout",
+	"icon": "columns",
+	"description": "Wrapper block that syncs accordion items with a showcase gallery.",
+	"keywords": [ "showcase", "accordion", "gallery", "layout" ],
+	"textdomain": "fancy-squares-core-enhancements",
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"__experimentalLayout": true,
+		"interactivity": true
+	},
+	"attributes": {
+		"blockId": {
+			"type": "string",
+			"default": ""
+		},
+		"isShowcase": {
+			"type": "boolean",
+			"default": true
+		},
+		"layoutType": {
+			"type": "string",
+			"default": "two-column"
+		},
+		"hideGalleryOnMobile": {
+			"type": "boolean",
+			"default": true
+		},
+		"sourceEventName": {
+			"type": "string",
+			"default": "shown.fs.accordion"
+		},
+		"additionalClasses": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		}
+	},
+	"providesContext": {
+		"fs-blocks/content-showcase/isShowcase": "isShowcase"
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php"
+}

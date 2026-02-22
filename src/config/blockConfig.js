@@ -223,6 +223,48 @@ export const BLOCK_CONFIG = {
 			'left',
 		],
 	},
+	'fs-blocks/content-showcase': {
+		classOptions: [ 'display', 'position', 'zindex' ],
+		allowedPaddingControls: [
+			'all',
+			'horizontal',
+			'vertical',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		],
+		allowedPositiveMarginControls: [
+			'all',
+			'horizontal',
+			'vertical',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		],
+	},
+	'fs-blocks/showcase-gallery': {
+		classOptions: [ 'display', 'position', 'zindex' ],
+		allowedPaddingControls: [
+			'all',
+			'horizontal',
+			'vertical',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		],
+		allowedPositiveMarginControls: [
+			'all',
+			'horizontal',
+			'vertical',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		],
+	},
 	'fs-blocks/carousel': {
 		classOptions: [ 'display', 'position', 'zindex' ],
 		allowedPaddingControls: [

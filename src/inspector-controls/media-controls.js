@@ -107,4 +107,3 @@ export default function MediaControls( BlockEdit, props ) {
 		</>
 	);
 }
-

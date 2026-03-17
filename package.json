@@ -1,6 +1,6 @@
 {
 	"name": "fancy-squares-core-enhancements",
-	"version": "1.0.0",
+	"version": "1.1.3",
 	"description": "Extends core blocks with custom classes and dropdowns",
 	"author": "Rory Heaney",
 	"license": "GPL-2.0-or-later",
@@ -51,4 +51,3 @@
 		"plugin-zip": "wp-scripts plugin-zip"
 	}
 }
-

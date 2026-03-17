@@ -93,7 +93,9 @@ const SpacingControls = ( {
 	};
 
 	const isTabActive = ( option ) =>
-		getKeys( option.name ).some( ( key ) => isSetValue( attributes[ key ] ) );
+		getKeys( option.name ).some( ( key ) =>
+			isSetValue( attributes[ key ] )
+		);
 
 	const activeLabels = tabs
 		.filter( ( option ) => isTabActive( option ) )
@@ -150,7 +152,10 @@ const SpacingControls = ( {
 				<span className="fs-panel-title">
 					{ title }
 					{ hasActive && (
-						<span className="fs-panel-indicator" aria-hidden="true" />
+						<span
+							className="fs-panel-indicator"
+							aria-hidden="true"
+						/>
 					) }
 				</span>
 			}
@@ -187,5 +192,3 @@ const SpacingControls = ( {
 };
 
 export default SpacingControls;
-
-

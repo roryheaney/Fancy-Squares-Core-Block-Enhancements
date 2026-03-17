@@ -63,7 +63,11 @@ store( 'fancySquaresTabsInteractive', {
 			const { ref } = getElement();
 			const tabsRoot = findTabsRoot( ref );
 
-			if ( ! tabsRoot || ! context.tabId || context.activeTab === context.tabId ) {
+			if (
+				! tabsRoot ||
+				! context.tabId ||
+				context.activeTab === context.tabId
+			) {
 				return;
 			}
 
@@ -102,7 +106,10 @@ store( 'fancySquaresTabsInteractive', {
 			}
 
 			if ( previousTab ) {
-				const previousPanelWrapper = findTabPanel( tabsRoot, previousTab );
+				const previousPanelWrapper = findTabPanel(
+					tabsRoot,
+					previousTab
+				);
 				const previousPanel = previousPanelWrapper?.querySelector(
 					'.fs-tabs__panel-content'
 				);
@@ -171,7 +178,8 @@ store( 'fancySquaresTabsInteractive', {
 						context.collapsing = context.tabId;
 
 						window.requestAnimationFrame( () => {
-							newPanel.style.height = newPanel.scrollHeight + 'px';
+							newPanel.style.height =
+								newPanel.scrollHeight + 'px';
 
 							runTransitionWithFallback( newPanel, () => {
 								newPanel.style.height = '';
@@ -221,7 +229,9 @@ store( 'fancySquaresTabsInteractive', {
 				return;
 			}
 
-			const tabs = Array.from( tablist.querySelectorAll( '[role="tab"]' ) );
+			const tabs = Array.from(
+				tablist.querySelectorAll( '[role="tab"]' )
+			);
 			const currentIndex = tabs.indexOf( ref );
 
 			let nextIndex = -1;

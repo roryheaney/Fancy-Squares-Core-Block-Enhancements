@@ -56,14 +56,27 @@ $initial_context = [
 	'closeOnEscape' => $close_on_escape,
 ];
 
-$wrapper_attributes = get_block_wrapper_attributes( [
+$dialog_label = trim( wp_strip_all_tags( (string) $title ) );
+
+$dialog_accessibility_attributes = [
+	'aria-modal' => 'true',
+	'role' => 'dialog',
+];
+
+if ( $show_header ) {
+	$dialog_accessibility_attributes['aria-labelledby'] = $modal_id . '-label';
+} else {
+	$dialog_accessibility_attributes['aria-label'] =
+		'' !== $dialog_label
+			? $dialog_label
+			: __( 'Modal dialog', 'fancy-squares-core-enhancements' );
+}
+
+$wrapper_attributes = get_block_wrapper_attributes( array_merge( [
 	'class' => implode( ' ', $classes ),
 	'id' => $modal_id,
 	'tabindex' => '-1',
-	'aria-labelledby' => $modal_id . '-label',
-	'aria-modal' => 'true',
-	'role' => 'dialog',
-] );
+], $dialog_accessibility_attributes ) );
 ?>
 <div
 	<?php echo $wrapper_attributes; ?>

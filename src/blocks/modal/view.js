@@ -269,4 +269,3 @@ const { state, actions } = store( 'fancySquaresModal', {
  *   // Reset form, clear data, etc.
  * });
  */
-

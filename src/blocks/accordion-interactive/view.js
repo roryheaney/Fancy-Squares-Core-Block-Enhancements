@@ -123,21 +123,25 @@ store( 'fancySquaresAccordionInteractive', {
 				);
 
 				if ( previousItem ) {
-					const prevHideEvent = new CustomEvent( 'hide.fs.accordion', {
-						bubbles: true,
-						cancelable: true,
-						detail: {
-							itemId: previousItemId,
-							element: previousItem,
-							trigger: ref,
-						},
-					} );
+					const prevHideEvent = new CustomEvent(
+						'hide.fs.accordion',
+						{
+							bubbles: true,
+							cancelable: true,
+							detail: {
+								itemId: previousItemId,
+								element: previousItem,
+								trigger: ref,
+							},
+						}
+					);
 
 					if ( ! previousItem.dispatchEvent( prevHideEvent ) ) {
 						return;
 					}
 
-					const prevHeight = previousItem.getBoundingClientRect().height;
+					const prevHeight =
+						previousItem.getBoundingClientRect().height;
 					previousItem.style.height = prevHeight + 'px';
 					void previousItem.offsetHeight;
 					previousItem.classList.add( 'collapsing' );

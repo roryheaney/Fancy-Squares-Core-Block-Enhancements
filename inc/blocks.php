@@ -164,53 +164,53 @@ function fs_core_enhancements_get_enabled_blocks() {
 	return array_values( array_unique( $valid ) );
 }
 
+function fs_core_enhancements_get_child_block_slugs() {
+	return [
+		'tabs-interactive' => [ 'tab-item-interactive' ],
+		'accordion-interactive' => [ 'accordion-item-interactive' ],
+		'content-showcase' => [ 'showcase-gallery' ],
+		'carousel' => [ 'carousel-slide' ],
+	];
+}
+
+function fs_core_enhancements_get_child_block_paths( $parent_slug, $parent_path ) {
+	$child_block_slugs = fs_core_enhancements_get_child_block_slugs();
+
+	if ( empty( $child_block_slugs[ $parent_slug ] ) ) {
+		return [];
+	}
+
+	$parent_directory = dirname( $parent_path );
+	$child_paths = [];
+
+	foreach ( $child_block_slugs[ $parent_slug ] as $child_slug ) {
+		$child_paths[] = $parent_directory . '/' . $child_slug;
+	}
+
+	return $child_paths;
+}
+
 function fs_core_enhancements_register_blocks() {
 	$blocks = fs_core_enhancements_get_custom_blocks();
 	$enabled = fs_core_enhancements_get_enabled_blocks();
 
 	foreach ( $enabled as $slug ) {
-		if ( isset( $blocks[ $slug ]['path'] ) ) {
-			register_block_type( $blocks[ $slug ]['path'] );
+		if ( empty( $blocks[ $slug ]['path'] ) ) {
+			continue;
 		}
-		if ( 'tabs-interactive' === $slug ) {
-			$tab_item_path =
-				fs_core_enhancements_get_custom_blocks()['tabs-interactive']['path'];
-			$tab_item_path = str_replace(
-				'/tabs-interactive',
-				'/tab-item-interactive',
-				$tab_item_path
-			);
-			register_block_type( $tab_item_path );
+
+		$parent_path = $blocks[ $slug ]['path'];
+		if ( file_exists( $parent_path . '/block.json' ) ) {
+			register_block_type( $parent_path );
 		}
-		if ( 'accordion-interactive' === $slug ) {
-			$accordion_item_path =
-				fs_core_enhancements_get_custom_blocks()['accordion-interactive']['path'];
-			$accordion_item_path = str_replace(
-				'/accordion-interactive',
-				'/accordion-item-interactive',
-				$accordion_item_path
-			);
-			register_block_type( $accordion_item_path );
-		}
-		if ( 'content-showcase' === $slug ) {
-			$showcase_gallery_path =
-				fs_core_enhancements_get_custom_blocks()['content-showcase']['path'];
-			$showcase_gallery_path = str_replace(
-				'/content-showcase',
-				'/showcase-gallery',
-				$showcase_gallery_path
-			);
-			register_block_type( $showcase_gallery_path );
-		}
-		if ( 'carousel' === $slug ) {
-			$carousel_path =
-				fs_core_enhancements_get_custom_blocks()['carousel']['path'];
-			$carousel_slide_path = str_replace(
-				'/carousel',
-				'/carousel-slide',
-				$carousel_path
-			);
-			register_block_type( $carousel_slide_path );
+
+		foreach (
+			fs_core_enhancements_get_child_block_paths( $slug, $parent_path )
+			as $child_path
+		) {
+			if ( file_exists( $child_path . '/block.json' ) ) {
+				register_block_type( $child_path );
+			}
 		}
 	}
 }

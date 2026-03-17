@@ -6,6 +6,68 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Convert the tagged modal trigger anchor into a button element.
+ *
+ * WP_HTML_Tag_Processor can modify attributes but cannot rename a tag.
+ * This performs a bounded replacement only for the processor-tagged anchor.
+ *
+ * @param string $html HTML containing the tagged trigger anchor.
+ *
+ * @return string
+ */
+function fs_core_enhancements_convert_modal_trigger_anchor_to_button( $html ) {
+	if ( '' === $html || false === strpos( $html, 'data-fs-modal-trigger="1"' ) ) {
+		return $html;
+	}
+
+	$trigger_attribute_offset = strpos( $html, 'data-fs-modal-trigger="1"' );
+	if ( false === $trigger_attribute_offset ) {
+		return $html;
+	}
+
+	$before_trigger = substr( $html, 0, $trigger_attribute_offset );
+	$opening_tag_start = strripos( $before_trigger, '<a' );
+	if ( false === $opening_tag_start ) {
+		return $html;
+	}
+
+	$opening_tag_end = strpos( $html, '>', $trigger_attribute_offset );
+	if ( false === $opening_tag_end ) {
+		return $html;
+	}
+
+	$opening_length = $opening_tag_end - $opening_tag_start + 1;
+	$opening_tag = substr( $html, $opening_tag_start, $opening_length );
+
+	$clean_opening_tag = str_replace(
+		[ ' data-fs-modal-trigger="1"', " data-fs-modal-trigger='1'", ' data-fs-modal-trigger' ],
+		'',
+		$opening_tag
+	);
+
+	if ( 0 !== stripos( $clean_opening_tag, '<a' ) ) {
+		return $html;
+	}
+
+	$button_opening_tag = '<button' . substr( $clean_opening_tag, 2 );
+
+	$html = substr_replace(
+		$html,
+		$button_opening_tag,
+		$opening_tag_start,
+		$opening_length
+	);
+
+	$search_offset = $opening_tag_start + strlen( $button_opening_tag );
+	$closing_offset = stripos( $html, '</a>', $search_offset );
+	if ( false === $closing_offset ) {
+		return $html;
+	}
+
+	return substr_replace( $html, '</button>', $closing_offset, 4 );
+}
+
+/**
  * Convert core/button links to modal triggers when enabled.
  *
  * @param string $block_content Rendered HTML of the block.
@@ -35,6 +97,7 @@ function fs_core_enhancements_button_modal_render( $block_content, $block ) {
 				'data-wp-bind--aria-expanded',
 				'state.currentModalId === context.modalId'
 			);
+			$processor->set_attribute( 'data-fs-modal-trigger', '1' );
 
 			$processor->set_attribute( 'aria-controls', $modal_id );
 			$processor->set_attribute( 'aria-haspopup', 'dialog' );
@@ -46,8 +109,10 @@ function fs_core_enhancements_button_modal_render( $block_content, $block ) {
 			$processor->remove_attribute( 'rel' );
 
 			$block_content = $processor->get_updated_html();
-			$block_content = preg_replace( '/<a\b/i', '<button', $block_content, 1 );
-			$block_content = preg_replace( '/<\/a>/', '</button>', $block_content, 1 );
+			$block_content =
+				fs_core_enhancements_convert_modal_trigger_anchor_to_button(
+					$block_content
+				);
 		}
 	}
 

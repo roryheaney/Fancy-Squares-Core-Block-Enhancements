@@ -12,9 +12,8 @@ import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
 const ALERT_STYLE_OPTIONS = [
-	{ label: __( 'Default', TEXT_DOMAIN ), value: '' },
+	{ label: __( 'Default', 'fancy-squares-core-enhancements' ), value: '' },
 	...alertOptions,
 ];
 
@@ -61,11 +60,17 @@ export default function Edit( props ) {
 			<BlockEdit { ...props } />
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Alert Settings', TEXT_DOMAIN ) }
+					title={ __(
+						'Alert Settings',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ false }
 				>
 					<SelectControl
-						label={ __( 'Alert Style', TEXT_DOMAIN ) }
+						label={ __(
+							'Alert Style',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ alertStyle }
 						options={ ALERT_STYLE_OPTIONS }
 						onChange={ ( value ) =>
@@ -81,7 +86,10 @@ export default function Edit( props ) {
 					onChange={ ( value ) =>
 						setAttributes( { alertContent: value } )
 					}
-					placeholder={ __( 'Alert message here', TEXT_DOMAIN ) }
+					placeholder={ __(
+						'Alert message here',
+						'fancy-squares-core-enhancements'
+					) }
 				/>
 			</div>
 		</>

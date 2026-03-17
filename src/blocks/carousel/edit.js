@@ -15,11 +15,9 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 
-import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
 const TEMPLATE = [ [ 'fs-blocks/carousel-slide' ] ];
 const ALLOWED_BLOCKS = [ 'fs-blocks/carousel-slide' ];
 
@@ -63,9 +61,10 @@ export default function Edit( props ) {
 		additionalClasses,
 	} = attributes;
 
-	const normalizedBreakpoints = Array.isArray( breakpoints )
-		? breakpoints
-		: [];
+	const normalizedBreakpoints = useMemo(
+		() => ( Array.isArray( breakpoints ) ? breakpoints : [] ),
+		[ breakpoints ]
+	);
 
 	const { hasChildBlocks } = useSelect(
 		( select ) => ( {
@@ -158,11 +157,17 @@ export default function Edit( props ) {
 		<>
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Carousel Settings', TEXT_DOMAIN ) }
+					title={ __(
+						'Carousel Settings',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen
 				>
 					<RangeControl
-						label={ __( 'Slides to show', TEXT_DOMAIN ) }
+						label={ __(
+							'Slides to show',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ slidesToShow }
 						onChange={ ( value ) =>
 							setAttributes( { slidesToShow: value } )
@@ -171,7 +176,10 @@ export default function Edit( props ) {
 						max={ 5 }
 					/>
 					<RangeControl
-						label={ __( 'Column gap', TEXT_DOMAIN ) }
+						label={ __(
+							'Column gap',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ columnGap }
 						onChange={ ( value ) =>
 							setAttributes( { columnGap: value } )
@@ -181,7 +189,10 @@ export default function Edit( props ) {
 						step={ 10 }
 					/>
 					<SelectControl
-						label={ __( 'HTML Element', TEXT_DOMAIN ) }
+						label={ __(
+							'HTML Element',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ elementTag }
 						options={ [
 							{ label: 'div', value: 'div' },
@@ -192,38 +203,53 @@ export default function Edit( props ) {
 						}
 					/>
 					<ToggleControl
-						label={ __( 'Dots navigation', TEXT_DOMAIN ) }
+						label={ __(
+							'Dots navigation',
+							'fancy-squares-core-enhancements'
+						) }
 						onChange={ () =>
 							setAttributes( { pagination: ! pagination } )
 						}
 						checked={ pagination }
 					/>
 					<ToggleControl
-						label={ __( 'Arrows navigation', TEXT_DOMAIN ) }
+						label={ __(
+							'Arrows navigation',
+							'fancy-squares-core-enhancements'
+						) }
 						onChange={ () =>
 							setAttributes( { navigation: ! navigation } )
 						}
 						checked={ navigation }
 					/>
 					<ToggleControl
-						label={ __( 'Autoplay', TEXT_DOMAIN ) }
+						label={ __(
+							'Autoplay',
+							'fancy-squares-core-enhancements'
+						) }
 						onChange={ () =>
 							setAttributes( { autoplay: ! autoplay } )
 						}
 						checked={ autoplay }
 					/>
 					<ToggleControl
-						label={ __( 'Infinite loop', TEXT_DOMAIN ) }
+						label={ __(
+							'Infinite loop',
+							'fancy-squares-core-enhancements'
+						) }
 						onChange={ () => setAttributes( { loop: ! loop } ) }
 						checked={ loop }
 						help={ __(
 							'Requires enough slides to loop.',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 					/>
 					{ autoplay && (
 						<RangeControl
-							label={ __( 'Delay (ms)', TEXT_DOMAIN ) }
+							label={ __(
+								'Delay (ms)',
+								'fancy-squares-core-enhancements'
+							) }
 							value={ delay }
 							onChange={ ( value ) =>
 								setAttributes( { delay: value } )
@@ -237,10 +263,13 @@ export default function Edit( props ) {
 					{ slidesToShow === 1 && (
 						<>
 							<ToggleControl
-								label={ __( 'Enable Fade', TEXT_DOMAIN ) }
+								label={ __(
+									'Enable Fade',
+									'fancy-squares-core-enhancements'
+								) }
 								help={ __(
 									'Use a fade transition instead of sliding.',
-									TEXT_DOMAIN
+									'fancy-squares-core-enhancements'
 								) }
 								checked={ enableFade }
 								onChange={ () =>
@@ -252,11 +281,11 @@ export default function Edit( props ) {
 							<ToggleControl
 								label={ __(
 									'Use fractional slides',
-									TEXT_DOMAIN
+									'fancy-squares-core-enhancements'
 								) }
 								help={ __(
-									'Overrides slides to show with a fractional value (0.05-0.50).',
-									TEXT_DOMAIN
+									'Overrides slides to show with a fractional value (0.05–0.50).',
+									'fancy-squares-core-enhancements'
 								) }
 								checked={ fractionalSlidesEnabled }
 								onChange={ () =>
@@ -270,7 +299,7 @@ export default function Edit( props ) {
 								<RangeControl
 									label={ __(
 										'Fractional slides per view',
-										TEXT_DOMAIN
+										'fancy-squares-core-enhancements'
 									) }
 									value={ fractionalSlidesValue }
 									onChange={ ( value ) =>
@@ -290,7 +319,7 @@ export default function Edit( props ) {
 						<ToggleControl
 							label={ __(
 								'Enable Play/Pause Button',
-								TEXT_DOMAIN
+								'fancy-squares-core-enhancements'
 							) }
 							checked={ showPlayPauseButton }
 							onChange={ () =>
@@ -301,7 +330,10 @@ export default function Edit( props ) {
 						/>
 					) }
 					<ToggleControl
-						label={ __( 'Enable auto height', TEXT_DOMAIN ) }
+						label={ __(
+							'Enable auto height',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ autoHeight }
 						onChange={ () =>
 							setAttributes( { autoHeight: ! autoHeight } )
@@ -310,7 +342,7 @@ export default function Edit( props ) {
 					<ToggleControl
 						label={ __(
 							'Enforce equal slide height',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 						checked={ enforceHeight }
 						onChange={ () =>
@@ -320,73 +352,100 @@ export default function Edit( props ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Responsive', TEXT_DOMAIN ) }
+					title={ __(
+						'Responsive',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ false }
 				>
-					{ normalizedBreakpoints.map( ( bp, index ) => (
-						<div
-							key={ `${ bp.breakpoint }-${ index }` }
-							style={ { marginBottom: '30px' } }
-						>
-							<strong>
-								{ sprintf(
-									__( 'Breakpoint %d', TEXT_DOMAIN ),
-									index + 1
-								) }
-							</strong>
-							<TextControl
-								label={ __(
-									'Min screen width (px)',
-									TEXT_DOMAIN
-								) }
-								type="number"
-								min={ 100 }
-								max={ 2000 }
-								step={ 10 }
-								value={ bp.breakpoint ?? '' }
-								onChange={ ( value ) =>
-									updateBreakpoint( index, {
-										breakpoint: parseInt( value, 10 ) || 0,
-									} )
-								}
-							/>
-							<RangeControl
-								label={ __( 'Slides to show', TEXT_DOMAIN ) }
-								value={ bp.slidesToShow }
-								onChange={ ( value ) =>
-									updateBreakpoint( index, {
-										slidesToShow: value,
-									} )
-								}
-								min={ 1 }
-								max={ 5 }
-							/>
-							<Button
-								isDestructive
-								isLink
-								onClick={ () => removeBreakpoint( index ) }
+					{ normalizedBreakpoints.map( ( bp, index ) => {
+						const breakpointLabel = sprintf(
+							/* translators: %d is the breakpoint number. */
+							__(
+								'Breakpoint %d',
+								'fancy-squares-core-enhancements'
+							),
+							index + 1
+						);
+						const removeLabel = sprintf(
+							/* translators: %d is the breakpoint number. */
+							__(
+								'Remove breakpoint %d',
+								'fancy-squares-core-enhancements'
+							),
+							index + 1
+						);
+
+						return (
+							<div
+								key={ `${ bp.breakpoint }-${ index }` }
+								style={ { marginBottom: '30px' } }
 							>
-								{ sprintf(
-									__( 'Remove breakpoint %d', TEXT_DOMAIN ),
-									index + 1
-								) }
-							</Button>
-						</div>
-					) ) }
+								<strong>{ breakpointLabel }</strong>
+								<TextControl
+									label={ __(
+										'Min screen width (px)',
+										'fancy-squares-core-enhancements'
+									) }
+									type="number"
+									min={ 100 }
+									max={ 2000 }
+									step={ 10 }
+									value={ bp.breakpoint ?? '' }
+									onChange={ ( value ) =>
+										updateBreakpoint( index, {
+											breakpoint:
+												parseInt( value, 10 ) || 0,
+										} )
+									}
+								/>
+								<RangeControl
+									label={ __(
+										'Slides to show',
+										'fancy-squares-core-enhancements'
+									) }
+									value={ bp.slidesToShow }
+									onChange={ ( value ) =>
+										updateBreakpoint( index, {
+											slidesToShow: value,
+										} )
+									}
+									min={ 1 }
+									max={ 5 }
+								/>
+								<Button
+									isDestructive
+									isLink
+									onClick={ () => removeBreakpoint( index ) }
+								>
+									{ removeLabel }
+								</Button>
+							</div>
+						);
+					} ) }
 
 					{ normalizedBreakpoints.length < 3 && (
 						<Button variant="secondary" onClick={ addBreakpoint }>
-							{ __( 'Add breakpoint', TEXT_DOMAIN ) }
+							{ __(
+								'Add breakpoint',
+								'fancy-squares-core-enhancements'
+							) }
 						</Button>
 					) }
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Animation', TEXT_DOMAIN ) }
+					title={ __(
+						'Animation',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ false }
 				>
 					<RangeControl
-						label={ __( 'Speed (ms)', TEXT_DOMAIN ) }
+						label={ __(
+							'Speed (ms)',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ speed }
 						onChange={ ( value ) =>
 							setAttributes( { speed: value } )

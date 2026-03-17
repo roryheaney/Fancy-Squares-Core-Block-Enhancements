@@ -19,6 +19,7 @@
 		grid-template-columns: minmax(0, 1fr);
 
 		&.fs-content-showcase--hide-gallery-mobile {
+
 			.wp-block-fs-blocks-showcase-gallery {
 				display: none;
 			}

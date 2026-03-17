@@ -23,7 +23,9 @@ const { state, actions } = store( 'fancySquaresModal', {
 
 			// Find modal element by ID from context
 			const modal = document.getElementById( context.modalId );
-			if ( ! modal ) return;
+			if ( ! modal ) {
+				return;
+			}
 
 			// Dispatch preventable "show" event
 			const showEvent = new CustomEvent( 'show.fs.modal', {
@@ -47,13 +49,13 @@ const { state, actions } = store( 'fancySquaresModal', {
 			document.body.classList.add( 'fs-modal-open' );
 
 			// Bootstrap 5 animation sequence - manual DOM manipulation for precise timing
-			requestAnimationFrame( () => {
+			window.requestAnimationFrame( () => {
 				// Display modal
 				modal.style.display = 'block';
-				modal.offsetHeight; // Force reflow
+				void modal.offsetHeight; // Force reflow
 
 				// Add .show class for fade-in transition
-				requestAnimationFrame( () => {
+				window.requestAnimationFrame( () => {
 					modal.classList.add( 'show' );
 					const backdrop =
 						modal.querySelector( '.fs-modal-backdrop' );
@@ -123,10 +125,14 @@ const { state, actions } = store( 'fancySquaresModal', {
 				document.body.classList.remove( 'fs-modal-open' );
 
 				// Restore focus to the button that opened the modal
-				if ( state.previousFocus ) {
+				if (
+					state.previousFocus &&
+					state.previousFocus instanceof HTMLElement &&
+					document.contains( state.previousFocus )
+				) {
 					state.previousFocus.focus();
-					state.previousFocus = null;
 				}
+				state.previousFocus = null;
 
 				// Dispatch "hidden" event (informational, not cancelable)
 				modal.dispatchEvent(
@@ -172,13 +178,17 @@ const { state, actions } = store( 'fancySquaresModal', {
 			// Focus trap - Tab key handling
 			if ( event.key === 'Tab' ) {
 				const modal = document.getElementById( context.modalId );
-				if ( ! modal ) return;
+				if ( ! modal ) {
+					return;
+				}
 
 				const focusableElements = modal.querySelectorAll(
 					'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 				);
 
-				if ( focusableElements.length === 0 ) return;
+				if ( focusableElements.length === 0 ) {
+					return;
+				}
 
 				const firstFocusable = focusableElements[ 0 ];
 				const lastFocusable =
@@ -187,7 +197,7 @@ const { state, actions } = store( 'fancySquaresModal', {
 				// Shift+Tab on first element - go to last
 				if (
 					event.shiftKey &&
-					document.activeElement === firstFocusable
+					modal.ownerDocument.activeElement === firstFocusable
 				) {
 					event.preventDefault();
 					lastFocusable.focus();
@@ -195,7 +205,7 @@ const { state, actions } = store( 'fancySquaresModal', {
 				// Tab on last element - go to first
 				else if (
 					! event.shiftKey &&
-					document.activeElement === lastFocusable
+					modal.ownerDocument.activeElement === lastFocusable
 				) {
 					event.preventDefault();
 					firstFocusable.focus();
@@ -259,3 +269,4 @@ const { state, actions } = store( 'fancySquaresModal', {
  *   // Reset form, clear data, etc.
  * });
  */
+

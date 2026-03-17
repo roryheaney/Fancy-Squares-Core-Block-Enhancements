@@ -48,11 +48,23 @@ addFilter(
 				type: 'boolean',
 				default: false,
 			};
-		} else if ( name === 'core/video' || name === 'core/cover' ) {
-			settings.attributes.lazyLoadVideo = {
-				type: 'boolean',
-				default: false,
-			};
+		} else if (
+			name === 'core/video' ||
+			name === 'core/cover' ||
+			name === 'core/image'
+		) {
+			if ( name === 'core/video' || name === 'core/cover' ) {
+				settings.attributes.lazyLoadVideo = {
+					type: 'boolean',
+					default: false,
+				};
+			}
+			if ( name === 'core/cover' || name === 'core/image' ) {
+				settings.attributes.disableForcedLazyLoading = {
+					type: 'boolean',
+					default: false,
+				};
+			}
 			if ( name === 'core/video' ) {
 				settings.attributes.useCustomPlayButton = {
 					type: 'boolean',
@@ -142,7 +154,11 @@ addFilter(
 			if ( props.name === 'core/columns' ) {
 				return ColumnsListControl( BlockEdit, props );
 			}
-			if ( props.name === 'core/video' || props.name === 'core/cover' ) {
+			if (
+				props.name === 'core/video' ||
+				props.name === 'core/cover' ||
+				props.name === 'core/image'
+			) {
 				return MediaControls( BlockEdit, props );
 			}
 			if ( props.name === 'core/button' ) {

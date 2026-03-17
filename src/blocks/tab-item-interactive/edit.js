@@ -8,8 +8,6 @@ import { useSelect } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
-
 export default function Edit( { clientId, attributes, setAttributes } ) {
 	const { title, tabId } = attributes;
 
@@ -48,7 +46,10 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 				onChange={ ( newTitle ) =>
 					setAttributes( { title: newTitle } )
 				}
-				placeholder={ __( 'Tab Title', TEXT_DOMAIN ) }
+				placeholder={ __(
+					'Tab Title',
+					'fancy-squares-core-enhancements'
+				) }
 			/>
 			<div className="fs-tabs__panel-content">
 				<InnerBlocks />

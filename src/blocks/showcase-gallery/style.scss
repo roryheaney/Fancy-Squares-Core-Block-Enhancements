@@ -42,33 +42,36 @@
 	}
 
 	&.has-no-media {
+
 		.showcase-gallery__media-wrapper {
 			opacity: 0.2;
 		}
 	}
 
-	&[data-transition='slide'] {
+	&[data-transition="slide"] {
+
 		.showcase-gallery__media-wrapper {
 			transition:
 				transform var(--fs-showcase-transition) ease-in-out,
 				opacity var(--fs-showcase-transition) ease-in-out;
-			transform: translateX( 16px );
+			transform: translateX(16px);
 
 			&.is-active {
-				transform: translateX( 0 );
+				transform: translateX(0);
 			}
 		}
 	}
 
-	&[data-transition='zoom'] {
+	&[data-transition="zoom"] {
+
 		.showcase-gallery__media-wrapper {
 			transition:
 				transform var(--fs-showcase-transition) ease-in-out,
 				opacity var(--fs-showcase-transition) ease-in-out;
-			transform: scale( 0.97 );
+			transform: scale(0.97);
 
 			&.is-active {
-				transform: scale( 1 );
+				transform: scale(1);
 			}
 		}
 	}

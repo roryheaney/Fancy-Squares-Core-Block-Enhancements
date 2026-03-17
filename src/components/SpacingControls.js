@@ -1,5 +1,5 @@
 // components/SpacingControls.js
-import { PanelBody, TabPanel, Icon } from '@wordpress/components';
+import { Icon, PanelBody, TabPanel } from '@wordpress/components';
 import {
 	sidesAll,
 	sidesHorizontal,
@@ -9,6 +9,7 @@ import {
 	sidesBottom,
 	sidesLeft,
 } from '@wordpress/icons';
+
 import SpacingControl from './SpacingControl';
 
 const CONTROL_OPTIONS = [
@@ -60,11 +61,11 @@ const capitalize = ( str ) => str.charAt( 0 ).toUpperCase() + str.slice( 1 );
 /**
  * Unified spacing controls component
  *
- * @param {Object} props - Component props
- * @param {string} props.type - Type of spacing: 'padding', 'margin', or 'negativeMargin'
- * @param {Object} props.attributes - Block attributes
- * @param {Function} props.setAttributes - Function to update block attributes
- * @param {Array} props.allowedControls - Array of allowed control names
+ * @param {Object}   props                 Component props
+ * @param {string}   props.type            Type of spacing: 'padding', 'margin', or 'negativeMargin'
+ * @param {Object}   props.attributes      Block attributes
+ * @param {Function} props.setAttributes   Function to update block attributes
+ * @param {Array}    props.allowedControls Array of allowed control names
  */
 const SpacingControls = ( {
 	type = 'padding',
@@ -87,13 +88,12 @@ const SpacingControls = ( {
 			`${ attributePrefix }${ capitalizedType }Md`,
 			`${ attributePrefix }${ capitalizedType }Lg`,
 			`${ attributePrefix }${ capitalizedType }Xl`,
+			`${ attributePrefix }${ capitalizedType }Xxl`,
 		];
 	};
 
 	const isTabActive = ( option ) =>
-		getKeys( option.name ).some( ( key ) =>
-			isSetValue( attributes[ key ] )
-		);
+		getKeys( option.name ).some( ( key ) => isSetValue( attributes[ key ] ) );
 
 	const activeLabels = tabs
 		.filter( ( option ) => isTabActive( option ) )
@@ -108,6 +108,7 @@ const SpacingControls = ( {
 		const mdKey = `${ attributePrefix }${ capitalizedType }Md`;
 		const lgKey = `${ attributePrefix }${ capitalizedType }Lg`;
 		const xlKey = `${ attributePrefix }${ capitalizedType }Xl`;
+		const xxlKey = `${ attributePrefix }${ capitalizedType }Xxl`;
 
 		return (
 			<SpacingControl
@@ -120,6 +121,7 @@ const SpacingControls = ( {
 				mdValue={ attributes[ mdKey ] }
 				lgValue={ attributes[ lgKey ] }
 				xlValue={ attributes[ xlKey ] }
+				xxlValue={ attributes[ xxlKey ] }
 				onChangeBase={ ( value ) =>
 					setAttributes( { [ baseKey ]: value } )
 				}
@@ -135,6 +137,9 @@ const SpacingControls = ( {
 				onChangeXl={ ( value ) =>
 					setAttributes( { [ xlKey ]: value } )
 				}
+				onChangeXxl={ ( value ) =>
+					setAttributes( { [ xxlKey ]: value } )
+				}
 			/>
 		);
 	};
@@ -145,10 +150,7 @@ const SpacingControls = ( {
 				<span className="fs-panel-title">
 					{ title }
 					{ hasActive && (
-						<span
-							className="fs-panel-indicator"
-							aria-hidden="true"
-						/>
+						<span className="fs-panel-indicator" aria-hidden="true" />
 					) }
 				</span>
 			}
@@ -185,3 +187,5 @@ const SpacingControls = ( {
 };
 
 export default SpacingControls;
+
+

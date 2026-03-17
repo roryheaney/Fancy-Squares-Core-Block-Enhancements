@@ -5,15 +5,16 @@ Extend core blocks with Bootstrap-style utility classes, breakpoint width contro
 ## Requirements
 
 -   WordPress 6.9+
--   Node/npm to build assets (via `@wordpress/scripts`)
+-   Node 20.x and npm 10+ to build assets (see `.nvmrc` and `package.json` `engines`)
 
 ## Quick Start
 
-1. Install dependencies: `npm install`
-2. Build assets: `npm run build` (or `npm run start` for watch mode)
-3. Activate the plugin in WordPress.
-4. (Optional) Enable custom blocks under Settings > Fancy Squares Blocks.
-5. In the editor, select a supported block and open the inspector to apply classes.
+1. Use Node 20 (`nvm use` if applicable).
+2. Install dependencies: `npm install`
+3. Build assets: `npm run build` (or `npm run start` for watch mode)
+4. Activate the plugin in WordPress.
+5. (Optional) Enable custom blocks under Settings > Fancy Squares Blocks.
+6. In the editor, select a supported block and open the inspector to apply classes.
 
 ## Editor Usage
 
@@ -76,12 +77,12 @@ When any child column has custom width values, the parent `core/columns` block i
 
 ### Spacing controls
 
-Padding, Margin, and Negative Margin panels appear only on blocks configured in `BLOCK_CONFIG`. These controls generate Bootstrap-style spacing classes for Base/Sm/Md/Lg/Xl. Negative margins use the `-n` convention, and a value of `0` is treated as "no class".
+Padding, Margin, and Negative Margin panels appear only on blocks configured in `BLOCK_CONFIG`. These controls generate Bootstrap-style spacing classes for Base/Sm/Md/Lg/Xl/Xxl. Negative margins use the `-n` convention, and a value of `0` is treated as "no class".
 
 ### Block-specific toggles
 
 -   List Settings: adds list semantics to `core/columns` and `core/column`.
--   Video Settings: adds lazy video loading (cover/video) and a custom play overlay (video only).
+-   Media Settings: lazy video loading (cover/video), custom play overlay (video only), and forced image lazy-loading opt-out (cover/image).
 -   Modal Settings: converts `core/button` into a modal trigger.
 
 ### RichText span format
@@ -240,11 +241,11 @@ Custom blocks under `src/blocks/` are disabled by default. Use Settings > Fancy 
 -   `core/buttons`: tokens (display, margin, position, zindex); dropdown (Button Option).
 -   `core/columns`: tokens (display, position, zindex, alignItems, justifyContent); dropdown (Columns Layout); Layout toggle (Constrain width); List Settings toggle.
 -   `core/column`: tokens (display, position, zindex, selfAlignment, order); dropdown (Column Layout Override); Width Settings (Base/Sm/Md/Lg/Xl/Xxl).
--   `core/cover`: tokens (display, position, zindex, bleed options); dropdown (Bleed Options); Video Settings (lazy load for video backgrounds).
+-   `core/cover`: tokens (display, position, zindex, bleed options); dropdown (Bleed Options); Media Settings (lazy video for cover video backgrounds + disable forced image lazy loading).
 -   `core/video`: Video Settings (lazy load + custom play button overlay).
 -   `core/group`: tokens (display, position, zindex, gap spacing).
 -   `core/button`: Modal Settings (trigger modal + modal ID).
--   `core/image`: render filter adds `loading="lazy"` and `decoding="async"`.
+-   `core/image`: render filter forces `loading="lazy"` and `decoding="async"` by default, with per-block opt-out via `disableForcedLazyLoading`.
 -   `fs-blocks/index-block`: tokens (position, zindex); padding, margin, negative margin (top/right/bottom/left); auto index display inside columns.
 -   `fs-blocks/content-wrapper`: tokens (display, order, selfAlignment, position, zindex); padding/margin/negative margin; optional width controls; wrapper element (div/section). Note: layout dropdown is currently disabled in config.
 -   `fs-blocks/dynamic-picture-block`: responsive picture element with optional aspect ratio, border, and radius utilities.
@@ -269,9 +270,11 @@ Note: `core/button` and `core/image` are enhanced via filters and inspector cont
 -   List Settings adds `role="list"` to columns and `role="listitem"` to child columns, plus `wp-block-fancysquares-*` classes.
 -   Lazy video adds `data-fs-lazy-video` and `data-src` while clearing `src`; `src/frontend.js` swaps the source in when visible.
 -   Custom play button inserts a `.fs-video-overlay` when a poster is present and starts playback on click.
--   Modal Settings converts `core/button` markup into a `<button>` with `data-bs-toggle="modal"` and `data-bs-target="#modal-id"`.
--   Modal Settings converts `core/button` markup into a `<button>` with Interactivity API directives (`data-wp-interactive`, `data-wp-on--click`, `data-wp-bind--aria-expanded`) and `aria-controls` for the target modal.
--   Carousel outputs Swiper markup with `data-swiper` configuration; Swiper assets are loaded on the front end only when the carousel block is present.
+-   `core/image` and cover background images are forced to `loading="lazy"` + `decoding="async"` unless `disableForcedLazyLoading` is enabled on that block.
+-   Modal Settings converts `core/button` markup into a `<button>` with Interactivity API directives (`data-wp-interactive`, `data-wp-on--click`, `data-wp-bind--aria-expanded`), plus `aria-controls` and `aria-haspopup="dialog"`.
+-   Carousel outputs Swiper markup with `data-swiper` configuration; Swiper assets are loaded only when a carousel block is rendered.
+-   Frontend runtime (`build/frontend.js`) is enqueued only when needed by rendered blocks (carousel, lazy video/custom play button scenarios, cover lazy video, and showcase/accordion integrations).
+-   Frontend-only styles are loaded from `build/frontend-styles.css` when present.
 -   Content Showcase collects accordion item media data on the server and emits it as local context; the showcase wrapper updates `activeItemId` on the `shown.fs.accordion` event.
 -   A render filter maintains a per-render context stack so the showcase gallery can SSR before the wrapper outputs its context.
 
@@ -284,20 +287,25 @@ Scripts:
 -   `npm run format` - format with WordPress Prettier rules
 -   `npm run lint:js` - lint JavaScript
 -   `npm run lint:css` - lint styles
+-   `npm run lint:php` - lint PHP
+-   `npm run lint:pkg-json` - validate `package.json`
+-   `npm run lint:md` - lint Markdown docs
+-   `npm run lint:all` - run all lint checks
 -   `npm run plugin-zip` - generate a release zip
 
 ## Key Files (What They Do)
 
--   `fancy-squares-core-enhancements.php` - plugin bootstrap and hooks setup.
--   `inc/assets.php` - enqueues editor and frontend bundles from `build/`.
--   `inc/admin.php` - settings page for enabling custom blocks.
+-   `fancy-squares-core-enhancements.php` - plugin bootstrap, includes, and text-domain loading.
+-   `inc/assets.php` - registers editor assets, registers frontend runtime/style assets, and conditionally enqueues frontend runtime per rendered block.
+-   `inc/admin.php` - settings page for enabling custom blocks, Bootstrap CDN mode, and utilities CSS mode.
+-   `inc/blocks.php` - custom block registration and interactivity module registration guard.
 -   `inc/render-filters.php` - loads all render filter files in `inc/render-filters/`.
--   `inc/render-filters/*` - server-side output tweaks for lists, cover/video lazy loading, modal buttons, and play overlays.
+-   `inc/render-filters/*` - server-side output tweaks for columns list semantics, cover/image/video lazy handling, modal buttons, custom play overlays, and showcase context.
 -   `build/` - compiled assets from `npm run build` (do not edit by hand).
 -   `data/bootstrap-classes/` - curated token lists for class pickers (display, spacing, alignment, etc.).
--   `docs/` - local reference docs for block editor APIs (not loaded by the plugin).
 -   `src/index.js` - editor entry point; registers extensions and formats.
--   `src/frontend.js` - frontend entry point; boots lazy video and play button behavior.
+-   `src/frontend.js` - frontend entry point; boots lazy video, custom play button, and carousel behavior.
+-   `src/frontend-styles.scss` - frontend-only stylesheet entry.
 -   `src/registerExtensions.js` - registers block extensions for CORE blocks using `@10up/block-components`.
 -   `src/block-enhancements.js` - editor filters and parent class auto-update for columns.
 -   `src/utils/helpers.js` - attribute generation, token utilities, and class name composition (`generateClassName()`).
@@ -305,25 +313,27 @@ Scripts:
 -   `src/config/constants.js` - spacing side/type constants used by helpers and controls.
 -   `src/components/BlockEdit.js` - reusable inspector UI component that reads `BLOCK_CONFIG` to render controls.
 -   `src/components/TokenFields.js` - token field UI for class groups and suggestions.
+-   `src/components/SpacingControl.js` / `src/components/SpacingControls.js` - unified spacing UI and tabs for padding/margin/negative margin.
 -   `src/components/WidthControl.js` / `src/components/WidthControls.js` - breakpoint width UI and tabs.
--   `src/components/PaddingControl.js` / `src/components/PaddingControls.js` - padding UI and tabs.
--   `src/components/PositiveMarginControl.js` / `src/components/PositiveMarginControls.js` - margin UI and tabs.
--   `src/components/NegativeMarginControl.js` / `src/components/NegativeMarginControls.js` - negative margin UI and tabs.
--   `src/inspector-controls/` - block-specific toggles (list semantics, lazy video, modal trigger).
+-   `src/inspector-controls/` - block-specific toggles (list semantics, media, modal trigger).
 -   `src/formats/span-format.js` - RichText span format with inline colors and utility tokens.
 -   `src/blocks/*/index.js` - custom block registration with attributes.
 -   `src/blocks/*/edit.js` - custom block edit components that render `<BlockEdit />` and sync classes to `additionalClasses`.
 -   `src/blocks/*/render.php` - custom block PHP rendering that outputs `$attributes['additionalClasses']` to frontend.
--   `src/assets/scss/` - editor/front-end styles for block UI and custom enhancements.
+-   `src/assets/scss/` - shared/editor/front-end styles for block UI and enhancements.
 -   `src/assets/js/lazyVideos.js` - lazy video loader.
 -   `src/assets/js/customPlayButtons.js` - custom play overlay behavior.
+-   `src/assets/js/carousel.js` - Swiper carousel runtime behavior.
+-   `webpack.config.js` - custom entries for `index`, `frontend`, `frontend-styles`, and `utilities`.
 
 ## Notes
 
 -   The editor UI uses Bootstrap-like utilities, but width classes are plugin-specific (`wp-block-column--column-*`).
 -   Negative margins treat `0` as a no-op, so no class is emitted for zero values.
--   Spacing controls currently surface Base/Sm/Md/Lg/Xl in the UI; attributes include Xxl for future use.
+-   Spacing controls surface Base/Sm/Md/Lg/Xl/Xxl in the UI.
+-   Forced lazy loading is on by default for `core/image` and cover background images, with block-level opt-out via the Media Settings toggle.
 
 ## License
 
 GPL-2.0-or-later
+

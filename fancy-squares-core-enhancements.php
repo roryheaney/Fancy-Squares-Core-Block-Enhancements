@@ -10,9 +10,21 @@
  * Domain Path: /languages
  */
 
-defined('ABSPATH') || exit;
+defined( 'ABSPATH' ) || exit;
 
-require_once plugin_dir_path(__FILE__) . 'inc/blocks.php';
-require_once plugin_dir_path(__FILE__) . 'inc/assets.php';
-require_once plugin_dir_path(__FILE__) . 'inc/admin.php';
-require_once plugin_dir_path(__FILE__) . 'inc/render-filters.php';
+/**
+ * Load plugin translations.
+ */
+function fs_core_enhancements_load_textdomain() {
+	load_plugin_textdomain(
+		'fancy-squares-core-enhancements',
+		false,
+		dirname( plugin_basename( __FILE__ ) ) . '/languages'
+	);
+}
+add_action( 'init', 'fs_core_enhancements_load_textdomain' );
+
+require_once plugin_dir_path( __FILE__ ) . 'inc/blocks.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/assets.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/admin.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/render-filters.php';

@@ -44,32 +44,42 @@ $column-breakpoints: (
 
 // Styles for wp-block-column (columnOptionsCore classes)
 .wp-block-column {
+
 	@each $prefix, $breakpoint in $column-breakpoints {
+
 		@if $prefix == "" {
+
 			@each $size-name, $size-value in $column-sizes {
 				// Add dash only if $size-name is not empty
 				@if $size-name == "" {
+
 					&.wp-block-column--column {
+
 						@include make-col($size-value);
 					}
 				} @else {
 					&.wp-block-column--column-#{$size-name} {
+
 						@include make-col($size-value);
 					}
 				}
 			}
 		} @else {
+
 			@include media-breakpoint-up(
 				map.get($column-breakpoints, $prefix)
 			) {
+
 				@each $size-name, $size-value in $column-sizes {
 					// Add dash only if $size-name is not empty
 					@if $size-name == "" {
 						&.wp-block-column--column#{$prefix} {
+
 							@include make-col($size-value);
 						}
 					} @else {
 						&.wp-block-column--column#{$prefix}-#{$size-name} {
+
 							@include make-col($size-value);
 						}
 					}
@@ -80,6 +90,7 @@ $column-breakpoints: (
 }
 
 .wp-block-columns {
+
 	&--constrained {
 		margin-left: auto;
 		margin-right: auto;
@@ -110,6 +121,7 @@ $column-breakpoints: (
 
 // Fix for Bootstrap style columns
 .is-style-bootstrap {
+
 	&.wp-block-columns {
 		flex-wrap: wrap !important;
 	}

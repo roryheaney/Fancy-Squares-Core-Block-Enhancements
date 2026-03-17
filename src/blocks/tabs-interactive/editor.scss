@@ -4,14 +4,15 @@
  */
 
 // Forward all styles from the main stylesheet
-@forward "./style.scss";
-
+@forward "./style";
 @use "sass:map";
 @use "../../settings" as *;
 
 // Editor-specific overrides for vertical tabs
-// The editor has an extra .wp-block-fs-blocks-tabs-editor wrapper that doesn't exist on frontend
+// The editor has an extra .wp-block-fs-blocks-tabs-editor wrapper that
+// doesn't exist on frontend
 .wp-block-fs-blocks-tabs-interactive.fs-tabs--vertical {
+
 	.wp-block-fs-blocks-tabs-editor {
 		display: flex;
 		flex-direction: row;
@@ -44,20 +45,24 @@
 		}
 	}
 
-	// Hide vertical tabs on mobile when responsive mode is also enabled
-	&.fs-tabs--responsive .wp-block-fs-blocks-tabs-editor .fs-tabs__tablist {
-		display: none; // Mobile: hidden
+	&.fs-tabs--responsive {
 
-		@media (min-width: map.get($grid-breakpoints, md)) {
-			display: flex; // Desktop: show vertical tabs
-		}
-	}
+		// Hide vertical tabs on mobile when responsive mode is also enabled
+		.wp-block-fs-blocks-tabs-editor {
 
-	// Keep flex layout on desktop even with responsive mode
-	&.fs-tabs--responsive .wp-block-fs-blocks-tabs-editor {
-		@media (min-width: map.get($grid-breakpoints, md)) {
-			display: flex;
-			flex-direction: row;
+			.fs-tabs__tablist {
+				display: none; // Mobile: hidden
+
+				@media (min-width: map.get($grid-breakpoints, md)) {
+					display: flex; // Desktop: show vertical tabs
+				}
+			}
+
+			// Keep flex layout on desktop even with responsive mode
+			@media (min-width: map.get($grid-breakpoints, md)) {
+				display: flex;
+				flex-direction: row;
+			}
 		}
 	}
 }

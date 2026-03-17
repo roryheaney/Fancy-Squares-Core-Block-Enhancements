@@ -22,8 +22,6 @@ if ( '' === $block_id ) {
 	$block_id = 'fs-tabs-interactive-' . $block_id;
 }
 
-// activeTab is transient editor state only - ignore saved value
-// Always default to first tab on frontend
 $active_tab = '';
 
 $tabs = [];
@@ -68,7 +66,6 @@ if ( $vertical_enabled ) {
 	$classes[] = 'fs-tabs--vertical';
 }
 
-// Add custom classes from block extensions
 if (
 	! empty( $attributes['additionalClasses'] ) &&
 	is_array( $attributes['additionalClasses'] )
@@ -83,13 +80,13 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	]
 );
 
-// Initialize context for Interactivity API
 $initial_context = [
 	'activeTab' => $active_tab,
 ];
 ?>
 <div
 	<?php echo $wrapper_attributes; ?>
+	data-fs-tabs-root="<?php echo esc_attr( $block_id ); ?>"
 	data-wp-interactive="fancySquaresTabsInteractive"
 	<?php echo wp_interactivity_data_wp_context( $initial_context ); ?>
 >
@@ -104,6 +101,7 @@ $initial_context = [
 				id="<?php echo esc_attr( $tab_button_id ); ?>"
 				type="button"
 				class="fs-tabs__tab"
+				data-fs-tab-id="<?php echo esc_attr( $tab['id'] ); ?>"
 				data-wp-context='<?php echo wp_json_encode( [ 'tabId' => $tab['id'] ] ); ?>'
 				data-wp-on-async--click="actions.setActiveTab"
 				data-wp-on--keydown="actions.handleKeyDown"
@@ -131,12 +129,11 @@ $initial_context = [
 			<div
 				id="<?php echo esc_attr( $pane_id ); ?>"
 				class="fs-tabs__panel"
+				data-fs-tab-id="<?php echo esc_attr( $tab['id'] ); ?>"
 				data-wp-context='<?php echo wp_json_encode( [ 'tabId' => $tab['id'] ] ); ?>'
 				data-wp-class--is-active="state.isActive"
-
 				role="tabpanel"
 				aria-labelledby="<?php echo esc_attr( $tab_button_id ); ?>"
-
 			>
 				<?php if ( $responsive_enabled ) : ?>
 					<button

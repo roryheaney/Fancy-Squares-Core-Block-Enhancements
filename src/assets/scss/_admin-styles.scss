@@ -37,6 +37,7 @@
 }
 
 .custom-column-widths {
+
 	&__panel-title {
 		display: inline-flex;
 		align-items: center;
@@ -74,6 +75,7 @@
 
 			// Customize the thumb
 			.components-range-control__thumb-wrapper {
+
 				.components-range-control__thumb {
 					background: #000;
 					border: 2px solid #fff;
@@ -168,6 +170,7 @@
 	}
 
 	&__tabs {
+
 		.components-tab-panel__tabs {
 			display: flex;
 			flex-wrap: nowrap;
@@ -224,6 +227,7 @@
 }
 
 .is-style-bootstrap {
+
 	&.wp-block-columns {
 		flex-wrap: wrap !important;
 	}

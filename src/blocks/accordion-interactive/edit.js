@@ -10,11 +10,8 @@ import { useEffect, useMemo, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 
-import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
-
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
@@ -111,14 +108,20 @@ export default function Edit( props ) {
 		<>
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Accordion Settings', TEXT_DOMAIN ) }
+					title={ __(
+						'Accordion Settings',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ true }
 				>
 					<ToggleControl
-						label={ __( 'Open First Item', TEXT_DOMAIN ) }
+						label={ __(
+							'Open First Item',
+							'fancy-squares-core-enhancements'
+						) }
 						help={ __(
 							'Automatically open the first accordion item on page load.',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 						checked={ openFirstItem }
 						onChange={ ( value ) =>

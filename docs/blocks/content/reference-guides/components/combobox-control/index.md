@@ -1,0 +1,156 @@
+---
+title: "ComboboxControl"
+slug: "combobox-control"
+source: "https://developer.wordpress.org/block-editor/reference-guides/components/combobox-control/"
+generatedAt: 2025-12-30T18:16:12.470Z
+---
+
+`ComboboxControl` is an enhanced version of a [`SelectControl`](https://developer.wordpress.org/block-editor/reference-guide/components/select-control/), with the addition of being able to search for options using a search input.
+
+## [Design guidelines](#design-guidelines)
+
+These are the same as [the ones for `SelectControl`s](https://developer.wordpress.org/block-editor/reference-guide/components/select-control/#design-guidelines), but this component is better suited for when there are too many items to scroll through or load at once so you need to filter them based on user input.
+
+## [Development guidelines](#development-guidelines)
+
+### [Usage](#usage)
+
+```jsx
+import { useState } from 'react';
+import { ComboboxControl } from '@wordpress/components';
+
+const options = [
+    {
+        value: 'small',
+        label: 'Small',
+    },
+    {
+        value: 'normal',
+        label: 'Normal',
+    },
+    {
+        value: 'large',
+        label: 'Large',
+    },
+];
+
+function MyComboboxControl() {
+    const [ fontSize, setFontSize ] = useState();
+    const [ filteredOptions, setFilteredOptions ] = useState( options );
+    return (
+        <ComboboxControl
+            __next40pxDefaultSize
+            label="Font Size"
+            value={ fontSize }
+            onChange={ setFontSize }
+            isLoading={ isLoading }
+            options={ filteredOptions }
+            onFilterValueChange={ ( inputValue ) =>
+                setFilteredOptions(
+                    options.filter( ( option ) =>
+                        option.value === inputValue
+                    )
+                )
+            }
+        />
+    );
+}
+```
+
+### [Props](#props)
+
+#### [label](#label)
+
+The label for the control.
+
+*   Type: `String`
+*   Required: Yes
+
+#### [hideLabelFromVision](#hidelabelfromvision)
+
+If true, the label will only be visible to screen readers.
+
+*   Type: `Boolean`
+*   Required: No
+
+#### [help](#help)
+
+If this property is added, a help text will be generated using help property as the content.
+
+*   Type: `String`
+*   Required: No
+
+#### [options](#options)
+
+The options that can be chosen from.
+
+*   Type: `Array<{ value: string, label: string, disabled?: boolean }>`
+*   Required: Yes
+
+#### [onFilterValueChange](#onfiltervaluechange)
+
+Function called when the control’s search input value changes. The argument contains the next input value.
+
+*   Type: `( value: string ) => void`
+*   Required: No
+
+#### [onChange](#onchange)
+
+Function called with the selected value changes.
+
+*   Type: `( value: string | null | undefined ) => void`
+*   Required: No
+
+#### [value](#value)
+
+The current value of the control.
+
+*   Type: `string | null`
+*   Required: No
+
+#### [expandOnFocus](#expandonfocus)
+
+Automatically expand the dropdown when the control is focused.  
+If the control is clicked, the dropdown will expand regardless of this prop.
+
+*   Type: `Boolean`
+*   Required: No
+*   Default: `true`
+
+#### [placeholder](#placeholder)
+
+If passed, the combobox input will show a placeholder string if no values are present.
+
+*   Type: `string`
+*   Required: No
+
+#### [isLoading](#isloading)
+
+Show a spinner (and hide the suggestions dropdown) while data about the matching suggestions (ie the `options` prop) is loading
+
+*   Type: `Boolean`
+*   Required: No
+
+#### [\_\_experimentalRenderItem](#__experimentalrenderitem)
+
+Custom renderer invoked for each option in the suggestion list. The render prop receives as its argument an object containing, under the `item` key, the single option’s data (directly from the array of data passed to the `options` prop).
+
+*   Type: `( args: { item: object } ) => ReactNode`
+*   Required: No
+
+#### [\_\_next40pxDefaultSize](#__next40pxdefaultsize)
+
+Start opting into the larger default height that will become the default size in a future version.
+
+*   Type: `Boolean`
+*   Required: No
+*   Default: `false`
+
+## [Related components](#related-components)
+
+*   Like this component, but without a search input, the [`CustomSelectControl`](https://developer.wordpress.org/block-editor/reference-guides/components/custom-select-control/) component.
+    
+*   To select one option from a set, when you want to show all the available options at once, use the [`RadioControl`](https://developer.wordpress.org/block-editor/reference-guides/components/radio-control/) component.
+    
+*   To select one or more items from a set, use the [`CheckboxControl`](https://developer.wordpress.org/block-editor/reference-guides/components/checkbox-control/) component.
+*   To toggle a single setting on or off, use the [`ToggleControl`](https://developer.wordpress.org/block-editor/reference-guides/components/toggle-control/) component.

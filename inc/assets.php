@@ -6,24 +6,32 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Return plugin dir/url paths.
+ *
+ * @return array{0:string,1:string}
+ */
+function fs_core_enhancements_get_plugin_paths() {
+	$plugin_file = dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php';
+	return [
+		plugin_dir_path( $plugin_file ),
+		plugin_dir_url( $plugin_file ),
+	];
+}
+
+/**
  * Enqueue the editor script and styles that extend core blocks.
  */
 function fs_core_enhancements_editor_assets() {
-        $plugin_dir = plugin_dir_path( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
-        $plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
+	list($plugin_dir, $plugin_url) = fs_core_enhancements_get_plugin_paths();
 
-        // Load asset file for dependencies and version.
-       $asset_file = $plugin_dir . 'build/index.asset.php';
-        if ( file_exists( $asset_file ) ) {
-                $asset = include $asset_file;
-        } else {
-                $asset = [
-                        'dependencies' => [],
-                        'version'      => false,
-                ];
-        }
+	$asset_file = $plugin_dir . 'build/index.asset.php';
+	$asset = file_exists( $asset_file )
+		? include $asset_file
+		: [
+			'dependencies' => [],
+			'version' => false,
+		];
 
-	// Enqueue the JavaScript (editor only).
 	wp_enqueue_script(
 		'fs-core-enhancements',
 		$plugin_url . 'build/index.js',
@@ -44,86 +52,160 @@ function fs_core_enhancements_editor_assets() {
 		'before'
 	);
 
-	// Enqueue the CSS (editor) - includes column widths.
 	wp_enqueue_style(
 		'fs-core-enhancements-editor',
-                $plugin_url . 'build/index.css',
-                [],
-                $asset['version']
-        );
-
-	// Note: Per-block styles (tabs, accordion, modal) are automatically
-	// enqueued by WordPress via the "style" field in each block.json.
+		$plugin_url . 'build/index.css',
+		[],
+		$asset['version']
+	);
 }
 add_action( 'enqueue_block_editor_assets', 'fs_core_enhancements_editor_assets' );
 
-function fs_core_enhancements_should_enqueue_swiper() {
-	if ( function_exists( 'has_block' ) && has_block( 'fs-blocks/carousel' ) ) {
-		return true;
-	}
-
-	return (bool) apply_filters( 'fs_core_enhancements_enqueue_swiper', false );
-}
-
 /**
- * Enqueue the styles for the front end.
+ * Register frontend assets.
  */
-function fs_core_enhancements_frontend_assets() {
-        $plugin_dir = plugin_dir_path( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
-        $plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
+function fs_core_enhancements_register_frontend_assets() {
+	list($plugin_dir, $plugin_url) = fs_core_enhancements_get_plugin_paths();
 
-       // Load asset file for version consistency.
-       $asset_file = $plugin_dir . 'build/frontend.asset.php';
-        if ( file_exists( $asset_file ) ) {
-                $asset = include $asset_file;
-        } else {
-                $asset = [
-                        'version' => false,
-                ];
-        }
+	$frontend_asset_file = $plugin_dir . 'build/frontend.asset.php';
+	$frontend_asset = file_exists( $frontend_asset_file )
+		? include $frontend_asset_file
+		: [
+			'dependencies' => [],
+			'version' => false,
+		];
 
-	$script_dependencies = $asset['dependencies'] ?? [];
+	$frontend_dependencies = $frontend_asset['dependencies'] ?? [];
+	$frontend_version = $frontend_asset['version'] ?? false;
 
-	if ( fs_core_enhancements_should_enqueue_swiper() ) {
-		wp_enqueue_style(
-			'fs-core-enhancements-swiper',
-			'https://cdn.jsdelivr.net/npm/swiper@11.1.1/swiper-bundle.min.css',
-			[],
-			'11.1.1'
-		);
-		wp_register_script(
-			'fs-core-enhancements-swiper',
-			'https://cdn.jsdelivr.net/npm/swiper@11.1.1/swiper-bundle.min.js',
-			[],
-			'11.1.1',
-			true
-		);
-		$script_dependencies[] = 'fs-core-enhancements-swiper';
-	}
-
-	$script_dependencies = array_values( array_unique( $script_dependencies ) );
-
-	// Enqueue the JavaScript for the front end.
-	wp_enqueue_script(
+	wp_register_script(
 		'fs-core-enhancements-frontend',
 		$plugin_url . 'build/frontend.js',
-		$script_dependencies,
-		$asset['version'],
+		$frontend_dependencies,
+		$frontend_version,
 		true
 	);
 
-	// Enqueue column width styles on frontend.
-	if ( file_exists( $plugin_dir . 'build/index.css' ) ) {
-		wp_enqueue_style(
-			'fs-core-enhancements-column-widths',
-			$plugin_url . 'build/index.css',
+	wp_register_style(
+		'fs-core-enhancements-swiper',
+		'https://cdn.jsdelivr.net/npm/swiper@11.1.1/swiper-bundle.min.css',
+		[],
+		'11.1.1'
+	);
+	wp_style_add_data(
+		'fs-core-enhancements-swiper',
+		'integrity',
+		'sha384-PWmRGB2I6kV3gYyFAvr+8VRU2qg603tGFzX74EhRRfRScQ36ptuVjQQFWOOJVWRM'
+	);
+	wp_style_add_data(
+		'fs-core-enhancements-swiper',
+		'crossorigin',
+		'anonymous'
+	);
+
+	wp_register_script(
+		'fs-core-enhancements-swiper',
+		'https://cdn.jsdelivr.net/npm/swiper@11.1.1/swiper-bundle.min.js',
+		[],
+		'11.1.1',
+		true
+	);
+	wp_script_add_data(
+		'fs-core-enhancements-swiper',
+		'integrity',
+		'sha384-2YLKPVDmBctT3U8nF+92s9qRznFC7Smwhnaj29vPzzWOxnlIUm3GVXI00avNjg1J'
+	);
+	wp_script_add_data(
+		'fs-core-enhancements-swiper',
+		'crossorigin',
+		'anonymous'
+	);
+
+	$frontend_style_file = $plugin_dir . 'build/frontend-styles.css';
+	if ( file_exists( $frontend_style_file ) ) {
+		$frontend_style_version = $frontend_version;
+		$frontend_style_asset_file =
+			$plugin_dir . 'build/frontend-styles.asset.php';
+		if ( file_exists( $frontend_style_asset_file ) ) {
+			$frontend_style_asset = include $frontend_style_asset_file;
+			$frontend_style_version =
+				$frontend_style_asset['version'] ?? $frontend_style_version;
+		}
+
+		wp_register_style(
+			'fs-core-enhancements-frontend-style',
+			$plugin_url . 'build/frontend-styles.css',
 			[],
-			$asset['version']
+			$frontend_style_version
 		);
+		wp_enqueue_style( 'fs-core-enhancements-frontend-style' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'fs_core_enhancements_register_frontend_assets' );
+
+/**
+ * Enqueue frontend runtime script when needed.
+ *
+ * @param bool $needs_swiper Whether carousel runtime is required.
+ */
+function fs_core_enhancements_enqueue_frontend_runtime( $needs_swiper = false ) {
+	if ( $needs_swiper ) {
+		wp_enqueue_style( 'fs-core-enhancements-swiper' );
+		wp_enqueue_script( 'fs-core-enhancements-swiper' );
 	}
 
-	// Note: Per-block styles (tabs, accordion, modal) are automatically
-	// enqueued by WordPress via the "style" field in each block.json.
-	// WordPress lazy-loads these styles only when the blocks are used.
+	wp_enqueue_script( 'fs-core-enhancements-frontend' );
 }
-add_action( 'wp_enqueue_scripts', 'fs_core_enhancements_frontend_assets' );
+
+/**
+ * Enqueue frontend runtime script only when required by rendered blocks.
+ *
+ * @param string $block_content Rendered block content.
+ * @param array  $block Parsed block.
+ *
+ * @return string
+ */
+function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $block ) {
+	if ( is_admin() || ! is_array( $block ) || empty( $block['blockName'] ) ) {
+		return $block_content;
+	}
+
+	$block_name = $block['blockName'];
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] )
+		? $block['attrs']
+		: [];
+
+	if ( 'fs-blocks/carousel' === $block_name ) {
+		fs_core_enhancements_enqueue_frontend_runtime( true );
+		return $block_content;
+	}
+
+	if ( 'core/video' === $block_name ) {
+		if ( ! empty( $attrs['lazyLoadVideo'] ) || ! empty( $attrs['useCustomPlayButton'] ) ) {
+			fs_core_enhancements_enqueue_frontend_runtime();
+		}
+		return $block_content;
+	}
+
+	if ( 'core/cover' === $block_name ) {
+		if ( ! empty( $attrs['lazyLoadVideo'] ) ) {
+			fs_core_enhancements_enqueue_frontend_runtime();
+		}
+		return $block_content;
+	}
+
+	if (
+		'fs-blocks/accordion-item-interactive' === $block_name ||
+		'fs-blocks/showcase-gallery' === $block_name
+	) {
+		fs_core_enhancements_enqueue_frontend_runtime();
+	}
+
+	return $block_content;
+}
+add_filter(
+	'render_block',
+	'fs_core_enhancements_maybe_enqueue_frontend_runtime',
+	10,
+	2
+);

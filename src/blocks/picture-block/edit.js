@@ -21,29 +21,60 @@ import {
 	borderRadiusOptions,
 } from '../../../data/bootstrap-classes/classes.js';
 import { getDisplayValues, getValuesFromDisplay } from '../../utils/helpers.js';
-
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
 const FILLER_IMAGE_DATA =
 	'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'None', TEXT_DOMAIN ), value: 'none' },
-	{ label: __( 'Square - 1:1', TEXT_DOMAIN ), value: '1-1' },
-	{ label: __( 'Standard - 4:3', TEXT_DOMAIN ), value: '4-3' },
-	{ label: __( 'Portrait - 3:4', TEXT_DOMAIN ), value: '3-4' },
-	{ label: __( 'Classic - 3:2', TEXT_DOMAIN ), value: '3-2' },
-	{ label: __( 'Classic Portrait - 2:3', TEXT_DOMAIN ), value: '2-3' },
-	{ label: __( 'Wide - 16:9', TEXT_DOMAIN ), value: '16-9' },
-	{ label: __( 'Tall - 9:16', TEXT_DOMAIN ), value: '9-16' },
+	{ label: __( 'None', 'fancy-squares-core-enhancements' ), value: 'none' },
+	{
+		label: __( 'Square - 1:1', 'fancy-squares-core-enhancements' ),
+		value: '1-1',
+	},
+	{
+		label: __( 'Standard - 4:3', 'fancy-squares-core-enhancements' ),
+		value: '4-3',
+	},
+	{
+		label: __( 'Portrait - 3:4', 'fancy-squares-core-enhancements' ),
+		value: '3-4',
+	},
+	{
+		label: __( 'Classic - 3:2', 'fancy-squares-core-enhancements' ),
+		value: '3-2',
+	},
+	{
+		label: __(
+			'Classic Portrait - 2:3',
+			'fancy-squares-core-enhancements'
+		),
+		value: '2-3',
+	},
+	{
+		label: __( 'Wide - 16:9', 'fancy-squares-core-enhancements' ),
+		value: '16-9',
+	},
+	{
+		label: __( 'Tall - 9:16', 'fancy-squares-core-enhancements' ),
+		value: '9-16',
+	},
 ];
 
 function ImageSelector( { label, imageId, imageUrl, onSelect, onRemove } ) {
-	const selectLabel = sprintf( __( 'Select %s Image', TEXT_DOMAIN ), label );
-	const editLabel = sprintf(
-		__( 'Edit or Replace %s Image', TEXT_DOMAIN ),
+	const selectLabel = sprintf(
+		/* translators: %s: Image label. */
+		__( 'Select %s Image', 'fancy-squares-core-enhancements' ),
 		label
 	);
-	const removeLabel = sprintf( __( 'Remove %s Image', TEXT_DOMAIN ), label );
+	const editLabel = sprintf(
+		/* translators: %s: Image label. */
+		__( 'Edit or Replace %s Image', 'fancy-squares-core-enhancements' ),
+		label
+	);
+	const removeLabel = sprintf(
+		/* translators: %s: Image label. */
+		__( 'Remove %s Image', 'fancy-squares-core-enhancements' ),
+		label
+	);
 
 	return (
 		<MediaUploadCheck>
@@ -218,7 +249,12 @@ export default function Edit( props ) {
 		if ( noBreakpoints ) {
 			if ( ! defaultImageUrl ) {
 				return (
-					<p>{ __( 'No default image selected.', TEXT_DOMAIN ) }</p>
+					<p>
+						{ __(
+							'No default image selected.',
+							'fancy-squares-core-enhancements'
+						) }
+					</p>
 				);
 			}
 			return (
@@ -306,22 +342,31 @@ export default function Edit( props ) {
 		<figure { ...blockProps }>
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Image Settings', TEXT_DOMAIN ) }
+					title={ __(
+						'Image Settings',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen
 				>
 					<CheckboxControl
-						label={ __( 'Show Values', TEXT_DOMAIN ) }
+						label={ __(
+							'Show Values',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ showValues }
 						onChange={ setShowValues }
 						help={ __(
 							'Display Bootstrap class names instead of labels.',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 						style={ { marginBottom: '20px' } }
 					/>
 
 					<ImageSelector
-						label={ __( 'Default', TEXT_DOMAIN ) }
+						label={ __(
+							'Default',
+							'fancy-squares-core-enhancements'
+						) }
 						imageId={ defaultImageId }
 						imageUrl={ defaultImageUrl }
 						onSelect={ onSelectImage( 'default' ) }
@@ -339,31 +384,37 @@ export default function Edit( props ) {
 							<p style={ { fontWeight: 'bold' } }>
 								{ __(
 									'No default image selected',
-									TEXT_DOMAIN
+									'fancy-squares-core-enhancements'
 								) }
 							</p>
 							<p>
 								{ __(
 									'A 1x1 transparent filler image will be used. For accessibility, provide alt text below.',
-									TEXT_DOMAIN
+									'fancy-squares-core-enhancements'
 								) }
 							</p>
 							<TextControl
-								label={ __( 'Filler Image Alt', TEXT_DOMAIN ) }
+								label={ __(
+									'Filler Image Alt',
+									'fancy-squares-core-enhancements'
+								) }
 								value={ fillerAlt }
 								onChange={ ( val ) =>
 									setAttributes( { fillerAlt: val } )
 								}
 								placeholder={ __(
 									'e.g. "No image provided"',
-									TEXT_DOMAIN
+									'fancy-squares-core-enhancements'
 								) }
 							/>
 						</div>
 					) }
 
 					<ImageSelector
-						label={ __( 'Small', TEXT_DOMAIN ) }
+						label={ __(
+							'Small',
+							'fancy-squares-core-enhancements'
+						) }
 						imageId={ smallImageId }
 						imageUrl={ smallImageUrl }
 						onSelect={ onSelectImage( 'small' ) }
@@ -371,7 +422,10 @@ export default function Edit( props ) {
 					/>
 
 					<ImageSelector
-						label={ __( 'Medium', TEXT_DOMAIN ) }
+						label={ __(
+							'Medium',
+							'fancy-squares-core-enhancements'
+						) }
 						imageId={ mediumImageId }
 						imageUrl={ mediumImageUrl }
 						onSelect={ onSelectImage( 'medium' ) }
@@ -379,7 +433,10 @@ export default function Edit( props ) {
 					/>
 
 					<ImageSelector
-						label={ __( 'Large', TEXT_DOMAIN ) }
+						label={ __(
+							'Large',
+							'fancy-squares-core-enhancements'
+						) }
 						imageId={ largeImageId }
 						imageUrl={ largeImageUrl }
 						onSelect={ onSelectImage( 'large' ) }
@@ -387,7 +444,10 @@ export default function Edit( props ) {
 					/>
 
 					<SelectControl
-						label={ __( 'Aspect Ratio', TEXT_DOMAIN ) }
+						label={ __(
+							'Aspect Ratio',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ aspectRatio }
 						options={ ASPECT_RATIO_OPTIONS }
 						onChange={ ( value ) =>
@@ -397,7 +457,10 @@ export default function Edit( props ) {
 
 					<div style={ { marginTop: '1em', marginBottom: '20px' } }>
 						<p style={ { fontWeight: 'bold' } }>
-							{ __( 'Border Classes', TEXT_DOMAIN ) }
+							{ __(
+								'Border Classes',
+								'fancy-squares-core-enhancements'
+							) }
 						</p>
 						<FormTokenField
 							value={ getDisplayValues(
@@ -409,13 +472,16 @@ export default function Edit( props ) {
 								showValues ? opt.value : opt.label
 							) }
 							onChange={ onChangeBorderTokens }
-							label={ __( 'Add border classes', TEXT_DOMAIN ) }
+							label={ __(
+								'Add border classes',
+								'fancy-squares-core-enhancements'
+							) }
 						/>
 						<details style={ { marginTop: '5px' } }>
 							<summary>
 								{ __(
 									'Available Border Classes',
-									TEXT_DOMAIN
+									'fancy-squares-core-enhancements'
 								) }
 							</summary>
 							<ul
@@ -436,7 +502,10 @@ export default function Edit( props ) {
 
 					<div style={ { marginBottom: '20px' } }>
 						<p style={ { fontWeight: 'bold' } }>
-							{ __( 'Border Radius Classes', TEXT_DOMAIN ) }
+							{ __(
+								'Border Radius Classes',
+								'fancy-squares-core-enhancements'
+							) }
 						</p>
 						<FormTokenField
 							value={ getDisplayValues(
@@ -448,13 +517,16 @@ export default function Edit( props ) {
 								showValues ? opt.value : opt.label
 							) }
 							onChange={ onChangeRadiusTokens }
-							label={ __( 'Add radius classes', TEXT_DOMAIN ) }
+							label={ __(
+								'Add radius classes',
+								'fancy-squares-core-enhancements'
+							) }
 						/>
 						<details style={ { marginTop: '5px' } }>
 							<summary>
 								{ __(
 									'Available Border Radius Classes',
-									TEXT_DOMAIN
+									'fancy-squares-core-enhancements'
 								) }
 							</summary>
 							<ul

@@ -14,7 +14,6 @@ import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
 const TEMPLATE = [ [ 'fs-blocks/tab-item-interactive' ] ];
 const ALLOWED_BLOCKS = [ 'fs-blocks/tab-item-interactive' ];
 
@@ -41,7 +40,9 @@ export default function Edit( props ) {
 			childBlocks.map( ( block ) => ( {
 				clientId: block.clientId,
 				tabId: block.attributes.tabId || block.clientId,
-				title: block.attributes.title || __( 'New Tab', TEXT_DOMAIN ),
+				title:
+					block.attributes.title ||
+					__( 'New Tab', 'fancy-squares-core-enhancements' ),
 			} ) ),
 		[ childBlocks ]
 	);
@@ -137,14 +138,20 @@ export default function Edit( props ) {
 			<BlockEdit { ...props } />
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Tabs Settings', TEXT_DOMAIN ) }
+					title={ __(
+						'Tabs Settings',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ true }
 				>
 					<ToggleControl
-						label={ __( 'Responsive tabs', TEXT_DOMAIN ) }
+						label={ __(
+							'Responsive tabs',
+							'fancy-squares-core-enhancements'
+						) }
 						help={ __(
 							'Use an accordion on mobile.',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 						checked={ responsiveTabs }
 						onChange={ ( value ) =>
@@ -152,10 +159,13 @@ export default function Edit( props ) {
 						}
 					/>
 					<ToggleControl
-						label={ __( 'Vertical tabs', TEXT_DOMAIN ) }
+						label={ __(
+							'Vertical tabs',
+							'fancy-squares-core-enhancements'
+						) }
 						help={ __(
 							'Display tabs vertically on the left.',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 						checked={ verticalTabs }
 						onChange={ ( value ) =>

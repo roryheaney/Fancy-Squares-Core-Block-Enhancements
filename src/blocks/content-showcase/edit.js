@@ -16,8 +16,6 @@ import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
-
 const TEMPLATE = [
 	[
 		'core/columns',
@@ -44,9 +42,18 @@ const TEMPLATE = [
 ];
 
 const LAYOUT_OPTIONS = [
-	{ label: __( 'Two Column', TEXT_DOMAIN ), value: 'two-column' },
-	{ label: __( 'Sidebar Left', TEXT_DOMAIN ), value: 'sidebar-left' },
-	{ label: __( 'Sidebar Right', TEXT_DOMAIN ), value: 'sidebar-right' },
+	{
+		label: __( 'Two Column', 'fancy-squares-core-enhancements' ),
+		value: 'two-column',
+	},
+	{
+		label: __( 'Sidebar Left', 'fancy-squares-core-enhancements' ),
+		value: 'sidebar-left',
+	},
+	{
+		label: __( 'Sidebar Right', 'fancy-squares-core-enhancements' ),
+		value: 'sidebar-right',
+	},
 ];
 
 export default function Edit( props ) {
@@ -109,11 +116,17 @@ export default function Edit( props ) {
 			<BlockEdit { ...props } />
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Showcase Layout', TEXT_DOMAIN ) }
+					title={ __(
+						'Showcase Layout',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ false }
 				>
 					<SelectControl
-						label={ __( 'Layout', TEXT_DOMAIN ) }
+						label={ __(
+							'Layout',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ layoutType }
 						options={ LAYOUT_OPTIONS }
 						onChange={ ( value ) =>
@@ -121,7 +134,10 @@ export default function Edit( props ) {
 						}
 					/>
 					<ToggleControl
-						label={ __( 'Hide gallery on mobile', TEXT_DOMAIN ) }
+						label={ __(
+							'Hide gallery on mobile',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ hideGalleryOnMobile }
 						onChange={ () =>
 							setAttributes( {
@@ -131,18 +147,24 @@ export default function Edit( props ) {
 					/>
 				</PanelBody>
 				<PanelBody
-					title={ __( 'Showcase Events', TEXT_DOMAIN ) }
+					title={ __(
+						'Showcase Events',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ false }
 				>
 					<TextControl
-						label={ __( 'Source event name', TEXT_DOMAIN ) }
+						label={ __(
+							'Source event name',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ sourceEventName }
 						onChange={ ( value ) =>
 							setAttributes( { sourceEventName: value } )
 						}
 						help={ __(
 							'Event emitted by the source block to change active media.',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 					/>
 				</PanelBody>

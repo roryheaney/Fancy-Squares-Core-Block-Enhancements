@@ -8,12 +8,9 @@ import {
 	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import { PanelBody, Button } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
-import { useDispatch } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
 
 export default function Edit( {
 	clientId,
@@ -101,6 +98,13 @@ export default function Edit( {
 		} );
 	};
 
+	const handleTriggerKeyDown = ( event ) => {
+		if ( event.key === 'Enter' || event.key === ' ' ) {
+			event.preventDefault();
+			handleTriggerClick( event );
+		}
+	};
+
 	return (
 		<>
 			{ isInsideShowcase && (
@@ -108,7 +112,10 @@ export default function Edit( {
 					<PanelBody
 						title={
 							<span className="fs-panel-title">
-								{ __( 'Showcase Media', TEXT_DOMAIN ) }
+								{ __(
+									'Showcase Media',
+									'fancy-squares-core-enhancements'
+								) }
 								{ showcaseMediaId ? (
 									<span
 										className="fs-panel-indicator"
@@ -130,10 +137,13 @@ export default function Edit( {
 										onClick={ open }
 									>
 										{ showcaseMediaId
-											? __( 'Change Media', TEXT_DOMAIN )
+											? __(
+													'Change Media',
+													'fancy-squares-core-enhancements'
+											  )
 											: __(
 													'Select Image or Video',
-													TEXT_DOMAIN
+													'fancy-squares-core-enhancements'
 											  ) }
 									</Button>
 								) }
@@ -165,7 +175,10 @@ export default function Edit( {
 									onClick={ onRemoveShowcaseMedia }
 									style={ { marginTop: '0.5rem' } }
 								>
-									{ __( 'Remove Media', TEXT_DOMAIN ) }
+									{ __(
+										'Remove Media',
+										'fancy-squares-core-enhancements'
+									) }
 								</Button>
 							</div>
 						) }
@@ -177,6 +190,7 @@ export default function Edit( {
 					<div
 						className="fs-accordion__trigger"
 						onClick={ handleTriggerClick }
+						onKeyDown={ handleTriggerKeyDown }
 						style={ { cursor: 'pointer' } }
 						role="button"
 						tabIndex={ 0 }
@@ -189,7 +203,7 @@ export default function Edit( {
 							}
 							placeholder={ __(
 								'Accordion Item Title',
-								TEXT_DOMAIN
+								'fancy-squares-core-enhancements'
 							) }
 							allowedFormats={ [] }
 							onClick={ ( e ) => e.stopPropagation() }

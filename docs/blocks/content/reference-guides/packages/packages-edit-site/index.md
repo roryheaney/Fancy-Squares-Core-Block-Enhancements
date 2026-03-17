@@ -1,0 +1,40 @@
+---
+title: "@wordpress/edit-site"
+slug: "packages-edit-site"
+source: "https://developer.wordpress.org/block-editor/reference-guides/packages/packages-edit-site/"
+generatedAt: 2025-12-30T18:18:06.472Z
+---
+
+Edit Site Page Module for WordPress.
+
+> This package is meant to be used only with WordPress core. Feel free to use it in your own project but please keep in mind that it might never get fully documented.
+
+## [Installation](#installation)
+
+```bash
+npm install @wordpress/edit-site
+```
+
+## [Usage](#usage)
+
+```js
+/**
+ * WordPress dependencies
+ */
+import { initialize } from '@wordpress/edit-site';
+
+/**
+ * Internal dependencies
+ */
+import blockEditorSettings from './block-editor-settings';
+
+initialize( '#editor-root', blockEditorSettings );
+```
+
+_This package assumes that your code will run in an **ES2015+** environment. If you’re using an environment that has limited or no support for such language features and APIs, you should include [the polyfill shipped in `@wordpress/babel-preset-default`](https://github.com/WordPress/gutenberg/tree/HEAD/packages/babel-preset-default#polyfill) in your code._
+
+## [Contributing to this package](#contributing-to-this-package)
+
+This is an individual package that’s part of the Gutenberg project. The project is organized as a monorepo. It’s made up of multiple self-contained software packages, each with a specific purpose. The packages in this monorepo are published to [npm](https://www.npmjs.com/) and used by [WordPress](https://make.wordpress.org/core/) as well as other software projects.
+
+To find out more about contributing to this package or Gutenberg as a whole, please read the project’s main [contributor guide](https://github.com/WordPress/gutenberg/tree/HEAD/CONTRIBUTING.md).

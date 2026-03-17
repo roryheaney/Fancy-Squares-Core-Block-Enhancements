@@ -1,6 +1,7 @@
 /* Carousel block styles (editor + front end). */
 
 .wp-block-fs-blocks-carousel-slide {
+
 	&.are-vertically-aligned-center {
 		margin-top: auto;
 		margin-bottom: auto;
@@ -22,6 +23,7 @@
 }
 
 .wp-block-fs-blocks-carousel {
+
 	.swiper-pagination {
 		position: static;
 		margin-top: 14px;
@@ -44,10 +46,9 @@
 	.swiper-button-prev {
 		color: #090909;
 	}
-}
 
-.wp-block-fs-blocks-carousel {
 	> .block-editor-inner-blocks {
+
 		> .block-editor-block-list__layout {
 			display: flex;
 			flex-wrap: nowrap;
@@ -59,7 +60,7 @@
 				position: static;
 			}
 
-			> [data-type='fs-blocks/carousel-slide'] {
+			> [data-type="fs-blocks/carousel-slide"] {
 				box-sizing: border-box;
 				flex: 1;
 				flex-basis: 100%;
@@ -89,15 +90,15 @@
 
 			&::-webkit-scrollbar {
 				-webkit-appearance: none;
-				background-color: rgba( 0, 0, 0, 0.15 );
+				background-color: rgba(0, 0, 0, 0.15);
 				height: 12px;
 
 				&-thumb {
-					background-color: rgba( 0, 0, 0, 0.38 );
+					background-color: rgba(0, 0, 0, 0.38);
 					border-radius: 0;
 
 					&:hover {
-						background-color: rgba( 0, 0, 0, 0.48 );
+						background-color: rgba(0, 0, 0, 0.48);
 					}
 				}
 			}
@@ -105,8 +106,11 @@
 	}
 
 	&.fs-carousel-show-scrollbar {
+
 		> .block-editor-inner-blocks {
+
 			> .block-editor-block-list__layout {
+
 				&:focus,
 				&:hover {
 					overflow-x: auto;
@@ -117,17 +121,18 @@
 	}
 
 	> .components-resizable-box__container {
+
 		&::-webkit-scrollbar {
 			-webkit-appearance: none;
-			background-color: rgba( 0, 0, 0, 0.15 );
+			background-color: rgba(0, 0, 0, 0.15);
 			height: 12px;
 
 			&-thumb {
-				background-color: rgba( 0, 0, 0, 0.38 );
+				background-color: rgba(0, 0, 0, 0.38);
 				border-radius: 0;
 
 				&:hover {
-					background-color: rgba( 0, 0, 0, 0.48 );
+					background-color: rgba(0, 0, 0, 0.48);
 				}
 			}
 		}

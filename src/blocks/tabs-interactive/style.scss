@@ -207,6 +207,7 @@
 
 		// Keep flex layout on desktop even with responsive mode
 		&.fs-tabs--responsive {
+
 			@media (min-width: map.get($grid-breakpoints, md)) {
 				display: flex;
 				flex-direction: row;

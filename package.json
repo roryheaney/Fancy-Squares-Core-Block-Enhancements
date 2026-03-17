@@ -4,6 +4,24 @@
 	"description": "Extends core blocks with custom classes and dropdowns",
 	"author": "Rory Heaney",
 	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"gutenberg",
+		"blocks",
+		"plugin",
+		"interactivity"
+	],
+	"homepage": "https://github.com/roryheaney/Fancy-Squares-Core-Block-Enhancements",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/roryheaney/Fancy-Squares-Core-Block-Enhancements.git"
+	},
+	"bugs": {
+		"url": "https://github.com/roryheaney/Fancy-Squares-Core-Block-Enhancements/issues"
+	},
+	"engines": {
+		"node": ">=20 <21"
+	},
 	"files": [
 		"build",
 		"data",
@@ -11,20 +29,26 @@
 		"fancy-squares-core-enhancements.php",
 		"README.md"
 	],
+	"dependencies": {
+		"@10up/block-components": "^1.20.0",
+		"@wordpress/icons": "^10.0.0",
+		"@wordpress/interactivity": "^6.37.0"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.10.0",
+		"rimraf": "^6.0.1"
+	},
 	"scripts": {
 		"build": "rimraf build && wp-scripts build --source-path=src --experimental-modules",
 		"start": "wp-scripts start --source-path=src --experimental-modules",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
+		"lint:php": "wp-scripts lint-php",
+		"lint:md": "wp-scripts lint-md-docs",
+		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"lint:all": "npm run lint:js && npm run lint:css && npm run lint:php && npm run lint:pkg-json && npm run lint:md",
 		"plugin-zip": "wp-scripts plugin-zip"
-	},
-	"devDependencies": {
-		"@wordpress/scripts": "^30.10.0"
-	},
-	"dependencies": {
-		"@10up/block-components": "^1.20.0",
-		"@wordpress/icons": "^10.0.0",
-		"@wordpress/interactivity": "^6.37.0"
 	}
 }
+

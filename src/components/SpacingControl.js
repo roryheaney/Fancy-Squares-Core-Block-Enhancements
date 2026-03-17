@@ -53,21 +53,23 @@ const SPACING_CONFIGS = {
 /**
  * Unified spacing control component
  *
- * @param {Object} props - Component props
- * @param {string} props.type - Type of spacing: 'padding', 'margin', or 'negativeMargin'
- * @param {string} props.label - Display label (e.g., 'All Sides', 'Top')
- * @param {string} props.subLabel - Sub-label (e.g., 'Padding', 'Margin')
- * @param {Object} props.icon - WordPress icon
- * @param {string} props.baseValue - Base breakpoint value
- * @param {string} props.smValue - Small breakpoint value
- * @param {string} props.mdValue - Medium breakpoint value
- * @param {string} props.lgValue - Large breakpoint value
- * @param {string} props.xlValue - Extra large breakpoint value
- * @param {Function} props.onChangeBase - Base value change handler
- * @param {Function} props.onChangeSm - Small value change handler
- * @param {Function} props.onChangeMd - Medium value change handler
- * @param {Function} props.onChangeLg - Large value change handler
- * @param {Function} props.onChangeXl - Extra large value change handler
+ * @param {Object}   props              Component props
+ * @param {string}   props.type         Type of spacing: 'padding', 'margin', or 'negativeMargin'
+ * @param {string}   props.label        Display label (e.g., 'All Sides', 'Top')
+ * @param {string}   props.subLabel     Sub-label (e.g., 'Padding', 'Margin')
+ * @param {Object}   props.icon         WordPress icon
+ * @param {string}   props.baseValue    Base breakpoint value
+ * @param {string}   props.smValue      Small breakpoint value
+ * @param {string}   props.mdValue      Medium breakpoint value
+ * @param {string}   props.lgValue      Large breakpoint value
+ * @param {string}   props.xlValue      Extra large breakpoint value
+ * @param {string}   props.xxlValue     Extra extra large breakpoint value
+ * @param {Function} props.onChangeBase Base value change handler
+ * @param {Function} props.onChangeSm   Small value change handler
+ * @param {Function} props.onChangeMd   Medium value change handler
+ * @param {Function} props.onChangeLg   Large value change handler
+ * @param {Function} props.onChangeXl   Extra large value change handler
+ * @param {Function} props.onChangeXxl  Extra extra large value change handler
  */
 const SpacingControl = ( {
 	type = 'padding',
@@ -79,11 +81,13 @@ const SpacingControl = ( {
 	mdValue,
 	lgValue,
 	xlValue,
+	xxlValue,
 	onChangeBase,
 	onChangeSm,
 	onChangeMd,
 	onChangeLg,
 	onChangeXl,
+	onChangeXxl,
 } ) => {
 	const config = SPACING_CONFIGS[ type ];
 	const { min, max, defaultValue, marks, handleChange } = config;
@@ -196,6 +200,23 @@ const SpacingControl = ( {
 					__nextHasNoMarginBottom
 					value={ parseValue( xlValue ) }
 					onChange={ createChangeHandler( onChangeXl ) }
+					min={ min }
+					max={ max }
+					step={ 1 }
+					marks={ marks }
+					showTooltip={ false }
+					withInputField={ false }
+				/>
+			</label>
+			<label className="custom-column-widths__range-control">
+				<span className="custom-column-widths__range-label">
+					Extra Large (xxl)
+				</span>
+				<RangeControl
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+					value={ parseValue( xxlValue ) }
+					onChange={ createChangeHandler( onChangeXxl ) }
 					min={ min }
 					max={ max }
 					step={ 1 }

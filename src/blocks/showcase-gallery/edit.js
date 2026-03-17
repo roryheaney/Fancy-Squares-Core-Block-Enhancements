@@ -7,12 +7,19 @@ import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
-
 const TRANSITION_OPTIONS = [
-	{ label: __( 'Fade', TEXT_DOMAIN ), value: 'fade' },
-	{ label: __( 'Slide', TEXT_DOMAIN ), value: 'slide' },
-	{ label: __( 'Zoom', TEXT_DOMAIN ), value: 'zoom' },
+	{
+		label: __( 'Fade', 'fancy-squares-core-enhancements' ),
+		value: 'fade',
+	},
+	{
+		label: __( 'Slide', 'fancy-squares-core-enhancements' ),
+		value: 'slide',
+	},
+	{
+		label: __( 'Zoom', 'fancy-squares-core-enhancements' ),
+		value: 'zoom',
+	},
 ];
 
 export default function Edit( props ) {
@@ -46,11 +53,17 @@ export default function Edit( props ) {
 			<BlockEdit { ...props } />
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Gallery Settings', TEXT_DOMAIN ) }
+					title={ __(
+						'Gallery Settings',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ false }
 				>
 					<SelectControl
-						label={ __( 'Transition', TEXT_DOMAIN ) }
+						label={ __(
+							'Transition',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ transitionType }
 						options={ TRANSITION_OPTIONS }
 						onChange={ ( value ) =>
@@ -58,7 +71,10 @@ export default function Edit( props ) {
 						}
 					/>
 					<RangeControl
-						label={ __( 'Transition duration (ms)', TEXT_DOMAIN ) }
+						label={ __(
+							'Transition duration (ms)',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ transitionDuration }
 						onChange={ ( value ) =>
 							setAttributes( { transitionDuration: value } )
@@ -70,11 +86,16 @@ export default function Edit( props ) {
 				</PanelBody>
 			</InspectorControls>
 			<div { ...blockProps }>
-				<p>{ __( 'Showcase Gallery Preview', TEXT_DOMAIN ) }</p>
+				<p>
+					{ __(
+						'Showcase Gallery Preview',
+						'fancy-squares-core-enhancements'
+					) }
+				</p>
 				<p className="fs-showcase-gallery-editor__note">
 					{ __(
 						'Media renders on the front end based on the active item.',
-						TEXT_DOMAIN
+						'fancy-squares-core-enhancements'
 					) }
 				</p>
 			</div>

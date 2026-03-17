@@ -18,8 +18,6 @@ import { copy } from '@wordpress/icons';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
-const TEXT_DOMAIN = 'fancy-squares-core-enhancements';
-
 const ALLOWED_BLOCKS = [
 	'core/paragraph',
 	'core/heading',
@@ -34,7 +32,12 @@ const ALLOWED_BLOCKS = [
 const TEMPLATE = [
 	[
 		'core/paragraph',
-		{ placeholder: __( 'Add modal content here...', TEXT_DOMAIN ) },
+		{
+			placeholder: __(
+				'Add modal content here…',
+				'fancy-squares-core-enhancements'
+			),
+		},
 	],
 ];
 
@@ -63,7 +66,7 @@ export default function Edit( props ) {
 			const generatedId = `modal-${ timestamp }${ random }`;
 			setAttributes( { modalId: generatedId } );
 		}
-	}, [] );
+	}, [ modalId, setAttributes ] );
 
 	const generatedClassName = useMemo(
 		() => generateClassName( attributes, name, BLOCK_CONFIG ),
@@ -96,7 +99,16 @@ export default function Edit( props ) {
 	);
 
 	const handleCopyModalId = () => {
-		navigator.clipboard.writeText( modalId ).then( () => {
+		if ( ! modalId ) {
+			return;
+		}
+
+		const clipboard = window?.navigator?.clipboard;
+		if ( ! clipboard?.writeText ) {
+			return;
+		}
+
+		clipboard.writeText( modalId ).then( () => {
 			setCopySuccess( true );
 			setTimeout( () => setCopySuccess( false ), 2000 );
 		} );
@@ -106,17 +118,23 @@ export default function Edit( props ) {
 		<>
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Modal Settings', TEXT_DOMAIN ) }
+					title={ __(
+						'Modal Settings',
+						'fancy-squares-core-enhancements'
+					) }
 					initialOpen={ true }
 				>
 					<div style={ { marginBottom: '16px' } }>
 						<TextControl
-							label={ __( 'Modal ID (Read Only)', TEXT_DOMAIN ) }
+							label={ __(
+								'Modal ID (Read Only)',
+								'fancy-squares-core-enhancements'
+							) }
 							value={ modalId }
 							readOnly={ true }
 							help={ __(
 								'Copy this ID and paste it in the Modal Button settings to link them together.',
-								TEXT_DOMAIN
+								'fancy-squares-core-enhancements'
 							) }
 						/>
 						<Button
@@ -125,7 +143,10 @@ export default function Edit( props ) {
 							onClick={ handleCopyModalId }
 							style={ { width: '100%' } }
 						>
-							{ __( 'Copy Modal ID', TEXT_DOMAIN ) }
+							{ __(
+								'Copy Modal ID',
+								'fancy-squares-core-enhancements'
+							) }
 						</Button>
 						{ copySuccess && (
 							<Notice
@@ -133,13 +154,19 @@ export default function Edit( props ) {
 								isDismissible={ false }
 								style={ { marginTop: '8px', marginBottom: 0 } }
 							>
-								{ __( 'Modal ID copied!', TEXT_DOMAIN ) }
+								{ __(
+									'Modal ID copied!',
+									'fancy-squares-core-enhancements'
+								) }
 							</Notice>
 						) }
 					</div>
 
 					<TextControl
-						label={ __( 'Modal Title', TEXT_DOMAIN ) }
+						label={ __(
+							'Modal Title',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ title }
 						onChange={ ( value ) =>
 							setAttributes( { title: value } )
@@ -147,27 +174,45 @@ export default function Edit( props ) {
 					/>
 
 					<SelectControl
-						label={ __( 'Modal Size', TEXT_DOMAIN ) }
+						label={ __(
+							'Modal Size',
+							'fancy-squares-core-enhancements'
+						) }
 						value={ size }
 						options={ [
 							{
-								label: __( 'Small', TEXT_DOMAIN ),
+								label: __(
+									'Small',
+									'fancy-squares-core-enhancements'
+								),
 								value: 'small',
 							},
 							{
-								label: __( 'Default', TEXT_DOMAIN ),
+								label: __(
+									'Default',
+									'fancy-squares-core-enhancements'
+								),
 								value: 'default',
 							},
 							{
-								label: __( 'Large', TEXT_DOMAIN ),
+								label: __(
+									'Large',
+									'fancy-squares-core-enhancements'
+								),
 								value: 'large',
 							},
 							{
-								label: __( 'Extra Large', TEXT_DOMAIN ),
+								label: __(
+									'Extra Large',
+									'fancy-squares-core-enhancements'
+								),
 								value: 'xl',
 							},
 							{
-								label: __( 'Fullscreen', TEXT_DOMAIN ),
+								label: __(
+									'Fullscreen',
+									'fancy-squares-core-enhancements'
+								),
 								value: 'fullscreen',
 							},
 						] }
@@ -177,55 +222,70 @@ export default function Edit( props ) {
 					/>
 
 					<ToggleControl
-						label={ __( 'Center Modal', TEXT_DOMAIN ) }
+						label={ __(
+							'Center Modal',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ centered }
 						onChange={ ( value ) =>
 							setAttributes( { centered: value } )
 						}
 						help={ __(
 							'Vertically center the modal on screen',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 					/>
 
 					<ToggleControl
-						label={ __( 'Scrollable Content', TEXT_DOMAIN ) }
+						label={ __(
+							'Scrollable Content',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ scrollable }
 						onChange={ ( value ) =>
 							setAttributes( { scrollable: value } )
 						}
 						help={ __(
 							'Enable scrolling within modal body',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 					/>
 
 					<ToggleControl
-						label={ __( 'Static Backdrop', TEXT_DOMAIN ) }
+						label={ __(
+							'Static Backdrop',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ staticBackdrop }
 						onChange={ ( value ) =>
 							setAttributes( { staticBackdrop: value } )
 						}
 						help={ __(
 							'Prevent closing modal when clicking outside',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 					/>
 
 					<ToggleControl
-						label={ __( 'Close on Escape Key', TEXT_DOMAIN ) }
+						label={ __(
+							'Close on Escape Key',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ closeOnEscape }
 						onChange={ ( value ) =>
 							setAttributes( { closeOnEscape: value } )
 						}
 						help={ __(
 							'Allow closing modal with Escape key',
-							TEXT_DOMAIN
+							'fancy-squares-core-enhancements'
 						) }
 					/>
 
 					<ToggleControl
-						label={ __( 'Show Header', TEXT_DOMAIN ) }
+						label={ __(
+							'Show Header',
+							'fancy-squares-core-enhancements'
+						) }
 						checked={ showHeader }
 						onChange={ ( value ) =>
 							setAttributes( { showHeader: value } )

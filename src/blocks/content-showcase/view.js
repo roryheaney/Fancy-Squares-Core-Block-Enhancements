@@ -15,12 +15,13 @@ store( 'fancySquaresContentShowcase', {
 	},
 	callbacks: {
 		initShowcase() {
-			const context = getContext();
 			const { ref } = getElement();
 
 			if ( ! ref ) {
 				return;
 			}
+
+			const context = getContext();
 
 			const eventName =
 				context.sourceEventName && context.sourceEventName.trim()

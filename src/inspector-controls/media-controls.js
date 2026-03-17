@@ -3,16 +3,28 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { useEffect, useState } from '@wordpress/element';
 
 export default function MediaControls( BlockEdit, props ) {
-	const { attributes, setAttributes, clientId } = props;
-	const { lazyLoadVideo, useCustomPlayButton } = attributes;
+	const { attributes, setAttributes, clientId, name } = props;
+	const { lazyLoadVideo, useCustomPlayButton, disableForcedLazyLoading } =
+		attributes;
 	const [ hasPoster, setHasPoster ] = useState( false );
 
+	const isVideoBlock = name === 'core/video';
+	const isCoverBlock = name === 'core/cover';
+	const isImageBlock = name === 'core/image';
+	const showVideoLazyToggle = isVideoBlock || isCoverBlock;
+	const showForcedLazyOptOutToggle = isCoverBlock || isImageBlock;
+
 	useEffect( () => {
+		if ( ! isVideoBlock ) {
+			setHasPoster( false );
+			return;
+		}
+
 		const videoEl = document.querySelector(
 			`[data-block="${ clientId }"] video`
 		);
 		setHasPoster( !! ( videoEl && videoEl.getAttribute( 'poster' ) ) );
-	}, [ clientId ] );
+	}, [ clientId, isVideoBlock ] );
 
 	const toggleLazyLoad = () => {
 		setAttributes( { lazyLoadVideo: ! lazyLoadVideo } );
@@ -22,6 +34,23 @@ export default function MediaControls( BlockEdit, props ) {
 		setAttributes( { useCustomPlayButton: ! useCustomPlayButton } );
 	};
 
+	const toggleForcedLazyOptOut = () => {
+		setAttributes( {
+			disableForcedLazyLoading: ! disableForcedLazyLoading,
+		} );
+	};
+
+	const hasEnabledSetting =
+		( showVideoLazyToggle && !! lazyLoadVideo ) ||
+		( isVideoBlock && !! useCustomPlayButton ) ||
+		( showForcedLazyOptOutToggle && !! disableForcedLazyLoading );
+
+	const panelTitle = isImageBlock
+		? 'Image Settings'
+		: isCoverBlock
+		? 'Cover Settings'
+		: 'Video Settings';
+
 	return (
 		<>
 			<BlockEdit { ...props } />
@@ -29,8 +58,8 @@ export default function MediaControls( BlockEdit, props ) {
 				<PanelBody
 					title={
 						<span className="fs-panel-title">
-							Video Settings
-							{ ( lazyLoadVideo || useCustomPlayButton ) && (
+							{ panelTitle }
+							{ hasEnabledSetting && (
 								<span
 									className="fs-panel-indicator"
 									aria-hidden="true"
@@ -39,13 +68,25 @@ export default function MediaControls( BlockEdit, props ) {
 						</span>
 					}
 				>
-					<ToggleControl
-						label="Lazy Load Video"
-						checked={ lazyLoadVideo }
-						onChange={ toggleLazyLoad }
-						help="Delay loading the video until it becomes visible."
-					/>
-					{ props.name === 'core/video' && (
+					{ showVideoLazyToggle && (
+						<ToggleControl
+							label="Lazy Load Video"
+							checked={ lazyLoadVideo }
+							onChange={ toggleLazyLoad }
+							help="Delay loading the video until it becomes visible."
+						/>
+					) }
+
+					{ showForcedLazyOptOutToggle && (
+						<ToggleControl
+							label="Disable forced image lazy loading"
+							checked={ !! disableForcedLazyLoading }
+							onChange={ toggleForcedLazyOptOut }
+							help="Default is forced loading='lazy'. Enable this to skip the forced lazy-loading override for this block."
+						/>
+					) }
+
+					{ isVideoBlock && (
 						<>
 							<ToggleControl
 								label="Use custom play button"
@@ -66,3 +107,4 @@ export default function MediaControls( BlockEdit, props ) {
 		</>
 	);
 }
+

@@ -59,6 +59,7 @@
 - Put feature ideas and implementation notes in `docs/`.
 - Use `docs/interactivity-api/` for directive/store behavior references.
 - Update docs when behavior or public APIs change.
+- Use `docs/blocks/` for block development best practices.
 
 ## QA Checklist
 

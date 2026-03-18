@@ -45,11 +45,12 @@ export default function MediaControls( BlockEdit, props ) {
 		( isVideoBlock && !! useCustomPlayButton ) ||
 		( showForcedLazyOptOutToggle && !! disableForcedLazyLoading );
 
-	const panelTitle = isImageBlock
-		? 'Image Settings'
-		: isCoverBlock
-		? 'Cover Settings'
-		: 'Video Settings';
+	let panelTitle = 'Video Settings';
+	if ( isImageBlock ) {
+		panelTitle = 'Image Settings';
+	} else if ( isCoverBlock ) {
+		panelTitle = 'Cover Settings';
+	}
 
 	return (
 		<>

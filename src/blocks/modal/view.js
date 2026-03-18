@@ -127,7 +127,8 @@ const { state, actions } = store( 'fancySquaresModal', {
 				// Restore focus to the button that opened the modal
 				if (
 					state.previousFocus &&
-					state.previousFocus instanceof HTMLElement &&
+					state.previousFocus.nodeType === 1 &&
+					typeof state.previousFocus.focus === 'function' &&
 					document.contains( state.previousFocus )
 				) {
 					state.previousFocus.focus();

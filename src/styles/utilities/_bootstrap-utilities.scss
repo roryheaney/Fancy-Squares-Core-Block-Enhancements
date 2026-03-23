@@ -20,26 +20,14 @@
 @use "sass:map";
 @use "sass:list";
 @use "sass:meta";
-@use "settings" as *;
+@use "../foundation/settings" as *;
 
 // ==========================================
 // SPACING UTILITIES (Margin & Padding)
 // ==========================================
 
 // Spacing scale (Extended to match data/bootstrap-classes)
-$spacers: (
-	0: 0,
-	1: 0.25rem,
-	2: 0.5rem,
-	3: 1rem,
-	4: 1.5rem,
-	5: 3rem,
-	6: 4.5rem,
-	7: 6rem,
-	8: 9rem,
-	9: 12rem,
-	10: 15rem,
-) !default;
+$spacers: $framework-spacing-scale !default;
 
 // Spacing properties
 $spacing-properties: (
@@ -105,7 +93,7 @@ $spacing-sides: (
 				@if $size-key != 0 {
 					// All sides
 					.#{$prop-key}-n#{$size-key} {
-						#{$prop}: -$size !important;
+						#{$prop}: calc(#{$size} * -1) !important;
 					}
 
 					// Individual sides and axes
@@ -115,12 +103,12 @@ $spacing-sides: (
 							.#{$prop-key}#{$side-key}-n#{$size-key} {
 
 								@each $s in $side {
-									#{$prop}-#{$s}: -$size !important;
+									#{$prop}-#{$s}: calc(#{$size} * -1) !important;
 								}
 							}
 						} @else {
 							.#{$prop-key}#{$side-key}-n#{$size-key} {
-								#{$prop}-#{$side}: -$size !important;
+								#{$prop}-#{$side}: calc(#{$size} * -1) !important;
 							}
 						}
 					}
@@ -202,7 +190,7 @@ $spacing-sides: (
 
 							@if $size-key != 0 {
 								.#{$prop-key}-#{$breakpoint-key}-n#{$size-key} {
-									#{$prop}: -$size !important;
+									#{$prop}: calc(#{$size} * -1) !important;
 								}
 
 								@each $side-key, $side in $spacing-sides {
@@ -211,12 +199,12 @@ $spacing-sides: (
 										.#{$prop-key}#{$side-key}-#{$breakpoint-key}-n#{$size-key} {
 
 											@each $s in $side {
-												#{$prop}-#{$s}: -$size !important;
+												#{$prop}-#{$s}: calc(#{$size} * -1) !important;
 											}
 										}
 									} @else {
 										.#{$prop-key}#{$side-key}-#{$breakpoint-key}-n#{$size-key} {
-											#{$prop}-#{$side}: -$size !important;
+											#{$prop}-#{$side}: calc(#{$size} * -1) !important;
 										}
 									}
 								}
@@ -602,3 +590,4 @@ $blend-modes: normal, multiply, screen, overlay, darken, lighten, color-dodge,
 // Build command: npm run build
 // Output: build/utilities.css (78KB minified)
 // ==========================================
+

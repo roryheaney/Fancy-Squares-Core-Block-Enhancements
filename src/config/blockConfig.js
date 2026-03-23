@@ -10,8 +10,32 @@ import {
 	justifyContentOptions,
 	orderOptions,
 	gapOptions,
-	bleedCoverOptions,
 } from '../../data/bootstrap-classes/index.js';
+import { getSuggestions } from '../utils/helpers';
+import {
+	columnsLayoutOptions,
+	bleedCoverOptions,
+} from './framework-option-sets';
+
+const SELECT_NONE_OPTION = [ { label: 'Select one', value: 'none' } ];
+const INHERIT_COLUMNS_OPTION = columnsLayoutOptions.find(
+	( option ) => option.value === ''
+) || { label: 'Inherit from Columns', value: '' };
+const ALL_SPACING_SIDES = [
+	'all',
+	'horizontal',
+	'vertical',
+	'top',
+	'right',
+	'bottom',
+	'left',
+];
+const EDGE_SPACING_SIDES = [ 'top', 'right', 'bottom', 'left' ];
+
+const SHARED_SPACING_CONFIG = {
+	allowedPaddingControls: ALL_SPACING_SIDES,
+	allowedPositiveMarginControls: ALL_SPACING_SIDES,
+};
 
 export const ALLOWED_BLOCKS = [
 	'core/heading',
@@ -22,18 +46,8 @@ export const ALLOWED_BLOCKS = [
 	'core/columns',
 	'core/column',
 	'core/cover',
-	'core/video',
 	'core/group',
 ];
-
-export const BREAKPOINT_DIMENSIONS = {
-	'': 'All',
-	sm: '>=576px',
-	md: '>=768px',
-	lg: '>=992px',
-	xl: '>=1200px',
-	xxl: '>=1400px',
-};
 
 export const BLOCK_CONFIG = {
 	'core/heading': {
@@ -42,19 +56,19 @@ export const BLOCK_CONFIG = {
 			attributeKey: 'headingDropdownValue',
 			label: 'Heading Option',
 			default: 'none',
-			options: [ { label: 'Select one', value: 'none' } ],
+			options: SELECT_NONE_OPTION,
 		},
 	},
 	'core/paragraph': {
 		classOptions: [ 'display', 'position', 'zindex' ],
 		allowedPaddingControls: [ 'top', 'bottom' ],
 		allowedPositiveMarginControls: [ 'all', 'vertical' ],
-		allowedNegativeMarginControls: [ 'top', 'bottom', 'left', 'right' ],
+		allowedNegativeMarginControls: EDGE_SPACING_SIDES,
 		dropdown: {
 			attributeKey: 'paragraphDropdownValue',
 			label: 'Paragraph Option',
 			default: 'none',
-			options: [ { label: 'Select one', value: 'none' } ],
+			options: SELECT_NONE_OPTION,
 		},
 	},
 	'core/list': {
@@ -63,7 +77,7 @@ export const BLOCK_CONFIG = {
 			attributeKey: 'listDropdownValue',
 			label: 'List Option',
 			default: 'none',
-			options: [ { label: 'Select one', value: 'none' } ],
+			options: SELECT_NONE_OPTION,
 		},
 	},
 	'core/list-item': {
@@ -72,7 +86,7 @@ export const BLOCK_CONFIG = {
 			attributeKey: 'listItemDropdownValue',
 			label: 'List Item Option',
 			default: 'none',
-			options: [ { label: 'Select one', value: 'none' } ],
+			options: SELECT_NONE_OPTION,
 		},
 	},
 	'core/buttons': {
@@ -81,7 +95,7 @@ export const BLOCK_CONFIG = {
 			attributeKey: 'buttonDropdownValue',
 			label: 'Button Option',
 			default: 'none',
-			options: [ { label: 'Select one', value: 'none' } ],
+			options: SELECT_NONE_OPTION,
 		},
 	},
 	'core/columns': {
@@ -91,50 +105,12 @@ export const BLOCK_CONFIG = {
 			'zindex',
 			'alignItems',
 			'justifyContent',
-		], // Added alignItems for controlling child column alignment
+		],
 		dropdown: {
 			attributeKey: 'columnsLayout',
 			label: 'Columns Layout',
 			default: '',
-			options: [
-				{ label: 'Inherit from Columns', value: '' },
-				{
-					label: '1 across all',
-					value: 'cols-mobile-1 cols-tablet-1 cols-desktop-1',
-				},
-				{
-					label: '2 across all',
-					value: 'cols-mobile-2 cols-tablet-2 cols-desktop-2',
-				},
-				{
-					label: '3 across all',
-					value: 'cols-mobile-3 cols-tablet-3 cols-desktop-3',
-				},
-				{
-					label: '4 across all',
-					value: 'cols-mobile-4 cols-tablet-4 cols-desktop-4',
-				},
-				{
-					label: '5 across all',
-					value: 'cols-mobile-5 cols-tablet-5 cols-desktop-5',
-				},
-				{
-					label: '6 across all',
-					value: 'cols-mobile-6 cols-tablet-6 cols-desktop-6',
-				},
-				{
-					label: '1 mobile, 2 tablet, 3 desktop',
-					value: 'cols-mobile-1 cols-tablet-2 cols-desktop-3',
-				},
-				{
-					label: '2 mobile, 3 tablet, 4 desktop',
-					value: 'cols-mobile-2 cols-tablet-3 cols-desktop-4',
-				},
-				{
-					label: '3 mobile, 4 tablet, 6 desktop',
-					value: 'cols-mobile-3 cols-tablet-4 cols-desktop-6',
-				},
-			],
+			options: columnsLayoutOptions,
 		},
 		hasConstrainToggle: true,
 	},
@@ -145,23 +121,15 @@ export const BLOCK_CONFIG = {
 			'zindex',
 			'selfAlignment',
 			'order',
-		], // Added selfAlignment for controlling column alignment within parent
+		],
 		dropdown: {
 			attributeKey: 'columnsLayout',
 			label: 'Column Layout Override',
 			default: '',
-			options: [ { label: 'Inherit from Columns', value: '' } ],
+			options: [ INHERIT_COLUMNS_OPTION ],
 		},
 		hasWidthControls: true,
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
+		allowedPaddingControls: ALL_SPACING_SIDES,
 	},
 	'core/cover': {
 		classOptions: [ 'display', 'position', 'zindex', 'bleedCoverOptions' ],
@@ -174,160 +142,35 @@ export const BLOCK_CONFIG = {
 	},
 	'core/group': {
 		classOptions: [ 'display', 'position', 'zindex', 'gapSpacing' ],
-		// dropdown: {
-		// 	attributeKey: 'stackDropdownValue',
-		// 	label: 'Group Option',
-		// 	default: 'none',
-		// 	options: [ { label: 'Select one', value: 'none' } ],
-		// },
 	},
 	'fs-blocks/tabs-interactive': {
 		classOptions: [ 'display', 'position', 'zindex' ],
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
+		...SHARED_SPACING_CONFIG,
 	},
 	'fs-blocks/accordion-interactive': {
 		classOptions: [ 'display', 'position', 'zindex' ],
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
+		...SHARED_SPACING_CONFIG,
 	},
 	'fs-blocks/content-showcase': {
 		classOptions: [ 'display', 'position', 'zindex' ],
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
+		...SHARED_SPACING_CONFIG,
 	},
 	'fs-blocks/showcase-gallery': {
 		classOptions: [ 'display', 'position', 'zindex' ],
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
+		...SHARED_SPACING_CONFIG,
 	},
 	'fs-blocks/carousel': {
 		classOptions: [ 'display', 'position', 'zindex' ],
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
+		...SHARED_SPACING_CONFIG,
 	},
 	'fs-blocks/alert': {
 		classOptions: [ 'display' ],
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
+		...SHARED_SPACING_CONFIG,
 	},
 	'fs-blocks/index-block': {
 		classOptions: [ 'position', 'zindex' ],
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedNegativeMarginControls: [ 'top', 'right', 'bottom', 'left' ],
+		...SHARED_SPACING_CONFIG,
+		allowedNegativeMarginControls: EDGE_SPACING_SIDES,
 	},
 	'fs-blocks/content-wrapper': {
 		classOptions: [
@@ -337,45 +180,8 @@ export const BLOCK_CONFIG = {
 			'position',
 			'zindex',
 		],
-		// Optional layout dropdown. Enable when layout variants are finalized.
-		// dropdown: {
-		// 	attributeKey: 'singularSelectClass',
-		// 	label: 'Layout Variant',
-		// 	default: '',
-		// 	options: [
-		// 		{ label: 'Default', value: '' },
-		// 		{ label: 'Wide', value: 'layout-wide' },
-		// 		{ label: 'Stacked', value: 'layout-stacked' },
-		// 	],
-		// },
-		allowedPaddingControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedPositiveMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		allowedNegativeMarginControls: [
-			'all',
-			'horizontal',
-			'vertical',
-			'top',
-			'right',
-			'bottom',
-			'left',
-		],
-		hasWidthControls: true,
+		...SHARED_SPACING_CONFIG,
+		allowedNegativeMarginControls: ALL_SPACING_SIDES,
 	},
 };
 
@@ -405,70 +211,27 @@ export const CLASS_OPTIONS_MAP = {
 		suggestions: getSuggestions( blendModeOptions, false ),
 	},
 	alignItems: {
-		// Added alignItems for core/columns
 		options: alignItemsOptions,
 		suggestions: getSuggestions( alignItemsOptions, false ),
 	},
 	selfAlignment: {
-		// Added selfAlignment for core/column
 		options: selfAlignmentOptions,
 		suggestions: getSuggestions( selfAlignmentOptions, false ),
 	},
 	justifyContent: {
-		// Added justifyContent for core/columns
 		options: justifyContentOptions,
 		suggestions: getSuggestions( justifyContentOptions, false ),
 	},
 	order: {
-		// Added order for core/column
 		options: orderOptions,
 		suggestions: getSuggestions( orderOptions, false ),
 	},
 	gapSpacing: {
-		// Added gapSpacing for core/group
 		options: gapOptions,
 		suggestions: getSuggestions( gapOptions, false ),
 	},
 	bleedCoverOptions: {
-		// Added bleedCoverOptions for core/cover
 		options: bleedCoverOptions,
 		suggestions: getSuggestions( bleedCoverOptions, false ),
 	},
 };
-
-/*
- * Example configuration for adding a new block.
- *
- * Only the properties you define will appear in the editor panel. If an option
- * such as `classOptions` or `dropdown` is omitted, the related controls stay
- * hidden, keeping the interface clean.
- *
- * 'core/example': {
- *     // Array of token fields to enable. Available groups:
- *     // display, margin, padding, position, zindex, blendMode, alignItems,
- *     // selfAlignment, justifyContent, order, gapSpacing, bleedCoverOptions.
- *     classOptions: [ 'display', 'position' ],
- *
- *     // Adds a SelectControl with these options.
- *     dropdown: {
- *         attributeKey: 'exampleDropdown',
- *         label: 'Example Select',
- *         default: 'none',
- *         options: [ { label: 'Select one', value: 'none' } ],
- *     },
- *
- *     // Restrict which padding and margin controls show.
- *     allowedPaddingControls: [ 'top', 'bottom' ],
- *     allowedPositiveMarginControls: [ 'all', 'vertical' ],
- *     allowedNegativeMarginControls: [ 'left', 'right' ],
- *
- *     // Additional block-specific toggles.
- *     hasWidthControls: true,      // for core/column
- *     hasConstrainToggle: true,    // for core/columns
- * },
- */
-
-// Note: getSuggestions is used in CLASS_OPTIONS_MAP, so we need to define it here temporarily
-function getSuggestions( options, showValues ) {
-	return options.map( ( item ) => ( showValues ? item.value : item.label ) );
-}

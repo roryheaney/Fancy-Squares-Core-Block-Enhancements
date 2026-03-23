@@ -1,0 +1,13 @@
+// ==========================================
+// File: editor.scss
+// Styles for core block enhancements in the editor
+// ==========================================
+
+@use "../../styles/components/columns";
+@use "../../assets/scss/admin-styles";
+@use "../../assets/scss/cover-block";
+@use "../../assets/scss/video-block";
+@use "../../assets/scss/picture-block";
+@use "../../assets/scss/carousel-block";
+@use "../../assets/scss/carousel-block-editor";
+@include columns.render-column-enhancements();

@@ -2,3 +2,6 @@ build/
 node_modules/
 CODE_AUDIT_REPORT.md
 docs/
+plugin-review.md
+claude-review-full-audit.md
+codex-reaudit-skills-aligned.md

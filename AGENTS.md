@@ -10,7 +10,7 @@
 - Use Node 20.x (`.nvmrc` and `package.json` engines).
 - Install deps: `npm install`
 - Dev build: `npm run start`
-- Prod build: `npm run build`
+- Prod build: `npm run build` (runs token generation first)
 - Output: compiled assets land in `build/`
 
 ## Project Map
@@ -26,10 +26,10 @@
 ## Current Runtime Rules
 
 - Frontend runtime is conditionally enqueued in `inc/assets.php` via `render_block` checks.
-- Frontend-only stylesheet is built from `src/frontend-styles.scss`.
+- Frontend-only stylesheet is built from `src/entries/styles/frontend.scss`.
 - `core/image` and `core/cover` image backgrounds are forced lazy/async by default.
 - Per-block opt-out for forced lazy image loading uses `disableForcedLazyLoading`.
-- `core/video` lazy-load and custom play button behavior run through render filters + `src/frontend.js`.
+- `core/video` lazy-load and custom play button behavior run through render filters + `src/entries/frontend/index.js`.
 - Modal trigger conversion for `core/button` uses Interactivity API attributes and `aria-haspopup="dialog"`.
 - CDN Bootstrap/Swiper registrations include SRI + `crossorigin` data.
 
@@ -73,3 +73,4 @@
 
 - Do not delete or overwrite user changes.
 - Avoid destructive commands unless explicitly requested.
+

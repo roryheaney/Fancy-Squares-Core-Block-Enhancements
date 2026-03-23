@@ -39,15 +39,20 @@
 		"rimraf": "^6.0.1"
 	},
 	"scripts": {
-		"build": "rimraf build && wp-scripts build --source-path=src --experimental-modules",
-		"start": "wp-scripts start --source-path=src --experimental-modules",
+		"tokens": "node scripts/generate-style-tokens.mjs",
+		"tokens:site": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/full-site-editing-build/theme.json",
+		"tokens:ci": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/full-site-editing-build/theme.json --require-theme-source",
+		"build": "npm run tokens:site && rimraf build && wp-scripts build --source-path=src --experimental-modules && npm run prune:style-stubs",
+		"build:ci": "npm run tokens:ci && rimraf build && wp-scripts build --source-path=src --experimental-modules && npm run prune:style-stubs",
+		"start": "npm run tokens:site && wp-scripts start --source-path=src --experimental-modules",
+		"prune:style-stubs": "rimraf build/frontend-styles.js build/utilities.js",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
-		"lint:php": "wp-scripts lint-php",
+		"lint:php": "node scripts/lint-php.mjs",
 		"lint:md": "wp-scripts lint-md-docs",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"lint:all": "npm run lint:js && npm run lint:css && npm run lint:php && npm run lint:pkg-json && npm run lint:md",
-		"plugin-zip": "wp-scripts plugin-zip"
+		"plugin-zip": "npm run prune:style-stubs && wp-scripts plugin-zip"
 	}
 }

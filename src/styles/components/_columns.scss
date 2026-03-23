@@ -1,0 +1,109 @@
+@use "sass:map";
+@use "../foundation/settings" as *;
+@use "../foundation/mixins" as *;
+
+$column-sizes: (
+	"": false,
+	"auto": auto,
+	"1": 1,
+	"2": 2,
+	"3": 3,
+	"4": 4,
+	"5": 5,
+	"6": 6,
+	"7": 7,
+	"8": 8,
+	"9": 9,
+	"10": 10,
+	"11": 11,
+	"12": 12,
+);
+
+$column-breakpoints: (
+	"": null,
+);
+
+@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+
+	@if $breakpoint-key != xs {
+		$column-breakpoints: map.merge(
+			$column-breakpoints,
+			(
+				"-#{$breakpoint-key}": $breakpoint-key,
+			)
+		);
+	}
+}
+
+@mixin render-column-enhancements() {
+
+	.wp-block-column {
+
+		@each $prefix, $breakpoint in $column-breakpoints {
+
+			@if $prefix == "" {
+
+				@each $size-name, $size-value in $column-sizes {
+
+					@if $size-name == "" {
+
+						&.wp-block-column--column {
+
+							@include make-col( $size-value );
+						}
+					} @else {
+						&.wp-block-column--column-#{$size-name} {
+
+							@include make-col( $size-value );
+						}
+					}
+				}
+			} @else {
+
+				@include media-breakpoint-up( $breakpoint ) {
+
+					@each $size-name, $size-value in $column-sizes {
+
+						@if $size-name == "" {
+							&.wp-block-column--column#{$prefix} {
+
+								@include make-col( $size-value );
+							}
+						} @else {
+							&.wp-block-column--column#{$prefix}-#{$size-name} {
+
+								@include make-col( $size-value );
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.wp-block-columns {
+
+		&--constrained {
+			margin-left: auto;
+			margin-right: auto;
+			width: 100%;
+
+			@each $breakpoint, $max-width in $container-max-widths {
+
+				@if map.has-key( $grid-breakpoints, $breakpoint ) {
+
+					@include media-breakpoint-up( $breakpoint ) {
+						max-width: $max-width;
+					}
+				}
+			}
+		}
+	}
+
+	.is-style-bootstrap {
+
+		&.wp-block-columns {
+			flex-wrap: wrap !important;
+		}
+	}
+}

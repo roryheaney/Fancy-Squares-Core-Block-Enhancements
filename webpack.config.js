@@ -3,14 +3,34 @@ const path = require( 'path' );
 
 // Add explicit entry points while preserving default @wordpress/scripts behavior.
 const customEntries = {
-	index: path.resolve( process.cwd(), 'src', 'index.js' ),
-	frontend: path.resolve( process.cwd(), 'src', 'frontend.js' ),
+	index: path.resolve(
+		process.cwd(),
+		'src',
+		'entries',
+		'editor',
+		'index.js'
+	),
+	frontend: path.resolve(
+		process.cwd(),
+		'src',
+		'entries',
+		'frontend',
+		'index.js'
+	),
 	'frontend-styles': path.resolve(
 		process.cwd(),
 		'src',
-		'frontend-styles.scss'
+		'entries',
+		'styles',
+		'frontend.scss'
 	),
-	utilities: path.resolve( process.cwd(), 'src', 'utilities.scss' ),
+	utilities: path.resolve(
+		process.cwd(),
+		'src',
+		'entries',
+		'styles',
+		'utilities.scss'
+	),
 };
 
 if ( Array.isArray( defaultConfig ) ) {

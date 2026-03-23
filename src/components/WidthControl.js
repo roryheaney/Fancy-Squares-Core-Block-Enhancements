@@ -16,11 +16,15 @@ const WidthControl = ( {
 		if ( val === '' || val === 'auto' ) {
 			return 0;
 		}
-		return (
-			parseInt(
-				val.replace( /wp-block-column--column-(?:[a-z]{0,3}-)?/, '' )
-			) || 0
+
+		const match = /^wp-block-column--column(?:-[a-z0-9-]+)?-(\d+)$/i.exec(
+			val
 		);
+		if ( ! match ) {
+			return 0;
+		}
+
+		return parseInt( match[ 1 ], 10 ) || 0;
 	};
 
 	const getLabelClassName = ( labelText ) => {
@@ -35,6 +39,13 @@ const WidthControl = ( {
 	}, [ numericValue ] );
 
 	const getDisplayValue = () => {
+		const selectedOption = options.find(
+			( option ) => option.value === value
+		);
+		if ( selectedOption ) {
+			return selectedOption.label;
+		}
+
 		if ( value === 'auto' ) {
 			return 'Auto';
 		}
@@ -57,11 +68,15 @@ const WidthControl = ( {
 		}
 	};
 
+	const zeroMarkLabel =
+		options.find( ( opt ) => opt.value === 'auto' )?.label ||
+		options.find( ( opt ) => opt.value === '' )?.label ||
+		'Auto';
+
 	const marks = [
 		{
 			value: 0,
-			label:
-				options.find( ( opt ) => opt.value === '' )?.label || 'Inherit',
+			label: zeroMarkLabel,
 		},
 		...Array.from( { length: 12 }, ( _, index ) => ( {
 			value: index + 1,

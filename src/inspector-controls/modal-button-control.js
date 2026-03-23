@@ -1,16 +1,13 @@
-import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
-export default function ModalButtonControl( BlockEdit, props ) {
-	const { attributes, setAttributes } = props;
+export default function ModalButtonControl( { BlockEdit, ...props } ) {
+	const { attributes, setAttributes, isSelected } = props;
 	const { triggerModal, modalId } = attributes;
 
-	const toggleTriggerModal = () => {
-		setAttributes( { triggerModal: ! triggerModal } );
-	};
-	const updateModalId = ( value ) => {
-		setAttributes( { modalId: value } );
-	};
+	if ( ! isSelected ) {
+		return <BlockEdit { ...props } />;
+	}
 
 	return (
 		<>
@@ -32,14 +29,18 @@ export default function ModalButtonControl( BlockEdit, props ) {
 				>
 					<ToggleControl
 						label="Trigger a modal"
-						checked={ triggerModal }
-						onChange={ toggleTriggerModal }
+						checked={ !! triggerModal }
+						onChange={ () =>
+							setAttributes( { triggerModal: ! triggerModal } )
+						}
 					/>
 					{ triggerModal && (
 						<TextControl
 							label="Modal ID"
 							value={ modalId }
-							onChange={ updateModalId }
+							onChange={ ( value ) =>
+								setAttributes( { modalId: value } )
+							}
 							help="Enter the modal element ID"
 						/>
 					) }

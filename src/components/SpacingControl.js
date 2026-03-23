@@ -1,107 +1,78 @@
 // components/SpacingControl.js
-import { RangeControl, Icon } from '@wordpress/components';
+import { Icon, SelectControl } from '@wordpress/components';
+import { frameworkSpacingScaleOptions } from '../config/generated/framework-tokens';
+import {
+	getSpacingBreakpointLabel,
+	SPACING_BREAKPOINT_KEYS,
+} from '../config/breakpoints';
 
-/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable jsx-a11y/label-has-associated-control, jsdoc/check-line-alignment */
 
-/**
- * Configuration for different spacing types
- *
- * Note: padding and margin configs are intentionally separate (not DRY)
- * for explicit clarity, even though they're currently identical.
- */
+const formatScaleOptionLabel = ( option ) => {
+	const label = option?.label || String( option?.slug || '' );
+	if ( option?.size ) {
+		return `${ label } [${ option.size }]`;
+	}
+	return label;
+};
+
+const baseSpacingOptions = (
+	Array.isArray( frameworkSpacingScaleOptions )
+		? frameworkSpacingScaleOptions
+		: []
+).map( ( option ) => ( {
+	value: String( option.slug ),
+	label: formatScaleOptionLabel( option ),
+} ) );
+
+const positiveOptions = [ { value: '', label: 'None' }, ...baseSpacingOptions ];
+
+const negativeOptions = [
+	{ value: '', label: 'None' },
+	...baseSpacingOptions
+		.filter( ( option ) => option.value !== '0' )
+		.map( ( option ) => ( {
+			value: option.value,
+			label: `-${ option.label }`,
+		} ) ),
+];
+
 const SPACING_CONFIGS = {
 	padding: {
-		min: -1,
-		max: 5,
-		defaultValue: -1,
-		marks: [
-			{ value: -1, label: 'None' },
-			...Array.from( { length: 6 }, ( _, index ) => ( {
-				value: index,
-				label: index.toString(),
-			} ) ),
-		],
-		handleChange: ( newValue ) =>
-			newValue === -1 ? '' : newValue.toString(),
+		options: positiveOptions,
 	},
 	margin: {
-		min: -1,
-		max: 5,
-		defaultValue: -1,
-		marks: [
-			{ value: -1, label: 'None' },
-			...Array.from( { length: 6 }, ( _, index ) => ( {
-				value: index,
-				label: index.toString(),
-			} ) ),
-		],
-		handleChange: ( newValue ) =>
-			newValue === -1 ? '' : newValue.toString(),
+		options: positiveOptions,
 	},
 	negativeMargin: {
-		min: -5,
-		max: 0,
-		defaultValue: 0,
-		marks: Array.from( { length: 6 }, ( _, index ) => ( {
-			value: -index,
-			label: ( -index ).toString(),
-		} ) ),
-		handleChange: ( newValue ) => newValue.toString(),
+		options: negativeOptions,
 	},
 };
 
 /**
- * Unified spacing control component
+ * Unified spacing control component.
  *
- * @param {Object}   props              Component props
- * @param {string}   props.type         Type of spacing: 'padding', 'margin', or 'negativeMargin'
- * @param {string}   props.label        Display label (e.g., 'All Sides', 'Top')
- * @param {string}   props.subLabel     Sub-label (e.g., 'Padding', 'Margin')
- * @param {Object}   props.icon         WordPress icon
- * @param {string}   props.baseValue    Base breakpoint value
- * @param {string}   props.smValue      Small breakpoint value
- * @param {string}   props.mdValue      Medium breakpoint value
- * @param {string}   props.lgValue      Large breakpoint value
- * @param {string}   props.xlValue      Extra large breakpoint value
- * @param {string}   props.xxlValue     Extra extra large breakpoint value
- * @param {Function} props.onChangeBase Base value change handler
- * @param {Function} props.onChangeSm   Small value change handler
- * @param {Function} props.onChangeMd   Medium value change handler
- * @param {Function} props.onChangeLg   Large value change handler
- * @param {Function} props.onChangeXl   Extra large value change handler
- * @param {Function} props.onChangeXxl  Extra extra large value change handler
+ * @param {Object} root0 - Component props.
+ * @param {'padding'|'margin'|'negativeMargin'} [root0.type='padding'] - Spacing control type.
+ * @param {string} root0.label - Control label.
+ * @param {string} [root0.subLabel] - Optional sub-label.
+ * @param {import('@wordpress/components').IconType} root0.icon - Icon for the control group.
+ * @param {Object<string, string>} [root0.values] - Values by breakpoint key (`''`, `sm`, `md`, ...).
+ * @param {(breakpointKey: string, value: string) => void} root0.onChange - Change handler.
  */
 const SpacingControl = ( {
 	type = 'padding',
 	label,
 	subLabel,
 	icon,
-	baseValue,
-	smValue,
-	mdValue,
-	lgValue,
-	xlValue,
-	xxlValue,
-	onChangeBase,
-	onChangeSm,
-	onChangeMd,
-	onChangeLg,
-	onChangeXl,
-	onChangeXxl,
+	values = {},
+	onChange,
 } ) => {
-	const config = SPACING_CONFIGS[ type ];
-	const { min, max, defaultValue, marks, handleChange } = config;
+	const config = SPACING_CONFIGS[ type ] || SPACING_CONFIGS.padding;
+	const selectOptions = config.options;
 
 	const getLabelClassName = ( labelText ) => {
 		return labelText.toLowerCase().replace( /\s+/g, '-' );
-	};
-
-	const parseValue = ( value ) => {
-		return value ? parseInt( value ) : defaultValue;
-	};
-
-	const createChangeHandler = ( onChange ) => ( newValue ) => {
-		onChange( handleChange( newValue ) );
 	};
 
 	return (
@@ -125,106 +96,23 @@ const SpacingControl = ( {
 					) }
 				</span>
 			</div>
-			<label className="custom-column-widths__range-control">
-				<span className="custom-column-widths__range-label">Base</span>
-				<RangeControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					value={ parseValue( baseValue ) }
-					onChange={ createChangeHandler( onChangeBase ) }
-					min={ min }
-					max={ max }
-					step={ 1 }
-					marks={ marks }
-					showTooltip={ false }
-					withInputField={ false }
-				/>
-			</label>
-			<label className="custom-column-widths__range-control">
-				<span className="custom-column-widths__range-label">
-					Mobile (sm)
-				</span>
-				<RangeControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					value={ parseValue( smValue ) }
-					onChange={ createChangeHandler( onChangeSm ) }
-					min={ min }
-					max={ max }
-					step={ 1 }
-					marks={ marks }
-					showTooltip={ false }
-					withInputField={ false }
-				/>
-			</label>
-			<label className="custom-column-widths__range-control">
-				<span className="custom-column-widths__range-label">
-					Tablet (md)
-				</span>
-				<RangeControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					value={ parseValue( mdValue ) }
-					onChange={ createChangeHandler( onChangeMd ) }
-					min={ min }
-					max={ max }
-					step={ 1 }
-					marks={ marks }
-					showTooltip={ false }
-					withInputField={ false }
-				/>
-			</label>
-			<label className="custom-column-widths__range-control">
-				<span className="custom-column-widths__range-label">
-					Laptop (lg)
-				</span>
-				<RangeControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					value={ parseValue( lgValue ) }
-					onChange={ createChangeHandler( onChangeLg ) }
-					min={ min }
-					max={ max }
-					step={ 1 }
-					marks={ marks }
-					showTooltip={ false }
-					withInputField={ false }
-				/>
-			</label>
-			<label className="custom-column-widths__range-control">
-				<span className="custom-column-widths__range-label">
-					Larger Screen (xl)
-				</span>
-				<RangeControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					value={ parseValue( xlValue ) }
-					onChange={ createChangeHandler( onChangeXl ) }
-					min={ min }
-					max={ max }
-					step={ 1 }
-					marks={ marks }
-					showTooltip={ false }
-					withInputField={ false }
-				/>
-			</label>
-			<label className="custom-column-widths__range-control">
-				<span className="custom-column-widths__range-label">
-					Extra Large (xxl)
-				</span>
-				<RangeControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					value={ parseValue( xxlValue ) }
-					onChange={ createChangeHandler( onChangeXxl ) }
-					min={ min }
-					max={ max }
-					step={ 1 }
-					marks={ marks }
-					showTooltip={ false }
-					withInputField={ false }
-				/>
-			</label>
+			{ SPACING_BREAKPOINT_KEYS.map( ( breakpointKey ) => (
+				<div
+					className="custom-column-widths__range-control"
+					key={ breakpointKey || 'base' }
+				>
+					<SelectControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={ getSpacingBreakpointLabel( breakpointKey ) }
+						value={ values[ breakpointKey ] || '' }
+						options={ selectOptions }
+						onChange={ ( newValue ) =>
+							onChange( breakpointKey, newValue )
+						}
+					/>
+				</div>
+			) ) }
 		</div>
 	);
 };

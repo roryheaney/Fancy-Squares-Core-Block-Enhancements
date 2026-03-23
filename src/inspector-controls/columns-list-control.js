@@ -1,9 +1,13 @@
-import { PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody, ToggleControl } from '@wordpress/components';
 
-export default function ColumnsListControl( BlockEdit, props ) {
-	const { attributes, setAttributes } = props;
+export default function ColumnsListControl( { BlockEdit, ...props } ) {
+	const { attributes, setAttributes, isSelected } = props;
 	const { isList } = attributes;
+
+	if ( ! isSelected ) {
+		return <BlockEdit { ...props } />;
+	}
 
 	const toggleIsList = () => {
 		setAttributes( { isList: ! isList } );

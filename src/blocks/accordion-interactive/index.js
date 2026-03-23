@@ -3,13 +3,15 @@ import { InnerBlocks } from '@wordpress/block-editor';
 import edit from './edit';
 import metadata from './block.json';
 import { generateAttributes } from '../../utils/helpers';
+import { BLOCK_CONFIG } from '../../config/blockConfig';
 import './style.scss';
 import './editor.scss';
 
 export function registerAccordionInteractiveBlock() {
+	const config = BLOCK_CONFIG[ metadata.name ] || {};
 	const attributes = {
 		...metadata.attributes,
-		...generateAttributes(),
+		...generateAttributes( config ),
 	};
 
 	registerBlockType( metadata.name, {

@@ -1,6 +1,6 @@
-import lazyLoadVideos from './assets/js/lazyVideos';
-import initCustomPlayButtons from './assets/js/customPlayButtons';
-import initCarousel from './assets/js/carousel';
+import lazyLoadVideos from '../../assets/js/lazyVideos';
+import initCustomPlayButtons from '../../assets/js/customPlayButtons';
+import initCarousel from '../../assets/js/carousel';
 
 const init = () => {
 	lazyLoadVideos();

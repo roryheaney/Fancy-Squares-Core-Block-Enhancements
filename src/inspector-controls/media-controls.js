@@ -1,12 +1,11 @@
-import { PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { useEffect, useState } from '@wordpress/element';
+import { PanelBody, ToggleControl } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 
-export default function MediaControls( BlockEdit, props ) {
-	const { attributes, setAttributes, clientId, name } = props;
+export default function MediaControls( { BlockEdit, ...props } ) {
+	const { attributes, setAttributes, clientId, name, isSelected } = props;
 	const { lazyLoadVideo, useCustomPlayButton, disableForcedLazyLoading } =
 		attributes;
-	const [ hasPoster, setHasPoster ] = useState( false );
 
 	const isVideoBlock = name === 'core/video';
 	const isCoverBlock = name === 'core/cover';
@@ -14,31 +13,21 @@ export default function MediaControls( BlockEdit, props ) {
 	const showVideoLazyToggle = isVideoBlock || isCoverBlock;
 	const showForcedLazyOptOutToggle = isCoverBlock || isImageBlock;
 
-	useEffect( () => {
-		if ( ! isVideoBlock ) {
-			setHasPoster( false );
-			return;
-		}
+	const hasPoster = useSelect(
+		( select ) => {
+			if ( ! isVideoBlock ) {
+				return false;
+			}
+			const blockAttrs =
+				select( 'core/block-editor' ).getBlockAttributes( clientId );
+			return !! blockAttrs?.poster;
+		},
+		[ clientId, isVideoBlock ]
+	);
 
-		const videoEl = document.querySelector(
-			`[data-block="${ clientId }"] video`
-		);
-		setHasPoster( !! ( videoEl && videoEl.getAttribute( 'poster' ) ) );
-	}, [ clientId, isVideoBlock ] );
-
-	const toggleLazyLoad = () => {
-		setAttributes( { lazyLoadVideo: ! lazyLoadVideo } );
-	};
-
-	const toggleCustomPlayButton = () => {
-		setAttributes( { useCustomPlayButton: ! useCustomPlayButton } );
-	};
-
-	const toggleForcedLazyOptOut = () => {
-		setAttributes( {
-			disableForcedLazyLoading: ! disableForcedLazyLoading,
-		} );
-	};
+	if ( ! isSelected ) {
+		return <BlockEdit { ...props } />;
+	}
 
 	const hasEnabledSetting =
 		( showVideoLazyToggle && !! lazyLoadVideo ) ||
@@ -72,8 +61,12 @@ export default function MediaControls( BlockEdit, props ) {
 					{ showVideoLazyToggle && (
 						<ToggleControl
 							label="Lazy Load Video"
-							checked={ lazyLoadVideo }
-							onChange={ toggleLazyLoad }
+							checked={ !! lazyLoadVideo }
+							onChange={ () =>
+								setAttributes( {
+									lazyLoadVideo: ! lazyLoadVideo,
+								} )
+							}
 							help="Delay loading the video until it becomes visible."
 						/>
 					) }
@@ -82,7 +75,12 @@ export default function MediaControls( BlockEdit, props ) {
 						<ToggleControl
 							label="Disable forced image lazy loading"
 							checked={ !! disableForcedLazyLoading }
-							onChange={ toggleForcedLazyOptOut }
+							onChange={ () =>
+								setAttributes( {
+									disableForcedLazyLoading:
+										! disableForcedLazyLoading,
+								} )
+							}
 							help="Default is forced loading='lazy'. Enable this to skip the forced lazy-loading override for this block."
 						/>
 					) }
@@ -91,8 +89,13 @@ export default function MediaControls( BlockEdit, props ) {
 						<>
 							<ToggleControl
 								label="Use custom play button"
-								checked={ useCustomPlayButton }
-								onChange={ toggleCustomPlayButton }
+								checked={ !! useCustomPlayButton }
+								onChange={ () =>
+									setAttributes( {
+										useCustomPlayButton:
+											! useCustomPlayButton,
+									} )
+								}
 								help="Requires a poster image."
 							/>
 							{ useCustomPlayButton && ! hasPoster && (

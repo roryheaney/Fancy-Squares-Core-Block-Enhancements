@@ -75,7 +75,7 @@ per-render context stack:
 
 ## Media Notes
 
-- Videos use `data-fs-lazy-video` and are loaded by `src/frontend.js`.
+- Videos use `data-fs-lazy-video` and are loaded by `src/entries/frontend/index.js`.
 
 ## Key Files
 
@@ -84,3 +84,4 @@ per-render context stack:
 - `render.php` - computes context, emits `data-wp-context`
 - `view.js` - event listener + derived state
 - `style.scss` / `editor.scss` - layout and editor hints
+

@@ -1,8 +1,7 @@
 export * from './classes.js';
 export * from './bleed-cover-options.js';
 export * from './display-options.js';
-export * from './margin-options.js';
-export * from './padding-options.js';
+export * from './generated-spacing-options.js';
 export * from './position-options.js';
 export * from './zindex-options.js';
 export * from './blend-mode-options.js';
@@ -10,4 +9,3 @@ export * from './align-items-options.js';
 export * from './self-alignment-options.js';
 export * from './justify-content-options.js';
 export * from './order-options.js';
-export * from './gap-options.js';

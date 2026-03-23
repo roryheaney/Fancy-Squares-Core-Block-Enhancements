@@ -6,7 +6,7 @@
 // Forward all styles from the main stylesheet
 @forward "./style";
 @use "sass:map";
-@use "../../settings" as *;
+@use "../../styles/foundation/settings" as *;
 
 // Editor-specific overrides for vertical tabs
 // The editor has an extra .wp-block-fs-blocks-tabs-editor wrapper that
@@ -66,3 +66,4 @@
 		}
 	}
 }
+

@@ -6,15 +6,15 @@
  * Adds custom width controls to core/column for breakpoint-specific layouts.
  */
 
-import './block-enhancements.js';
+import '../../extensions/core/block-enhancements.js';
 
 // Import span modal
-import './formats/span-format.js';
+import '../../formats/span-format.js';
 
 // Import SCSS for compilation
-import './editor.scss';
+import '../styles/editor.scss';
 
 // Import helper modules
-import registerExtensions from './registerExtensions';
+import registerExtensions from '../../extensions/register-extensions';
 
 registerExtensions();

@@ -1,3 +1,6 @@
 build/
 node_modules/
 docs/
+src/config/generated/
+src/styles/generated/
+data/bootstrap-classes/generated-spacing-options.js

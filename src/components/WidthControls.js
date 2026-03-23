@@ -1,12 +1,26 @@
 // components/WidthControls.js
 import { PanelBody, Button, TabPanel } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
-import { BREAKPOINT_DIMENSIONS } from '../config/blockConfig';
+import {
+	getBreakpointAttributeKey,
+	getBreakpointDimension,
+	getWidthBreakpointLabel,
+	getWidthBreakpointShortLabel,
+	getWidthIconKey,
+	WIDTH_BREAKPOINT_KEYS,
+} from '../config/breakpoints';
 import WidthControl from './WidthControl';
 import desktopImage from '../assets/icons/desktop.png';
 import laptopImage from '../assets/icons/laptop.png';
 import tabletImage from '../assets/icons/tablet.png';
 import mobileImage from '../assets/icons/mobile.png';
+
+const ICONS_BY_KEY = {
+	desktop: desktopImage,
+	laptop: laptopImage,
+	tablet: tabletImage,
+	mobile: mobileImage,
+};
 
 const WidthControls = ( {
 	attributes,
@@ -24,90 +38,38 @@ const WidthControls = ( {
 		return null;
 	}
 
-	const hasAnyWidths =
-		hasValue( attributes.widthBase ) ||
-		hasValue( attributes.widthSm ) ||
-		hasValue( attributes.widthMd ) ||
-		hasValue( attributes.widthLg ) ||
-		hasValue( attributes.widthXl ) ||
-		hasValue( attributes.widthXXl );
-	const widthTabs = [
-		{
-			name: 'base',
-			label: 'Base',
-			shortLabel: 'Base',
-			subLabel: BREAKPOINT_DIMENSIONS[ '' ],
-			image: mobileImage,
-			attrKey: 'widthBase',
-			options: [
-				{ label: '100%', value: '' },
-				{ label: 'Automatically', value: 'auto' },
-			],
-		},
-		{
-			name: 'sm',
-			label: 'Mobile',
-			shortLabel: 'Sm',
-			subLabel: BREAKPOINT_DIMENSIONS.sm,
-			image: mobileImage,
-			attrKey: 'widthSm',
-			options: [
-				{ label: 'Inherit', value: '' },
-				{ label: 'Automatically', value: 'auto' },
-			],
-		},
-		{
-			name: 'md',
-			label: 'Tablet',
-			shortLabel: 'Md',
-			subLabel: BREAKPOINT_DIMENSIONS.md,
-			image: tabletImage,
-			attrKey: 'widthMd',
-			options: [
-				{ label: 'Inherit', value: '' },
-				{ label: 'Automatically', value: 'auto' },
-			],
-		},
-		{
-			name: 'lg',
-			label: 'Laptop',
-			shortLabel: 'Lg',
-			subLabel: BREAKPOINT_DIMENSIONS.lg,
-			image: laptopImage,
-			attrKey: 'widthLg',
-			options: [
-				{ label: 'Inherit', value: '' },
-				{ label: 'Automatically', value: 'auto' },
-			],
-		},
-		{
-			name: 'xl',
-			label: 'Larger Screen',
-			shortLabel: 'Xl',
-			subLabel: BREAKPOINT_DIMENSIONS.xl,
-			image: desktopImage,
-			attrKey: 'widthXl',
-			options: [
-				{ label: 'Inherit', value: '' },
-				{ label: 'Automatically', value: 'auto' },
-			],
-		},
-		{
-			name: 'xxl',
-			label: 'XXL Screen',
-			shortLabel: 'Xxl',
-			subLabel: BREAKPOINT_DIMENSIONS.xxl,
-			image: desktopImage,
-			attrKey: 'widthXXl',
-			options: [
-				{ label: 'Inherit', value: '' },
-				{ label: 'Automatically', value: 'auto' },
-			],
-		},
-	];
+	const widthTabs = WIDTH_BREAKPOINT_KEYS.map( ( breakpointKey ) => {
+		const isBase = ! breakpointKey;
+		return {
+			name: isBase ? 'base' : breakpointKey,
+			breakpoint: breakpointKey,
+			label: getWidthBreakpointLabel( breakpointKey ),
+			shortLabel: getWidthBreakpointShortLabel( breakpointKey ),
+			subLabel: getBreakpointDimension( breakpointKey ),
+			image:
+				ICONS_BY_KEY[ getWidthIconKey( breakpointKey ) ] ||
+				desktopImage,
+			attrKey: getBreakpointAttributeKey( 'width', breakpointKey ),
+			options: isBase
+				? [
+						{ label: '100%', value: '' },
+						{ label: 'Automatically', value: 'auto' },
+				  ]
+				: [
+						{ label: 'Inherit', value: '' },
+						{ label: 'Automatically', value: 'auto' },
+				  ],
+		};
+	} );
+
+	const hasAnyWidths = widthTabs.some( ( tab ) =>
+		hasValue( attributes[ tab.attrKey ] )
+	);
+
 	const activeLabels = widthTabs
 		.filter( ( tab ) => hasValue( attributes[ tab.attrKey ] ) )
 		.map( ( tab ) => tab.label );
+
 	return (
 		<PanelBody
 			title={
@@ -195,14 +157,12 @@ const WidthControls = ( {
 						return null;
 					}
 					const value = attributes[ configItem.attrKey ];
-					const breakpoint =
-						configItem.name === 'base' ? '' : configItem.name;
 					return (
 						<WidthControl
 							label={ configItem.label }
 							subLabel={ configItem.subLabel }
 							image={ configItem.image }
-							breakpoint={ breakpoint }
+							breakpoint={ configItem.breakpoint }
 							value={ value }
 							isActive={ hasValue( value ) }
 							onChange={ ( newValue ) =>

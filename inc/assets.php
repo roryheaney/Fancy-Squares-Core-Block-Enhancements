@@ -138,10 +138,59 @@ function fs_core_enhancements_register_frontend_assets() {
 			[],
 			$frontend_style_version
 		);
-		wp_enqueue_style( 'fs-core-enhancements-frontend-style' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'fs_core_enhancements_register_frontend_assets' );
+
+/**
+ * Conditionally enqueue the frontend stylesheet bundle.
+ */
+function fs_core_enhancements_enqueue_frontend_style() {
+	if ( wp_style_is( 'fs-core-enhancements-frontend-style', 'registered' ) ) {
+		wp_enqueue_style( 'fs-core-enhancements-frontend-style' );
+	}
+}
+
+/**
+ * Determine whether a rendered block requires frontend styles.
+ *
+ * @param string $block_name Block name.
+ * @param array  $attrs      Block attributes.
+ *
+ * @return bool
+ */
+function fs_core_enhancements_block_needs_frontend_style( $block_name, $attrs ) {
+	$class_name = isset( $attrs['className'] ) && is_string( $attrs['className'] )
+		? $attrs['className']
+		: '';
+
+	switch ( $block_name ) {
+		case 'core/columns':
+			return false !== strpos( $class_name, 'is-style-bootstrap' )
+				|| false !== strpos( $class_name, 'wp-block-columns--constrained' );
+		case 'core/column':
+			return false !== strpos( $class_name, 'wp-block-column--column' );
+		case 'core/cover':
+			if (
+				false !== strpos( $class_name, 'cover-negative-margin-left' ) ||
+				false !== strpos( $class_name, 'cover-negative-margin-right' )
+			) {
+				return true;
+			}
+
+			$bleed_cover = isset( $attrs['bleedCover'] ) && is_string( $attrs['bleedCover'] )
+				? $attrs['bleedCover']
+				: '';
+			return false !== strpos( $bleed_cover, 'cover-negative-margin' );
+		case 'core/video':
+			return ! empty( $attrs['useCustomPlayButton'] );
+		case 'fs-blocks/dynamic-picture-block':
+		case 'fs-blocks/carousel':
+			return true;
+		default:
+			return false;
+	}
+}
 
 /**
  * Enqueue frontend runtime script when needed.
@@ -158,7 +207,7 @@ function fs_core_enhancements_enqueue_frontend_runtime( $needs_swiper = false ) 
 }
 
 /**
- * Enqueue frontend runtime script only when required by rendered blocks.
+ * Enqueue frontend runtime script and styles only when required by rendered blocks.
  *
  * @param string $block_content Rendered block content.
  * @param array  $block Parsed block.
@@ -174,6 +223,10 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] )
 		? $block['attrs']
 		: [];
+
+	if ( fs_core_enhancements_block_needs_frontend_style( $block_name, $attrs ) ) {
+		fs_core_enhancements_enqueue_frontend_style();
+	}
 
 	if ( 'fs-blocks/carousel' === $block_name ) {
 		fs_core_enhancements_enqueue_frontend_runtime( true );

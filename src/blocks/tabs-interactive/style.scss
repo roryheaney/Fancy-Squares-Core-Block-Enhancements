@@ -2,7 +2,7 @@
  * Frontend styles for Interactive Tabs
  */
 @use "sass:map";
-@use "../../settings" as *;
+@use "../../styles/foundation/settings" as *;
 
 .wp-block-fs-blocks-tabs-interactive {
 	// Tab list - horizontal tabs at top
@@ -259,3 +259,4 @@
 		}
 	}
 }
+

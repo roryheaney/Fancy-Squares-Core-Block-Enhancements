@@ -7,7 +7,7 @@ import { PanelBody, SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useMemo } from '@wordpress/element';
 
-import { alertOptions } from '../../../data/bootstrap-classes/classes.js';
+import { alertOptions } from '../../config/framework-option-sets';
 import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { BLOCK_CONFIG } from '../../config/blockConfig';

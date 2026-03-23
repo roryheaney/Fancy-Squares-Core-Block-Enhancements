@@ -1,0 +1,11 @@
+// ==========================================
+// File: _settings.scss
+// ==========================================
+
+@use "../generated/framework-tokens" as tokens;
+
+$grid-breakpoints: tokens.$framework-grid-breakpoints !default;
+$container-max-widths: tokens.$framework-container-max-widths !default;
+$framework-spacing-scale: tokens.$framework-spacing-scale !default;
+$framework-half-gap: tokens.$framework-half-gap !default;
+$framework-container-padding-x: tokens.$framework-container-padding-x !default;

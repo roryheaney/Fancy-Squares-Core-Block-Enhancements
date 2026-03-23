@@ -19,7 +19,7 @@ import { useSelect } from '@wordpress/data';
 import {
 	borderOptions,
 	borderRadiusOptions,
-} from '../../../data/bootstrap-classes/classes.js';
+} from '../../config/framework-option-sets';
 import { getDisplayValues, getValuesFromDisplay } from '../../utils/helpers.js';
 const FILLER_IMAGE_DATA =
 	'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';

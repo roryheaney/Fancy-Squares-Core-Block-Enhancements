@@ -11,6 +11,10 @@ import {
 } from '@wordpress/icons';
 
 import SpacingControl from './SpacingControl';
+import {
+	getBreakpointAttributeKey,
+	SPACING_BREAKPOINT_KEYS,
+} from '../config/breakpoints';
 
 const CONTROL_OPTIONS = [
 	{ name: 'all', label: 'All Sides', icon: sidesAll },
@@ -81,15 +85,10 @@ const SpacingControls = ( {
 	);
 
 	const getKeys = ( name ) => {
-		const capitalizedType = capitalize( name );
-		return [
-			`${ attributePrefix }${ capitalizedType }Base`,
-			`${ attributePrefix }${ capitalizedType }Sm`,
-			`${ attributePrefix }${ capitalizedType }Md`,
-			`${ attributePrefix }${ capitalizedType }Lg`,
-			`${ attributePrefix }${ capitalizedType }Xl`,
-			`${ attributePrefix }${ capitalizedType }Xxl`,
-		];
+		const controlPrefix = `${ attributePrefix }${ capitalize( name ) }`;
+		return SPACING_BREAKPOINT_KEYS.map( ( breakpointKey ) =>
+			getBreakpointAttributeKey( controlPrefix, breakpointKey )
+		);
 	};
 
 	const isTabActive = ( option ) =>
@@ -104,13 +103,22 @@ const SpacingControls = ( {
 	const hasActive = activeLabels.length > 0;
 
 	const renderControl = ( option ) => {
-		const capitalizedType = capitalize( option.name );
-		const baseKey = `${ attributePrefix }${ capitalizedType }Base`;
-		const smKey = `${ attributePrefix }${ capitalizedType }Sm`;
-		const mdKey = `${ attributePrefix }${ capitalizedType }Md`;
-		const lgKey = `${ attributePrefix }${ capitalizedType }Lg`;
-		const xlKey = `${ attributePrefix }${ capitalizedType }Xl`;
-		const xxlKey = `${ attributePrefix }${ capitalizedType }Xxl`;
+		if ( ! option ) {
+			return null;
+		}
+
+		const controlPrefix = `${ attributePrefix }${ capitalize(
+			option.name
+		) }`;
+		const values = {};
+
+		for ( const breakpointKey of SPACING_BREAKPOINT_KEYS ) {
+			const attrKey = getBreakpointAttributeKey(
+				controlPrefix,
+				breakpointKey
+			);
+			values[ breakpointKey ] = attributes[ attrKey ];
+		}
 
 		return (
 			<SpacingControl
@@ -118,30 +126,14 @@ const SpacingControls = ( {
 				label={ option.label }
 				subLabel={ subLabel }
 				icon={ option.icon }
-				baseValue={ attributes[ baseKey ] }
-				smValue={ attributes[ smKey ] }
-				mdValue={ attributes[ mdKey ] }
-				lgValue={ attributes[ lgKey ] }
-				xlValue={ attributes[ xlKey ] }
-				xxlValue={ attributes[ xxlKey ] }
-				onChangeBase={ ( value ) =>
-					setAttributes( { [ baseKey ]: value } )
-				}
-				onChangeSm={ ( value ) =>
-					setAttributes( { [ smKey ]: value } )
-				}
-				onChangeMd={ ( value ) =>
-					setAttributes( { [ mdKey ]: value } )
-				}
-				onChangeLg={ ( value ) =>
-					setAttributes( { [ lgKey ]: value } )
-				}
-				onChangeXl={ ( value ) =>
-					setAttributes( { [ xlKey ]: value } )
-				}
-				onChangeXxl={ ( value ) =>
-					setAttributes( { [ xxlKey ]: value } )
-				}
+				values={ values }
+				onChange={ ( breakpointKey, value ) => {
+					const attrKey = getBreakpointAttributeKey(
+						controlPrefix,
+						breakpointKey
+					);
+					setAttributes( { [ attrKey ]: value } );
+				} }
 			/>
 		);
 	};

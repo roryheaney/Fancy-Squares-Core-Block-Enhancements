@@ -1,0 +1,11 @@
+// ==========================================
+// File: frontend.scss
+// Frontend-only styles for core block enhancements
+// ==========================================
+
+@use "../../styles/components/columns";
+@use "../../assets/scss/cover-block";
+@use "../../assets/scss/video-block";
+@use "../../assets/scss/picture-block";
+@use "../../assets/scss/carousel-block";
+@include columns.render-column-enhancements();

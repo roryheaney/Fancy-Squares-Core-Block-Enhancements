@@ -4,7 +4,74 @@ import {
 	MARGIN_SIDE_TYPES,
 	NEGATIVE_MARGIN_SIDE_TYPES,
 } from '../config/constants';
+import {
+	getBreakpointAttributeKey,
+	getBreakpointAttributeSuffix,
+	SPACING_BREAKPOINT_KEYS,
+	WIDTH_BREAKPOINT_KEYS,
+} from '../config/breakpoints';
 
+const SPACING_CONTROL_SUFFIXES = {
+	all: 'All',
+	horizontal: 'Horizontal',
+	vertical: 'Vertical',
+	top: 'Top',
+	right: 'Right',
+	bottom: 'Bottom',
+	left: 'Left',
+};
+
+const SPACING_CONTROL_KEYS = Object.keys( SPACING_CONTROL_SUFFIXES );
+
+const getAllowedControls = ( controls ) => {
+	if ( ! Array.isArray( controls ) || controls.length === 0 ) {
+		return [];
+	}
+
+	return controls.filter( ( control ) =>
+		Object.prototype.hasOwnProperty.call(
+			SPACING_CONTROL_SUFFIXES,
+			control
+		)
+	);
+};
+
+const addSpacingAttributes = ( attributes, prefix, controls ) => {
+	for ( const control of controls ) {
+		const suffix = SPACING_CONTROL_SUFFIXES[ control ];
+		for ( const breakpointKey of SPACING_BREAKPOINT_KEYS ) {
+			attributes[
+				`${ prefix }${ suffix }${ getBreakpointAttributeSuffix(
+					breakpointKey
+				) }`
+			] = {
+				type: 'string',
+				default: '',
+			};
+		}
+	}
+};
+
+const getNegativeSpacingSlug = ( value ) => {
+	if ( value === undefined || value === null ) {
+		return '';
+	}
+
+	const raw = String( value ).trim();
+	if ( ! raw || raw === '0' || raw === '-0' ) {
+		return '';
+	}
+
+	if ( raw.startsWith( '-' ) ) {
+		return raw.slice( 1 );
+	}
+
+	if ( raw.startsWith( 'n' ) ) {
+		return raw.slice( 1 );
+	}
+
+	return raw;
+};
 export function getDisplayValues( values, options, showValues ) {
 	const result = [];
 	for ( const value of values ) {
@@ -33,42 +100,59 @@ export function getSuggestions( options, showValues ) {
 	return options.map( ( item ) => ( showValues ? item.value : item.label ) );
 }
 
-export function generateAttributes() {
+export function generateAttributes( config = null ) {
 	const attributes = {};
-	const breakpoints = [ 'Base', 'Sm', 'Md', 'Lg', 'Xl', 'Xxl' ];
-	const sides = [
-		'All',
-		'Horizontal',
-		'Vertical',
-		'Top',
-		'Right',
-		'Bottom',
-		'Left',
-	];
 
-	// Generate padding attributes
-	sides.forEach( ( side ) => {
-		breakpoints.forEach( ( breakpoint ) => {
-			const attrKey = `padding${ side }${ breakpoint }`;
-			attributes[ attrKey ] = { type: 'string', default: '' };
-		} );
-	} );
+	const isLegacyCall = ! config;
+	const paddingControls = isLegacyCall
+		? SPACING_CONTROL_KEYS
+		: getAllowedControls( config.allowedPaddingControls );
+	const positiveMarginControls = isLegacyCall
+		? SPACING_CONTROL_KEYS
+		: getAllowedControls( config.allowedPositiveMarginControls );
+	const negativeMarginControls = isLegacyCall
+		? SPACING_CONTROL_KEYS
+		: getAllowedControls( config.allowedNegativeMarginControls );
 
-	// Generate positive margin attributes
-	sides.forEach( ( side ) => {
-		breakpoints.forEach( ( breakpoint ) => {
-			const attrKey = `margin${ side }${ breakpoint }`;
-			attributes[ attrKey ] = { type: 'string', default: '' };
-		} );
-	} );
+	addSpacingAttributes( attributes, 'padding', paddingControls );
+	addSpacingAttributes( attributes, 'margin', positiveMarginControls );
+	addSpacingAttributes(
+		attributes,
+		'negativeMargin',
+		negativeMarginControls
+	);
 
-	// Generate negative margin attributes
-	sides.forEach( ( side ) => {
-		breakpoints.forEach( ( breakpoint ) => {
-			const attrKey = `negativeMargin${ side }${ breakpoint }`;
-			attributes[ attrKey ] = { type: 'string', default: '' };
-		} );
-	} );
+	for ( const classType of config?.classOptions || [] ) {
+		attributes[ `${ classType }Classes` ] = {
+			type: 'array',
+			items: { type: 'string' },
+			default: [],
+		};
+	}
+
+	if ( config?.dropdown?.attributeKey ) {
+		attributes[ config.dropdown.attributeKey ] = {
+			type: 'string',
+			default: config.dropdown.default || 'none',
+		};
+	}
+
+	if ( config?.hasWidthControls ) {
+		for ( const breakpointKey of WIDTH_BREAKPOINT_KEYS ) {
+			attributes[ getBreakpointAttributeKey( 'width', breakpointKey ) ] =
+				{
+					type: 'string',
+					default: '',
+				};
+		}
+	}
+
+	if ( config?.hasConstrainToggle ) {
+		attributes.isConstrained = {
+			type: 'boolean',
+			default: false,
+		};
+	}
 
 	return attributes;
 }
@@ -94,41 +178,28 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 		combinedTokens.push( uniqueVal );
 	}
 
-	// Add width classes for core/column
+	// Add width classes for blocks using width controls.
 	if ( config.hasWidthControls ) {
-		const { widthBase, widthSm, widthMd, widthLg, widthXl, widthXXl } =
-			attributes;
-		if ( widthBase && widthBase !== 'auto' && widthBase !== '' ) {
-			combinedTokens.push( widthBase );
-		}
-		if ( widthSm && widthSm !== 'auto' && widthSm !== '' ) {
-			combinedTokens.push( widthSm );
-		}
-		if ( widthMd && widthMd !== 'auto' && widthMd !== '' ) {
-			combinedTokens.push( widthMd );
-		}
-		if ( widthLg && widthLg !== 'auto' && widthLg !== '' ) {
-			combinedTokens.push( widthLg );
-		}
-		if ( widthXl && widthXl !== 'auto' && widthXl !== '' ) {
-			combinedTokens.push( widthXl );
-		}
-		if ( widthXXl && widthXXl !== 'auto' && widthXXl !== '' ) {
-			combinedTokens.push( widthXXl );
+		for ( const breakpointKey of WIDTH_BREAKPOINT_KEYS ) {
+			const widthAttrKey = getBreakpointAttributeKey(
+				'width',
+				breakpointKey
+			);
+			const widthValue = attributes[ widthAttrKey ];
+			if ( widthValue && widthValue !== 'auto' && widthValue !== '' ) {
+				combinedTokens.push( widthValue );
+			}
 		}
 	}
 
-	// Add padding classes
-	const breakpoints = [ '', 'sm', 'md', 'lg', 'xl', 'xxl' ];
+	// Add spacing classes.
+	const breakpoints = SPACING_BREAKPOINT_KEYS;
 
 	PADDING_SIDE_TYPES.forEach( ( sideType ) => {
 		breakpoints.forEach( ( breakpoint ) => {
-			const attrKey = `${ sideType.key }${
+			const attrKey = `${ sideType.key }${ getBreakpointAttributeSuffix(
 				breakpoint
-					? breakpoint.charAt( 0 ).toUpperCase() +
-					  breakpoint.slice( 1 )
-					: 'Base'
-			}`;
+			) }`;
 			const value = attributes[ attrKey ];
 			if ( value && value !== '' ) {
 				const breakpointSuffix = breakpoint ? `-${ breakpoint }` : '';
@@ -147,15 +218,11 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 		} );
 	} );
 
-	// Add positive margin classes
 	MARGIN_SIDE_TYPES.forEach( ( sideType ) => {
 		breakpoints.forEach( ( breakpoint ) => {
-			const attrKey = `${ sideType.key }${
+			const attrKey = `${ sideType.key }${ getBreakpointAttributeSuffix(
 				breakpoint
-					? breakpoint.charAt( 0 ).toUpperCase() +
-					  breakpoint.slice( 1 )
-					: 'Base'
-			}`;
+			) }`;
 			const value = attributes[ attrKey ];
 			if ( value && value !== '' ) {
 				const breakpointSuffix = breakpoint ? `-${ breakpoint }` : '';
@@ -174,36 +241,25 @@ export const generateClassName = ( attributes, blockName, BLOCK_CONFIG ) => {
 		} );
 	} );
 
-	// Add negative margin classes
-	// utils/helpers.js (snippet)
 	NEGATIVE_MARGIN_SIDE_TYPES.forEach( ( sideType ) => {
 		breakpoints.forEach( ( breakpoint ) => {
-			const attrKey = `${ sideType.key }${
+			const attrKey = `${ sideType.key }${ getBreakpointAttributeSuffix(
 				breakpoint
-					? breakpoint.charAt( 0 ).toUpperCase() +
-					  breakpoint.slice( 1 )
-					: 'Base'
-			}`;
+			) }`;
 			const value = attributes[ attrKey ];
-			if ( value && value !== '' ) {
-				const intVal = parseInt( value, 10 );
-				// Skip if value is zero which represents no negative margin
-				if ( intVal !== 0 && ! isNaN( intVal ) ) {
-					const breakpointSuffix = breakpoint
-						? `-${ breakpoint }`
-						: '';
-					const negativeValue = Math.abs( intVal );
-					if ( Array.isArray( sideType.prefix ) ) {
-						sideType.prefix.forEach( ( prefix ) => {
-							combinedTokens.push(
-								`${ prefix }${ breakpointSuffix }-n${ negativeValue }`
-							);
-						} );
-					} else {
+			const negativeSlug = getNegativeSpacingSlug( value );
+			if ( negativeSlug ) {
+				const breakpointSuffix = breakpoint ? `-${ breakpoint }` : '';
+				if ( Array.isArray( sideType.prefix ) ) {
+					sideType.prefix.forEach( ( prefix ) => {
 						combinedTokens.push(
-							`${ sideType.prefix }${ breakpointSuffix }-n${ negativeValue }`
+							`${ prefix }${ breakpointSuffix }-n${ negativeSlug }`
 						);
-					}
+					} );
+				} else {
+					combinedTokens.push(
+						`${ sideType.prefix }${ breakpointSuffix }-n${ negativeSlug }`
+					);
 				}
 			}
 		} );

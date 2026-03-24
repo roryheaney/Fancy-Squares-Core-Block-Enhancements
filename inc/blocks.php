@@ -14,10 +14,6 @@ function fs_core_enhancements_register_interactivity_module() {
 		return;
 	}
 
-	if ( wp_script_is( '@wordpress/interactivity', 'registered' ) ) {
-		return;
-	}
-
 	wp_register_script_module(
 		'@wordpress/interactivity',
 		includes_url( 'js/dist/interactivity.min.js' ),

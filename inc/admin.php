@@ -298,7 +298,9 @@ function fs_core_enhancements_enqueue_utilities_css() {
 		return;
 	}
 
-	if ( 'editor' === $utilities_setting && ! is_admin() ) {
+	// Frontend utilities are conditionally enqueued in inc/assets.php.
+	// Keep this path editor-only so settings and runtime conditions do not conflict.
+	if ( ! is_admin() ) {
 		return;
 	}
 

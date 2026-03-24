@@ -14,7 +14,11 @@ defined('ABSPATH') || exit;
  * @return string Modified block HTML.
  */
 function fs_accordion_interactive_render_block($block_content, $block) {
-	if ('fs-blocks/accordion-interactive' !== $block['blockName']) {
+	if (
+		! is_array( $block ) ||
+		! isset( $block['blockName'] ) ||
+		'fs-blocks/accordion-interactive' !== $block['blockName']
+	) {
 		return $block_content;
 	}
 

@@ -139,6 +139,24 @@ function fs_core_enhancements_register_frontend_assets() {
 			$frontend_style_version
 		);
 	}
+
+	$utilities_style_file = $plugin_dir . 'build/utilities.css';
+	if ( file_exists( $utilities_style_file ) ) {
+		$utilities_style_version = $frontend_version;
+		$utilities_style_asset_file = $plugin_dir . 'build/utilities.asset.php';
+		if ( file_exists( $utilities_style_asset_file ) ) {
+			$utilities_style_asset = include $utilities_style_asset_file;
+			$utilities_style_version =
+				$utilities_style_asset['version'] ?? $utilities_style_version;
+		}
+
+		wp_register_style(
+			'fs-core-enhancements-utilities',
+			$plugin_url . 'build/utilities.css',
+			[],
+			$utilities_style_version
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'fs_core_enhancements_register_frontend_assets' );
 
@@ -149,6 +167,150 @@ function fs_core_enhancements_enqueue_frontend_style() {
 	if ( wp_style_is( 'fs-core-enhancements-frontend-style', 'registered' ) ) {
 		wp_enqueue_style( 'fs-core-enhancements-frontend-style' );
 	}
+}
+
+/**
+ * Get utilities CSS load setting.
+ *
+ * @return string One of `off`, `editor`, or `both`.
+ */
+function fs_core_enhancements_get_utilities_setting() {
+	$option_name = defined( 'FS_CORE_ENHANCEMENTS_OPTION_UTILITIES' )
+		? FS_CORE_ENHANCEMENTS_OPTION_UTILITIES
+		: 'fs_core_enhancements_utilities_css';
+
+	$value = get_option( $option_name, 'off' );
+	$allowed = [ 'off', 'editor', 'both' ];
+
+	if ( ! is_string( $value ) || ! in_array( $value, $allowed, true ) ) {
+		return 'off';
+	}
+
+	return $value;
+}
+
+/**
+ * Determine whether utilities stylesheet is allowed on the frontend.
+ *
+ * @return bool
+ */
+function fs_core_enhancements_should_enqueue_utilities_frontend() {
+	return 'both' === fs_core_enhancements_get_utilities_setting();
+}
+
+/**
+ * Conditionally enqueue generated utility classes.
+ */
+function fs_core_enhancements_enqueue_utilities_style() {
+	if ( ! fs_core_enhancements_should_enqueue_utilities_frontend() ) {
+		return;
+	}
+
+	if ( wp_style_is( 'fs-core-enhancements-utilities', 'registered' ) ) {
+		wp_enqueue_style( 'fs-core-enhancements-utilities' );
+	}
+}
+
+/**
+ * Detect whether a class token is provided by utilities.css.
+ *
+ * @param string $token Candidate class token.
+ *
+ * @return bool
+ */
+function fs_core_enhancements_is_utility_token( $token ) {
+	if ( ! is_string( $token ) ) {
+		return false;
+	}
+
+	$token = trim( $token );
+	if ( '' === $token ) {
+		return false;
+	}
+
+	return 1 === preg_match(
+		'/^(?:' .
+		'[mp][trbsexy]?-(?:[a-z0-9]+-)?(?:n)?[a-z0-9][a-z0-9-]*' .
+		'|' .
+		'[mp][trbsexy]?-(?:[a-z0-9]+-)?auto' .
+		'|' .
+		'(?:row-|column-)?gap(?:-[a-z0-9]+)?-[a-z0-9][a-z0-9-]*' .
+		'|' .
+		'd(?:-[a-z0-9]+)?-[a-z-]+' .
+		'|' .
+		'justify-content(?:-[a-z0-9]+)?-[a-z-]+' .
+		'|' .
+		'align-(?:items|self)(?:-[a-z0-9]+)?-[a-z-]+' .
+		'|' .
+		'order(?:-[a-z0-9]+)?-(?:[0-9]+|first|last)' .
+		'|' .
+		'position-[a-z]+' .
+		'|' .
+		'(?:top|bottom|start|end)-(?:0|50|100)' .
+		'|' .
+		'translate-middle(?:-x|-y)?' .
+		'|' .
+		'z-(?:n1|0|1|2|3)' .
+		'|' .
+		'mix-blend-[a-z-]+' .
+		')$/',
+		$token
+	);
+}
+
+/**
+ * Determine whether a block uses generated utility classes.
+ *
+ * @param array $attrs Block attributes.
+ *
+ * @return bool
+ */
+function fs_core_enhancements_block_needs_utilities( $attrs ) {
+	if ( ! is_array( $attrs ) ) {
+		return false;
+	}
+
+	foreach ( $attrs as $key => $value ) {
+		if ( ! is_string( $key ) ) {
+			continue;
+		}
+
+		$is_spacing_attribute =
+			0 === strpos( $key, 'padding' ) ||
+			0 === strpos( $key, 'margin' ) ||
+			0 === strpos( $key, 'negativeMargin' );
+
+		if ( $is_spacing_attribute && is_string( $value ) && '' !== trim( $value ) ) {
+			return true;
+		}
+
+		if ( 'Classes' === substr( $key, -7 ) ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value as $token ) {
+					if ( fs_core_enhancements_is_utility_token( $token ) ) {
+						return true;
+					}
+				}
+			} elseif ( is_string( $value ) && fs_core_enhancements_is_utility_token( $value ) ) {
+				return true;
+			}
+		}
+	}
+
+	$class_name = isset( $attrs['className'] ) && is_string( $attrs['className'] )
+		? $attrs['className']
+		: '';
+	if ( '' === $class_name ) {
+		return false;
+	}
+
+	foreach ( preg_split( '/\s+/', $class_name ) as $token ) {
+		if ( fs_core_enhancements_is_utility_token( $token ) ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -226,6 +388,10 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 
 	if ( fs_core_enhancements_block_needs_frontend_style( $block_name, $attrs ) ) {
 		fs_core_enhancements_enqueue_frontend_style();
+	}
+
+	if ( fs_core_enhancements_block_needs_utilities( $attrs ) ) {
+		fs_core_enhancements_enqueue_utilities_style();
 	}
 
 	if ( 'fs-blocks/carousel' === $block_name ) {

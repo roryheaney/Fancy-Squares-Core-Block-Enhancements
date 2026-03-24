@@ -276,6 +276,7 @@ Note: `core/button` and `core/image` are enhanced via filters and inspector cont
 -   Carousel outputs Swiper markup with `data-swiper` configuration; Swiper assets are loaded only when a carousel block is rendered.
 -   Frontend runtime (`build/frontend.js`) is enqueued only when needed by rendered blocks (carousel, lazy video/custom play button scenarios, cover lazy video, and showcase/accordion integrations).
 -   Frontend style bundle (`build/frontend-styles.css`) is conditionally enqueued only when style-dependent blocks/features are rendered (columns custom-width classes, cover bleed classes, custom video play overlay, dynamic picture block, carousel).
+-   Utility style bundle (`build/utilities.css`) is conditionally enqueued when rendered blocks include generated utility classes (spacing, gap, display, flex, position, z-index, blend) and the Utilities CSS mode is set to `Editor + front end`.
 -   Content Showcase collects accordion item media data on the server and emits it as local context; the showcase wrapper updates `activeItemId` on the `shown.fs.accordion` event.
 -   A render filter maintains a per-render context stack so the showcase gallery can SSR before the wrapper outputs its context.
 

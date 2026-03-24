@@ -13,28 +13,138 @@ import {
 import {
 	Modal,
 	Button,
-	FormTokenField,
-	ColorPicker,
-	Tooltip, // If WP < 6.3, consider __experimentalTooltip as Tooltip
+	ComboboxControl,
+	ColorPalette,
 	CheckboxControl,
+	TextControl,
 } from '@wordpress/components';
 
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-import {
-	getDisplayValues,
-	getValuesFromDisplay,
-	getSuggestions,
-} from '../utils/helpers';
+let spanClassOptionsPromise = null;
 
-// Import your Bootstrap arrays (minus z-index, blend modes, etc.)
-import {
-	displayOptions,
-	marginOptions,
-	paddingOptions,
-	positionOptions,
-} from '../../data/bootstrap-classes/index.js';
+const loadSpanClassOptions = async () => {
+	if ( ! spanClassOptionsPromise ) {
+		spanClassOptionsPromise = import(
+			'../../data/bootstrap-classes/index.js'
+		).then( ( optionsModule ) => ( {
+			displayOptions: optionsModule.displayOptions || [],
+			marginOptions: optionsModule.marginOptions || [],
+			paddingOptions: optionsModule.paddingOptions || [],
+			positionOptions: optionsModule.positionOptions || [],
+		} ) );
+	}
+
+	return spanClassOptionsPromise;
+};
+
+const dedupeTokens = ( tokens ) => [
+	...new Set( ( Array.isArray( tokens ) ? tokens : [] ).filter( Boolean ) ),
+];
+
+const getOptionLabel = ( option, showValues ) => {
+	if ( ! option ) {
+		return '';
+	}
+
+	if ( showValues ) {
+		return option.value;
+	}
+
+	return option.label || option.value;
+};
+
+function TokenSelectorControl( {
+	label,
+	options,
+	values,
+	onAddToken,
+	onRemoveToken,
+	showValues,
+} ) {
+	const [ pendingToken, setPendingToken ] = useState( '' );
+
+	const selectOptions = ( Array.isArray( options ) ? options : [] ).map(
+		( option ) => ( {
+			value: option.value,
+			label: getOptionLabel( option, showValues ),
+		} )
+	);
+
+	return (
+		<div style={ { marginBottom: '1rem' } }>
+			<div style={ { marginBottom: '0.5rem', fontWeight: 600 } }>
+				{ label }
+			</div>
+			<div
+				style={ {
+					display: 'grid',
+					gridTemplateColumns: '1fr auto',
+					gap: '0.5rem',
+					alignItems: 'end',
+				} }
+			>
+				<ComboboxControl
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+					label={ __( 'Search and select class', 'fs-blocks' ) }
+					value={ pendingToken }
+					options={ selectOptions }
+					onChange={ ( nextValue ) =>
+						setPendingToken( nextValue || '' )
+					}
+				/>
+				<Button
+					variant="secondary"
+					onClick={ () => {
+						if ( ! pendingToken ) {
+							return;
+						}
+						onAddToken( pendingToken );
+						setPendingToken( '' );
+					} }
+					disabled={ ! pendingToken }
+				>
+					{ __( 'Add', 'fs-blocks' ) }
+				</Button>
+			</div>
+			<div
+				style={ {
+					marginTop: '0.5rem',
+					display: 'flex',
+					flexWrap: 'wrap',
+					gap: '0.5rem',
+				} }
+			>
+				{ values.length === 0 && (
+					<span style={ { fontSize: '12px', opacity: 0.75 } }>
+						{ __( 'No classes selected.', 'fs-blocks' ) }
+					</span>
+				) }
+				{ values.map( ( token ) => {
+					const matchedOption = ( options || [] ).find(
+						( option ) => option.value === token
+					);
+					const tokenLabel = matchedOption
+						? getOptionLabel( matchedOption, showValues )
+						: token;
+
+					return (
+						<Button
+							key={ `${ label }-${ token }` }
+							variant="tertiary"
+							onClick={ () => onRemoveToken( token ) }
+							style={ { border: '1px solid #dcdcde' } }
+						>
+							{ tokenLabel } ×
+						</Button>
+					);
+				} ) }
+			</div>
+		</div>
+	);
+}
 
 /*
  * Edit component for the "fs/span" RichText format.
@@ -49,16 +159,27 @@ import {
 function EditSpan( { isActive, value, onChange } ) {
 	// Modal open/close
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
+	const [ classOptionsReady, setClassOptionsReady ] = useState( false );
+	const [ classOptions, setClassOptions ] = useState( {
+		displayOptions: [],
+		marginOptions: [],
+		paddingOptions: [],
+		positionOptions: [],
+	} );
 
 	// States for class tokens
 	const [ displayTokens, setDisplayTokens ] = useState( [] );
 	const [ marginTokens, setMarginTokens ] = useState( [] );
 	const [ paddingTokens, setPaddingTokens ] = useState( [] );
 	const [ positionTokens, setPositionTokens ] = useState( [] );
+	const [ otherTokens, setOtherTokens ] = useState( [] );
 
 	// States for inline color styles
 	const [ textColor, setTextColor ] = useState( '' );
 	const [ backgroundColor, setBackgroundColor ] = useState( '' );
+	const [ otherStyleDeclarations, setOtherStyleDeclarations ] = useState(
+		[]
+	);
 
 	// Toggle between showing class labels or values
 	const [ showValues, setShowValues ] = useState( false );
@@ -70,12 +191,37 @@ function EditSpan( { isActive, value, onChange } ) {
 	 * Toggle the format: if it's active, parse existing data so user can edit;
 	 * otherwise, open the modal fresh.
 	 */
-	function onToggleFormat() {
+	async function onToggleFormat() {
+		const loadedClassOptions = await ensureClassOptionsLoaded();
+
 		if ( isActive ) {
-			populateExistingFormat();
+			populateExistingFormat( loadedClassOptions );
 		} else {
+			resetEditingState();
 			openModal();
 		}
+	}
+
+	function resetEditingState() {
+		setDisplayTokens( [] );
+		setMarginTokens( [] );
+		setPaddingTokens( [] );
+		setPositionTokens( [] );
+		setOtherTokens( [] );
+		setTextColor( '' );
+		setBackgroundColor( '' );
+		setOtherStyleDeclarations( [] );
+	}
+
+	async function ensureClassOptionsLoaded() {
+		if ( classOptionsReady ) {
+			return classOptions;
+		}
+
+		const loaded = await loadSpanClassOptions();
+		setClassOptions( loaded );
+		setClassOptionsReady( true );
+		return loaded;
 	}
 
 	function openModal() {
@@ -87,8 +233,10 @@ function EditSpan( { isActive, value, onChange } ) {
 
 	/**
 	 * Parse the existing <span> attributes: classes & inline style
+	 *
+	 * @param {Object} loadedClassOptions Loaded token option arrays.
 	 */
-	function populateExistingFormat() {
+	function populateExistingFormat( loadedClassOptions = classOptions ) {
 		const activeSpan = getActiveFormat( value, 'fs/span' );
 		if ( ! activeSpan ) {
 			openModal();
@@ -103,15 +251,24 @@ function EditSpan( { isActive, value, onChange } ) {
 			.filter( ( c ) => c && c !== 'fs-span-base' );
 
 		// Convert arrays to plain strings for membership checks
-		const displayVals = displayOptions.map( ( o ) => o.value );
-		const marginVals = marginOptions.map( ( o ) => o.value );
-		const paddingVals = paddingOptions.map( ( o ) => o.value );
-		const positionVals = positionOptions.map( ( o ) => o.value );
+		const displayVals = loadedClassOptions.displayOptions.map(
+			( o ) => o.value
+		);
+		const marginVals = loadedClassOptions.marginOptions.map(
+			( o ) => o.value
+		);
+		const paddingVals = loadedClassOptions.paddingOptions.map(
+			( o ) => o.value
+		);
+		const positionVals = loadedClassOptions.positionOptions.map(
+			( o ) => o.value
+		);
 
 		const pickedDisplay = [];
 		const pickedMargin = [];
 		const pickedPadding = [];
 		const pickedPosition = [];
+		const pickedOther = [];
 
 		classArray.forEach( ( cls ) => {
 			if ( displayVals.includes( cls ) ) {
@@ -122,6 +279,8 @@ function EditSpan( { isActive, value, onChange } ) {
 				pickedPadding.push( cls );
 			} else if ( positionVals.includes( cls ) ) {
 				pickedPosition.push( cls );
+			} else {
+				pickedOther.push( cls );
 			}
 		} );
 
@@ -129,19 +288,50 @@ function EditSpan( { isActive, value, onChange } ) {
 		setMarginTokens( pickedMargin );
 		setPaddingTokens( pickedPadding );
 		setPositionTokens( pickedPosition );
+		setOtherTokens( pickedOther );
 
-		// 2) Inline style (e.g., "color: #FFF; background-color: #000;")
+		// 2) Inline styles (preserve unknown declarations).
 		const styleAttr = activeSpan.attributes?.style || '';
-		const getStyleValue = ( style, prop ) => {
-			const match = style.match(
-				new RegExp( `(?:^|;)\\s*${ prop }\\s*:\\s*([^;]+)`, 'i' )
-			);
-			return match ? match[ 1 ].trim() : '';
-		};
-		setTextColor( styleAttr ? getStyleValue( styleAttr, 'color' ) : '' );
-		setBackgroundColor(
-			styleAttr ? getStyleValue( styleAttr, 'background-color' ) : ''
-		);
+		const declarations = styleAttr
+			.split( ';' )
+			.map( ( declaration ) => declaration.trim() )
+			.filter( Boolean );
+
+		let nextTextColor = '';
+		let nextBackgroundColor = '';
+		const nextOtherDeclarations = [];
+
+		declarations.forEach( ( declaration ) => {
+			const separatorIndex = declaration.indexOf( ':' );
+			if ( separatorIndex < 0 ) {
+				nextOtherDeclarations.push( declaration );
+				return;
+			}
+
+			const property = declaration
+				.slice( 0, separatorIndex )
+				.trim()
+				.toLowerCase();
+			const propertyValue = declaration
+				.slice( separatorIndex + 1 )
+				.trim();
+
+			if ( property === 'color' ) {
+				nextTextColor = propertyValue;
+				return;
+			}
+
+			if ( property === 'background-color' ) {
+				nextBackgroundColor = propertyValue;
+				return;
+			}
+
+			nextOtherDeclarations.push( `${ property }: ${ propertyValue }` );
+		} );
+
+		setTextColor( nextTextColor );
+		setBackgroundColor( nextBackgroundColor );
+		setOtherStyleDeclarations( nextOtherDeclarations );
 
 		openModal();
 	}
@@ -151,12 +341,13 @@ function EditSpan( { isActive, value, onChange } ) {
 	 */
 	function applySpanFormat() {
 		// Combine chosen tokens
-		const allTokens = [
+		const allTokens = dedupeTokens( [
 			...displayTokens,
 			...marginTokens,
 			...paddingTokens,
 			...positionTokens,
-		];
+			...otherTokens,
+		] );
 		const classString = `fs-span-base ${ allTokens.join( ' ' ) }`.trim();
 
 		// Build inline style
@@ -167,6 +358,7 @@ function EditSpan( { isActive, value, onChange } ) {
 		if ( backgroundColor ) {
 			styleParts.push( `background-color: ${ backgroundColor }` );
 		}
+		styleParts.push( ...otherStyleDeclarations );
 		const styleString = styleParts.join( '; ' );
 
 		// If user sets no classes or colors, remove format entirely
@@ -199,12 +391,6 @@ function EditSpan( { isActive, value, onChange } ) {
 		closeModal();
 	}
 
-	// Convert objects to strings for FormTokenField
-	const displaySuggestions = getSuggestions( displayOptions, showValues );
-	const marginSuggestions = getSuggestions( marginOptions, showValues );
-	const paddingSuggestions = getSuggestions( paddingOptions, showValues );
-	const positionSuggestions = getSuggestions( positionOptions, showValues );
-
 	return (
 		<>
 			<RichTextToolbarButton
@@ -232,88 +418,79 @@ function EditSpan( { isActive, value, onChange } ) {
 						) }
 						style={ { marginBottom: '1rem' } }
 					/>
-					<div
-						style={ {
-							display: 'grid',
-							gridTemplateColumns: 'repeat(2, 1fr)',
-							gap: '0.75rem',
-							alignItems: 'start',
-							marginBottom: '1rem',
-						} }
-					>
-						<FormTokenField
-							label={ __( 'Display', 'fs-blocks' ) }
-							value={ getDisplayValues(
-								displayTokens,
-								displayOptions,
-								showValues
-							) }
-							suggestions={ displaySuggestions }
-							onChange={ ( tokens ) =>
-								setDisplayTokens(
-									getValuesFromDisplay(
-										tokens,
-										displayOptions,
-										showValues
-									)
-								)
-							}
-						/>
-						<FormTokenField
-							label={ __( 'Margin', 'fs-blocks' ) }
-							value={ getDisplayValues(
-								marginTokens,
-								marginOptions,
-								showValues
-							) }
-							suggestions={ marginSuggestions }
-							onChange={ ( tokens ) =>
-								setMarginTokens(
-									getValuesFromDisplay(
-										tokens,
-										marginOptions,
-										showValues
-									)
-								)
-							}
-						/>
-						<FormTokenField
-							label={ __( 'Padding', 'fs-blocks' ) }
-							value={ getDisplayValues(
-								paddingTokens,
-								paddingOptions,
-								showValues
-							) }
-							suggestions={ paddingSuggestions }
-							onChange={ ( tokens ) =>
-								setPaddingTokens(
-									getValuesFromDisplay(
-										tokens,
-										paddingOptions,
-										showValues
-									)
-								)
-							}
-						/>
-						<FormTokenField
-							label={ __( 'Position', 'fs-blocks' ) }
-							value={ getDisplayValues(
-								positionTokens,
-								positionOptions,
-								showValues
-							) }
-							suggestions={ positionSuggestions }
-							onChange={ ( tokens ) =>
-								setPositionTokens(
-									getValuesFromDisplay(
-										tokens,
-										positionOptions,
-										showValues
-									)
-								)
-							}
-						/>
-					</div>
+					<TokenSelectorControl
+						label={ __( 'Display', 'fs-blocks' ) }
+						options={ classOptions.displayOptions }
+						values={ displayTokens }
+						showValues={ showValues }
+						onAddToken={ ( token ) =>
+							setDisplayTokens( ( current ) =>
+								dedupeTokens( [ ...current, token ] )
+							)
+						}
+						onRemoveToken={ ( token ) =>
+							setDisplayTokens( ( current ) =>
+								current.filter( ( item ) => item !== token )
+							)
+						}
+					/>
+					<TokenSelectorControl
+						label={ __( 'Margin', 'fs-blocks' ) }
+						options={ classOptions.marginOptions }
+						values={ marginTokens }
+						showValues={ showValues }
+						onAddToken={ ( token ) =>
+							setMarginTokens( ( current ) =>
+								dedupeTokens( [ ...current, token ] )
+							)
+						}
+						onRemoveToken={ ( token ) =>
+							setMarginTokens( ( current ) =>
+								current.filter( ( item ) => item !== token )
+							)
+						}
+					/>
+					<TokenSelectorControl
+						label={ __( 'Padding', 'fs-blocks' ) }
+						options={ classOptions.paddingOptions }
+						values={ paddingTokens }
+						showValues={ showValues }
+						onAddToken={ ( token ) =>
+							setPaddingTokens( ( current ) =>
+								dedupeTokens( [ ...current, token ] )
+							)
+						}
+						onRemoveToken={ ( token ) =>
+							setPaddingTokens( ( current ) =>
+								current.filter( ( item ) => item !== token )
+							)
+						}
+					/>
+					<TokenSelectorControl
+						label={ __( 'Position', 'fs-blocks' ) }
+						options={ classOptions.positionOptions }
+						values={ positionTokens }
+						showValues={ showValues }
+						onAddToken={ ( token ) =>
+							setPositionTokens( ( current ) =>
+								dedupeTokens( [ ...current, token ] )
+							)
+						}
+						onRemoveToken={ ( token ) =>
+							setPositionTokens( ( current ) =>
+								current.filter( ( item ) => item !== token )
+							)
+						}
+					/>
+					{ otherTokens.length > 0 && (
+						<p style={ { marginTop: '0.5rem', fontSize: '12px' } }>
+							{ __(
+								'Additional existing classes are preserved:',
+								'fs-blocks'
+							) }{ ' ' }
+							<code>{ otherTokens.join( ' ' ) }</code>
+						</p>
+					) }
 
 					<hr style={ { margin: '1rem 0' } } />
 
@@ -325,110 +502,58 @@ function EditSpan( { isActive, value, onChange } ) {
 							marginBottom: '1rem',
 						} }
 					>
-						{ /* Text Color */ }
 						<div style={ { flex: '1' } }>
 							<strong>{ __( 'Text Color', 'fs-blocks' ) }</strong>
-							{ /* Render theme palette swatches */ }
-							<div
-								style={ {
-									display: 'flex',
-									flexWrap: 'wrap',
-									gap: '4px',
-									marginTop: '0.5rem',
-								} }
-							>
-								{ themePalette.map( ( pItem ) => (
-									<Tooltip
-										text={ pItem.name || pItem.color }
-										key={ pItem.color }
-									>
-										<button
-											type="button"
-											onClick={ () =>
-												setTextColor( pItem.color )
-											}
-											style={ {
-												width: '24px',
-												height: '24px',
-												border:
-													textColor === pItem.color
-														? '2px solid #444'
-														: '1px solid #ccc',
-												backgroundColor: pItem.color,
-												cursor: 'pointer',
-											} }
-											aria-label={ `Set text color to ${
-												pItem.name || pItem.color
-											}` }
-										/>
-									</Tooltip>
-								) ) }
-							</div>
-
-							<ColorPicker
-								color={ textColor || '#000000' }
-								onChangeComplete={ ( colorObj ) => {
-									setTextColor( colorObj.hex );
-								} }
-								disableAlpha={ false }
-								style={ { marginTop: '0.5rem' } }
+							<ColorPalette
+								colors={ themePalette }
+								value={ textColor || undefined }
+								onChange={ ( nextColor ) =>
+									setTextColor( nextColor || '' )
+								}
+								clearable
+							/>
+							<TextControl
+								label={ __( 'Custom text color', 'fs-blocks' ) }
+								value={ textColor }
+								onChange={ ( nextValue ) =>
+									setTextColor( nextValue )
+								}
 							/>
 						</div>
 
-						{ /* Background Color */ }
 						<div style={ { flex: '1' } }>
 							<strong>
 								{ __( 'Background Color', 'fs-blocks' ) }
 							</strong>
-							<div
-								style={ {
-									display: 'flex',
-									flexWrap: 'wrap',
-									gap: '4px',
-									marginTop: '0.5rem',
-								} }
-							>
-								{ themePalette.map( ( pItem ) => (
-									<Tooltip
-										text={ pItem.name || pItem.color }
-										key={ pItem.color }
-									>
-										<button
-											type="button"
-											onClick={ () =>
-												setBackgroundColor(
-													pItem.color
-												)
-											}
-											style={ {
-												width: '24px',
-												height: '24px',
-												border:
-													backgroundColor ===
-													pItem.color
-														? '2px solid #444'
-														: '1px solid #ccc',
-												backgroundColor: pItem.color,
-												cursor: 'pointer',
-											} }
-											aria-label={ `Set background color to ${
-												pItem.name || pItem.color
-											}` }
-										/>
-									</Tooltip>
-								) ) }
-							</div>
-
-							<ColorPicker
-								color={ backgroundColor || '#ffffff' }
-								onChangeComplete={ ( colorObj ) => {
-									setBackgroundColor( colorObj.hex );
-								} }
-								disableAlpha={ false }
-								style={ { marginTop: '0.5rem' } }
+							<ColorPalette
+								colors={ themePalette }
+								value={ backgroundColor || undefined }
+								onChange={ ( nextColor ) =>
+									setBackgroundColor( nextColor || '' )
+								}
+								clearable
+							/>
+							<TextControl
+								label={ __(
+									'Custom background color',
+									'fs-blocks'
+								) }
+								value={ backgroundColor }
+								onChange={ ( nextValue ) =>
+									setBackgroundColor( nextValue )
+								}
 							/>
 						</div>
 					</div>
+					{ otherStyleDeclarations.length > 0 && (
+						<p style={ { marginTop: '0.5rem', fontSize: '12px' } }>
+							{ __(
+								'Additional existing inline styles are preserved:',
+								'fs-blocks'
+							) }{ ' ' }
+							<code>{ otherStyleDeclarations.join( '; ' ) }</code>
+						</p>
+					) }
 
 					<div style={ { display: 'flex', gap: '0.5rem' } }>
 						<Button variant="primary" onClick={ applySpanFormat }>

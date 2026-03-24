@@ -1,11 +1,12 @@
 // components/TokenFields.js
-import { FormTokenField } from '@wordpress/components';
+import { FormTokenField, Spinner } from '@wordpress/components';
+import { useEffect, useState } from '@wordpress/element';
 import {
 	getDisplayValues,
 	getValuesFromDisplay,
 	getSuggestions,
 } from '../utils/helpers';
-import { CLASS_OPTIONS_MAP } from '../config/blockConfig';
+import { loadClassOptionsMap } from '../config/class-options-map';
 
 const TokenFields = ( {
 	config = {},
@@ -13,12 +14,32 @@ const TokenFields = ( {
 	setAttributes,
 	showValues,
 } ) => {
+	const [ classOptionsMap, setClassOptionsMap ] = useState( null );
+
+	useEffect( () => {
+		let isMounted = true;
+
+		loadClassOptionsMap().then( ( loadedMap ) => {
+			if ( isMounted ) {
+				setClassOptionsMap( loadedMap );
+			}
+		} );
+
+		return () => {
+			isMounted = false;
+		};
+	}, [] );
+
+	if ( ! classOptionsMap ) {
+		return <Spinner />;
+	}
+
 	return (
 		<>
 			{ ( config.classOptions || [] ).map( ( classType ) => {
 				const classKey = `${ classType }Classes`;
 				const classValue = attributes[ classKey ] || [];
-				const { options } = CLASS_OPTIONS_MAP[ classType ];
+				const { options = [] } = classOptionsMap[ classType ] || {};
 
 				const onChange = ( newTokens ) => {
 					const newValues = getValuesFromDisplay(

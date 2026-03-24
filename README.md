@@ -2,6 +2,17 @@
 
 Extend core blocks with Bootstrap-style utility classes, breakpoint width controls, and media enhancements. This plugin adds inspector controls and server-side render filters for a curated set of core blocks.
 
+## Current Version
+
+-   `1.1.4`
+
+## Release Highlights (1.1.4)
+
+-   Span format modal now uses structured token selectors (combobox + chips) instead of raw token fields.
+-   Span editing preserves unknown existing classes and inline style declarations when re-applying format settings.
+-   Class option maps are lazy-loaded in the editor to reduce initial bundle cost.
+-   Documentation updated for theme-token flow and class option map location.
+
 ## Requirements
 
 -   WordPress 6.9+
@@ -87,7 +98,7 @@ Padding, Margin, and Negative Margin panels appear only on blocks configured in 
 
 ### RichText span format
 
-Use the "Span" toolbar button to apply inline utility classes and optional text/background colors. The format adds a `fs-span-base` class and stores selected tokens and inline styles on the span.
+Use the "Span" toolbar button to apply inline utility classes and optional text/background colors. The modal uses grouped selectors with add/remove chips, supports palette + custom color values, and preserves unknown existing classes/styles while editing. The format adds a `fs-span-base` class and stores selected tokens and inline styles on the span.
 
 ## Architecture: How Block Extensions Work
 
@@ -192,7 +203,7 @@ Custom blocks under `src/blocks/` are disabled by default. Use Settings > Fancy 
 
 1. Add the block name (e.g., `core/quote`) to `ALLOWED_BLOCKS` in `src/config/blockConfig.js`.
 2. Add a matching entry in `BLOCK_CONFIG` describing which controls should appear.
-3. If you need new token groups, add options in `data/bootstrap-classes/` and wire them into `CLASS_OPTIONS_MAP`.
+3. If you need new token groups, add options in `data/bootstrap-classes/` and wire them into the async class options map loader (`src/config/class-options-map.js`).
 4. Run `npm run build` and verify the inspector panels in the editor.
 
 ### Add a new CUSTOM block with extension controls
@@ -211,10 +222,10 @@ Custom blocks under `src/blocks/` are disabled by default. Use Settings > Fancy 
 
 ### Add or adjust token options
 
-1. For spacing token options (`paddingOptions`, `marginOptions`, `gapOptions`), update `data/style-tokens.default.json` (or your `theme.json` framework override) and run `npm run tokens`.
+1. For spacing token options (`paddingOptions`, `marginOptions`, `gapOptions`), prefer updating your site `theme.json` (`settings.spacing.spacingSizes` or `settings.spacing.spacingScale`) and run `npm run tokens:site` (or `npm run tokens -- --theme-json-path=...` for custom paths). Use `data/style-tokens.default.json` only as a plugin fallback.
 2. For non-spacing token groups, update the relevant file in `data/bootstrap-classes/` (for example `display-options.js`, `position-options.js`).
 3. Ensure `data/bootstrap-classes/index.js` exports the token group.
-4. If it is a new token group, add it to `CLASS_OPTIONS_MAP` in `src/config/blockConfig.js`.
+4. If it is a new token group, add it to the map in `src/config/class-options-map.js`.
 
 ### Add or adjust spacing controls
 
@@ -397,6 +408,7 @@ Resulting behavior from the example above:
 -   `src/config/constants.js` - spacing side/type constants used by helpers and controls.
 -   `src/components/BlockEdit.js` - reusable inspector UI component that reads `BLOCK_CONFIG` to render controls.
 -   `src/components/TokenFields.js` - token field UI for class groups and suggestions.
+-   `src/config/class-options-map.js` - lazy-loaded class option map used by token selectors.
 -   `src/components/SpacingControl.js` / `src/components/SpacingControls.js` - unified spacing UI and tabs for padding/margin/negative margin.
 -   `src/components/WidthControl.js` / `src/components/WidthControls.js` - breakpoint width UI and tabs.
 -   `src/inspector-controls/` - block-specific toggles (list semantics, media, modal trigger).
@@ -409,7 +421,7 @@ Resulting behavior from the example above:
 -   `src/assets/js/lazyVideos.js` - lazy video loader.
 -   `src/assets/js/customPlayButtons.js` - custom play overlay behavior.
 -   `src/assets/js/carousel.js` - Swiper carousel runtime behavior.
--   `scripts/generate-style-tokens.mjs` - generates SCSS/JS token artifacts and spacing option datasets from `data/style-tokens.default.json`, with optional `theme.json` framework overrides.
+-   `scripts/generate-style-tokens.mjs` - generates SCSS/JS token artifacts and spacing option datasets from `theme.json` when available, with `data/style-tokens.default.json` fallback behavior.
 -   `data/style-tokens.default.json` - plugin-owned fallback design tokens for breakpoints, container widths, spacing scale, and column gap.
 -   `data/bootstrap-classes/generated-spacing-options.js` - auto-generated spacing option dataset consumed by class token controls.
 -   `src/config/generated/framework-tokens.js` - auto-generated JS token exports used by editor controls (breakpoints, spacing scale, optional `frameworkOptionSets`).

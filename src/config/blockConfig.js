@@ -1,21 +1,4 @@
-import {
-	displayOptions,
-	marginOptions,
-	paddingOptions,
-	positionOptions,
-	zindexOptions,
-	blendModeOptions,
-	alignItemsOptions,
-	selfAlignmentOptions,
-	justifyContentOptions,
-	orderOptions,
-	gapOptions,
-} from '../../data/bootstrap-classes/index.js';
-import { getSuggestions } from '../utils/helpers';
-import {
-	columnsLayoutOptions,
-	bleedCoverOptions,
-} from './framework-option-sets';
+import { columnsLayoutOptions } from './framework-option-sets';
 
 const SELECT_NONE_OPTION = [ { label: 'Select one', value: 'none' } ];
 const INHERIT_COLUMNS_OPTION = columnsLayoutOptions.find(
@@ -182,56 +165,5 @@ export const BLOCK_CONFIG = {
 		],
 		...SHARED_SPACING_CONFIG,
 		allowedNegativeMarginControls: ALL_SPACING_SIDES,
-	},
-};
-
-export const CLASS_OPTIONS_MAP = {
-	display: {
-		options: displayOptions,
-		suggestions: getSuggestions( displayOptions, false ),
-	},
-	margin: {
-		options: marginOptions,
-		suggestions: getSuggestions( marginOptions, false ),
-	},
-	padding: {
-		options: paddingOptions,
-		suggestions: getSuggestions( paddingOptions, false ),
-	},
-	position: {
-		options: positionOptions,
-		suggestions: getSuggestions( positionOptions, false ),
-	},
-	zindex: {
-		options: zindexOptions,
-		suggestions: getSuggestions( zindexOptions, false ),
-	},
-	blendMode: {
-		options: blendModeOptions,
-		suggestions: getSuggestions( blendModeOptions, false ),
-	},
-	alignItems: {
-		options: alignItemsOptions,
-		suggestions: getSuggestions( alignItemsOptions, false ),
-	},
-	selfAlignment: {
-		options: selfAlignmentOptions,
-		suggestions: getSuggestions( selfAlignmentOptions, false ),
-	},
-	justifyContent: {
-		options: justifyContentOptions,
-		suggestions: getSuggestions( justifyContentOptions, false ),
-	},
-	order: {
-		options: orderOptions,
-		suggestions: getSuggestions( orderOptions, false ),
-	},
-	gapSpacing: {
-		options: gapOptions,
-		suggestions: getSuggestions( gapOptions, false ),
-	},
-	bleedCoverOptions: {
-		options: bleedCoverOptions,
-		suggestions: getSuggestions( bleedCoverOptions, false ),
 	},
 };

@@ -81,7 +81,7 @@ if ( $showcase_media_id ) {
 			aria-controls="<?php echo esc_attr( $content_id ); ?>"
 			aria-expanded="false"
 			data-wp-bind--aria-expanded="state.isActive"
-			data-wp-on-async--click="actions.toggleItem"
+			data-wp-on--click="actions.toggleItem"
 			data-wp-on--keydown="actions.handleKeydown"
 		>
 			<span><?php echo wp_kses_post( $title ); ?></span>

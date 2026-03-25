@@ -1,4 +1,9 @@
-import { store, getContext, getElement } from '@wordpress/interactivity';
+import {
+	store,
+	getContext,
+	getElement,
+	withSyncEvent,
+} from '@wordpress/interactivity';
 
 const MOBILE_MAX_WIDTH = 767;
 const MOBILE_TRANSITION_FALLBACK_MS = 450;
@@ -58,7 +63,7 @@ store( 'fancySquaresTabsInteractive', {
 		},
 	},
 	actions: {
-		setActiveTab() {
+		setActiveTab: withSyncEvent( () => {
 			const context = getContext();
 			const { ref } = getElement();
 			const tabsRoot = findTabsRoot( ref );
@@ -217,8 +222,8 @@ store( 'fancySquaresTabsInteractive', {
 					ref.focus();
 				}
 			} );
-		},
-		handleKeyDown( event ) {
+		} ),
+		handleKeyDown: withSyncEvent( ( event ) => {
 			const { ref } = getElement();
 			if ( ! ref ) {
 				return;
@@ -265,6 +270,6 @@ store( 'fancySquaresTabsInteractive', {
 				tabs[ nextIndex ].focus();
 				tabs[ nextIndex ].click();
 			}
-		},
+		} ),
 	},
 } );

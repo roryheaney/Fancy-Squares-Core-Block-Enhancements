@@ -42,7 +42,7 @@ store( 'fancySquaresAccordionInteractive', {
 		},
 	},
 	actions: {
-		toggleItem() {
+		toggleItem: withSyncEvent( () => {
 			const { ref } = getElement();
 			const item = ref?.closest(
 				'[data-wp-interactive="fancySquaresAccordionInteractive"]'
@@ -203,7 +203,7 @@ store( 'fancySquaresAccordionInteractive', {
 					} )
 				);
 			} );
-		},
+		} ),
 
 		handleKeydown: withSyncEvent( ( event ) => {
 			const key = event.key;

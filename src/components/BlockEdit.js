@@ -1,11 +1,6 @@
 // components/BlockEdit.js
 import { InspectorControls } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	SelectControl,
-	CheckboxControl,
-	ToggleControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 
@@ -67,7 +62,8 @@ const BlockEdit = ( props ) => {
 					}
 					initialOpen={ false }
 				>
-					<CheckboxControl
+					<ToggleControl
+						__nextHasNoMarginBottom
 						label="Show Values"
 						checked={ showValues }
 						onChange={ setShowValues }
@@ -100,6 +96,8 @@ const BlockEdit = ( props ) => {
 					initialOpen={ false }
 				>
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ dropdownConfig.label || 'Unique Option' }
 						value={ uniqueDropdownValue }
 						options={ dropdownConfig.options || [] }
@@ -127,6 +125,7 @@ const BlockEdit = ( props ) => {
 					initialOpen={ false }
 				>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label="Constrain width"
 						checked={ attributes.isConstrained }
 						onChange={ () =>

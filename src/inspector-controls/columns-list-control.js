@@ -31,6 +31,7 @@ export default function ColumnsListControl( { BlockEdit, ...props } ) {
 					}
 				>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label="Enable List Role"
 						checked={ isList }
 						onChange={ toggleIsList }

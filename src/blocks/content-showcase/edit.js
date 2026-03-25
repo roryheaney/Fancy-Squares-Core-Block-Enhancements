@@ -123,6 +123,8 @@ export default function Edit( props ) {
 					initialOpen={ false }
 				>
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Layout',
 							'fancy-squares-core-enhancements'
@@ -134,6 +136,7 @@ export default function Edit( props ) {
 						}
 					/>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Hide gallery on mobile',
 							'fancy-squares-core-enhancements'
@@ -154,6 +157,8 @@ export default function Edit( props ) {
 					initialOpen={ false }
 				>
 					<TextControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Source event name',
 							'fancy-squares-core-enhancements'

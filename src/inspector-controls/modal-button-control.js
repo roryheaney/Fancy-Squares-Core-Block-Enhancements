@@ -28,6 +28,7 @@ export default function ModalButtonControl( { BlockEdit, ...props } ) {
 					}
 				>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label="Trigger a modal"
 						checked={ !! triggerModal }
 						onChange={ () =>
@@ -36,6 +37,8 @@ export default function ModalButtonControl( { BlockEdit, ...props } ) {
 					/>
 					{ triggerModal && (
 						<TextControl
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 							label="Modal ID"
 							value={ modalId }
 							onChange={ ( value ) =>

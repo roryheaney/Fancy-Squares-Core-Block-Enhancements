@@ -5,22 +5,19 @@ import {
 	getActiveFormat,
 } from '@wordpress/rich-text';
 
-import {
-	RichTextToolbarButton,
-	useSetting, // WP 6.2+ only!
-} from '@wordpress/block-editor';
+import { RichTextToolbarButton, useSettings } from '@wordpress/block-editor';
 
 import {
 	Modal,
 	Button,
 	ComboboxControl,
 	ColorPalette,
-	CheckboxControl,
-	TextControl,
+	ToggleControl,
 } from '@wordpress/components';
 
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import '../assets/scss/_span-format.scss';
 
 let spanClassOptionsPromise = null;
 
@@ -73,18 +70,9 @@ function TokenSelectorControl( {
 	);
 
 	return (
-		<div style={ { marginBottom: '1rem' } }>
-			<div style={ { marginBottom: '0.5rem', fontWeight: 600 } }>
-				{ label }
-			</div>
-			<div
-				style={ {
-					display: 'grid',
-					gridTemplateColumns: '1fr auto',
-					gap: '0.5rem',
-					alignItems: 'end',
-				} }
-			>
+		<div className="fs-span-token-control">
+			<div className="fs-span-token-control__header">{ label }</div>
+			<div className="fs-span-token-control__picker">
 				<ComboboxControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
@@ -109,16 +97,9 @@ function TokenSelectorControl( {
 					{ __( 'Add', 'fs-blocks' ) }
 				</Button>
 			</div>
-			<div
-				style={ {
-					marginTop: '0.5rem',
-					display: 'flex',
-					flexWrap: 'wrap',
-					gap: '0.5rem',
-				} }
-			>
+			<div className="fs-span-token-control__chips">
 				{ values.length === 0 && (
-					<span style={ { fontSize: '12px', opacity: 0.75 } }>
+					<span className="fs-span-token-control__empty">
 						{ __( 'No classes selected.', 'fs-blocks' ) }
 					</span>
 				) }
@@ -135,9 +116,9 @@ function TokenSelectorControl( {
 							key={ `${ label }-${ token }` }
 							variant="tertiary"
 							onClick={ () => onRemoveToken( token ) }
-							style={ { border: '1px solid #dcdcde' } }
+							className="fs-span-token-control__chip"
 						>
-							{ tokenLabel } ×
+							{ tokenLabel } &times;
 						</Button>
 					);
 				} ) }
@@ -184,8 +165,7 @@ function EditSpan( { isActive, value, onChange } ) {
 	// Toggle between showing class labels or values
 	const [ showValues, setShowValues ] = useState( false );
 
-	// Fetch theme palette (WP 6.2+). If older WP, this is undefined or an error.
-	const themePalette = useSetting( 'color.palette' ) || [];
+	const [ themePalette = [] ] = useSettings( 'color.palette' );
 
 	/**
 	 * Toggle the format: if it's active, parse existing data so user can edit;
@@ -408,82 +388,85 @@ function EditSpan( { isActive, value, onChange } ) {
 					className="fs-span-modal"
 				>
 					<h3>{ __( 'Bootstrap Classes', 'fs-blocks' ) }</h3>
-					<CheckboxControl
-						label={ __( 'Show Values', 'fs-blocks' ) }
+					<ToggleControl
+						__nextHasNoMarginBottom
+						label={ __( 'Show Classes', 'fs-blocks' ) }
 						checked={ showValues }
 						onChange={ setShowValues }
 						help={ __(
 							'Display class names instead of labels.',
 							'fs-blocks'
 						) }
-						style={ { marginBottom: '1rem' } }
+						className="fs-span-modal__show-values-toggle"
 					/>
-					<TokenSelectorControl
-						label={ __( 'Display', 'fs-blocks' ) }
-						options={ classOptions.displayOptions }
-						values={ displayTokens }
-						showValues={ showValues }
-						onAddToken={ ( token ) =>
-							setDisplayTokens( ( current ) =>
-								dedupeTokens( [ ...current, token ] )
-							)
-						}
-						onRemoveToken={ ( token ) =>
-							setDisplayTokens( ( current ) =>
-								current.filter( ( item ) => item !== token )
-							)
-						}
-					/>
-					<TokenSelectorControl
-						label={ __( 'Margin', 'fs-blocks' ) }
-						options={ classOptions.marginOptions }
-						values={ marginTokens }
-						showValues={ showValues }
-						onAddToken={ ( token ) =>
-							setMarginTokens( ( current ) =>
-								dedupeTokens( [ ...current, token ] )
-							)
-						}
-						onRemoveToken={ ( token ) =>
-							setMarginTokens( ( current ) =>
-								current.filter( ( item ) => item !== token )
-							)
-						}
-					/>
-					<TokenSelectorControl
-						label={ __( 'Padding', 'fs-blocks' ) }
-						options={ classOptions.paddingOptions }
-						values={ paddingTokens }
-						showValues={ showValues }
-						onAddToken={ ( token ) =>
-							setPaddingTokens( ( current ) =>
-								dedupeTokens( [ ...current, token ] )
-							)
-						}
-						onRemoveToken={ ( token ) =>
-							setPaddingTokens( ( current ) =>
-								current.filter( ( item ) => item !== token )
-							)
-						}
-					/>
-					<TokenSelectorControl
-						label={ __( 'Position', 'fs-blocks' ) }
-						options={ classOptions.positionOptions }
-						values={ positionTokens }
-						showValues={ showValues }
-						onAddToken={ ( token ) =>
-							setPositionTokens( ( current ) =>
-								dedupeTokens( [ ...current, token ] )
-							)
-						}
-						onRemoveToken={ ( token ) =>
-							setPositionTokens( ( current ) =>
-								current.filter( ( item ) => item !== token )
-							)
-						}
-					/>
+					<div className="fs-span-modal__token-grid">
+						<TokenSelectorControl
+							label={ __( 'Display', 'fs-blocks' ) }
+							options={ classOptions.displayOptions }
+							values={ displayTokens }
+							showValues={ showValues }
+							onAddToken={ ( token ) =>
+								setDisplayTokens( ( current ) =>
+									dedupeTokens( [ ...current, token ] )
+								)
+							}
+							onRemoveToken={ ( token ) =>
+								setDisplayTokens( ( current ) =>
+									current.filter( ( item ) => item !== token )
+								)
+							}
+						/>
+						<TokenSelectorControl
+							label={ __( 'Margin', 'fs-blocks' ) }
+							options={ classOptions.marginOptions }
+							values={ marginTokens }
+							showValues={ showValues }
+							onAddToken={ ( token ) =>
+								setMarginTokens( ( current ) =>
+									dedupeTokens( [ ...current, token ] )
+								)
+							}
+							onRemoveToken={ ( token ) =>
+								setMarginTokens( ( current ) =>
+									current.filter( ( item ) => item !== token )
+								)
+							}
+						/>
+						<TokenSelectorControl
+							label={ __( 'Padding', 'fs-blocks' ) }
+							options={ classOptions.paddingOptions }
+							values={ paddingTokens }
+							showValues={ showValues }
+							onAddToken={ ( token ) =>
+								setPaddingTokens( ( current ) =>
+									dedupeTokens( [ ...current, token ] )
+								)
+							}
+							onRemoveToken={ ( token ) =>
+								setPaddingTokens( ( current ) =>
+									current.filter( ( item ) => item !== token )
+								)
+							}
+						/>
+						<TokenSelectorControl
+							label={ __( 'Position', 'fs-blocks' ) }
+							options={ classOptions.positionOptions }
+							values={ positionTokens }
+							showValues={ showValues }
+							onAddToken={ ( token ) =>
+								setPositionTokens( ( current ) =>
+									dedupeTokens( [ ...current, token ] )
+								)
+							}
+							onRemoveToken={ ( token ) =>
+								setPositionTokens( ( current ) =>
+									current.filter( ( item ) => item !== token )
+								)
+							}
+						/>
+					</div>
 					{ otherTokens.length > 0 && (
-						<p style={ { marginTop: '0.5rem', fontSize: '12px' } }>
+						<p className="fs-span-modal__preserved-note">
 							{ __(
 								'Additional existing classes are preserved:',
 								'fs-blocks'
@@ -492,17 +475,11 @@ function EditSpan( { isActive, value, onChange } ) {
 						</p>
 					) }
 
-					<hr style={ { margin: '1rem 0' } } />
+					<hr className="fs-span-modal__separator" />
 
 					<h3>{ __( 'Colors', 'fs-blocks' ) }</h3>
-					<div
-						style={ {
-							display: 'flex',
-							gap: '1rem',
-							marginBottom: '1rem',
-						} }
-					>
-						<div style={ { flex: '1' } }>
+					<div className="fs-span-modal__color-grid">
+						<div className="fs-span-modal__color-column">
 							<strong>{ __( 'Text Color', 'fs-blocks' ) }</strong>
 							<ColorPalette
 								colors={ themePalette }
@@ -511,17 +488,11 @@ function EditSpan( { isActive, value, onChange } ) {
 									setTextColor( nextColor || '' )
 								}
 								clearable
-							/>
-							<TextControl
-								label={ __( 'Custom text color', 'fs-blocks' ) }
-								value={ textColor }
-								onChange={ ( nextValue ) =>
-									setTextColor( nextValue )
-								}
+								disableCustomColors={ true }
 							/>
 						</div>
 
-						<div style={ { flex: '1' } }>
+						<div className="fs-span-modal__color-column">
 							<strong>
 								{ __( 'Background Color', 'fs-blocks' ) }
 							</strong>
@@ -532,21 +503,12 @@ function EditSpan( { isActive, value, onChange } ) {
 									setBackgroundColor( nextColor || '' )
 								}
 								clearable
-							/>
-							<TextControl
-								label={ __(
-									'Custom background color',
-									'fs-blocks'
-								) }
-								value={ backgroundColor }
-								onChange={ ( nextValue ) =>
-									setBackgroundColor( nextValue )
-								}
+								disableCustomColors={ true }
 							/>
 						</div>
 					</div>
 					{ otherStyleDeclarations.length > 0 && (
-						<p style={ { marginTop: '0.5rem', fontSize: '12px' } }>
+						<p className="fs-span-modal__preserved-note">
 							{ __(
 								'Additional existing inline styles are preserved:',
 								'fs-blocks'
@@ -555,7 +517,7 @@ function EditSpan( { isActive, value, onChange } ) {
 						</p>
 					) }
 
-					<div style={ { display: 'flex', gap: '0.5rem' } }>
+					<div className="fs-span-modal__actions">
 						<Button variant="primary" onClick={ applySpanFormat }>
 							{ __( 'Apply', 'fs-blocks' ) }
 						</Button>

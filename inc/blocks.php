@@ -9,24 +9,6 @@ if ( ! defined( 'FS_CORE_ENHANCEMENTS_OPTION_ENABLED_BLOCKS' ) ) {
 	define( 'FS_CORE_ENHANCEMENTS_OPTION_ENABLED_BLOCKS', 'fs_core_enhancements_enabled_blocks' );
 }
 
-function fs_core_enhancements_register_interactivity_module() {
-	if ( ! function_exists( 'wp_register_script_module' ) ) {
-		return;
-	}
-
-	wp_register_script_module(
-		'@wordpress/interactivity',
-		includes_url( 'js/dist/interactivity.min.js' ),
-		[],
-		get_bloginfo( 'version' )
-	);
-}
-add_action(
-	'init',
-	'fs_core_enhancements_register_interactivity_module',
-	5
-);
-
 function fs_core_enhancements_get_custom_blocks() {
 	$base_dir = dirname( __DIR__ );
 	$build_dir = $base_dir . '/build/blocks';

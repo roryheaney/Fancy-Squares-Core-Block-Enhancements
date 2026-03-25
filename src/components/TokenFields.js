@@ -53,6 +53,8 @@ const TokenFields = ( {
 				return (
 					<div key={ classType } style={ { marginBottom: '20px' } }>
 						<FormTokenField
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 							label={ `${
 								classType.charAt( 0 ).toUpperCase() +
 								classType.slice( 1 )

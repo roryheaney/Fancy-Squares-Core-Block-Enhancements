@@ -115,6 +115,7 @@ export default function Edit( props ) {
 					initialOpen={ true }
 				>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Open First Item',
 							'fancy-squares-core-enhancements'

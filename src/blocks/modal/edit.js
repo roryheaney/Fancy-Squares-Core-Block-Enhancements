@@ -126,6 +126,8 @@ export default function Edit( props ) {
 				>
 					<div style={ { marginBottom: '16px' } }>
 						<TextControl
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 							label={ __(
 								'Modal ID (Read Only)',
 								'fancy-squares-core-enhancements'
@@ -163,6 +165,8 @@ export default function Edit( props ) {
 					</div>
 
 					<TextControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Modal Title',
 							'fancy-squares-core-enhancements'
@@ -174,6 +178,8 @@ export default function Edit( props ) {
 					/>
 
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Modal Size',
 							'fancy-squares-core-enhancements'
@@ -222,6 +228,7 @@ export default function Edit( props ) {
 					/>
 
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Center Modal',
 							'fancy-squares-core-enhancements'
@@ -237,6 +244,7 @@ export default function Edit( props ) {
 					/>
 
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Scrollable Content',
 							'fancy-squares-core-enhancements'
@@ -252,6 +260,7 @@ export default function Edit( props ) {
 					/>
 
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Static Backdrop',
 							'fancy-squares-core-enhancements'
@@ -267,6 +276,7 @@ export default function Edit( props ) {
 					/>
 
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Close on Escape Key',
 							'fancy-squares-core-enhancements'
@@ -282,6 +292,7 @@ export default function Edit( props ) {
 					/>
 
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Show Header',
 							'fancy-squares-core-enhancements'

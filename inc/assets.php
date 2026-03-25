@@ -52,6 +52,33 @@ function fs_core_enhancements_editor_assets() {
 		'before'
 	);
 
+}
+add_action( 'enqueue_block_editor_assets', 'fs_core_enhancements_editor_assets' );
+
+/**
+ * Enqueue editor styles through enqueue_block_assets so they are iframe-safe.
+ */
+function fs_core_enhancements_editor_canvas_assets() {
+	if ( ! is_admin() ) {
+		return;
+	}
+
+	if (
+		function_exists( 'wp_should_load_block_editor_scripts_and_styles' ) &&
+		! wp_should_load_block_editor_scripts_and_styles()
+	) {
+		return;
+	}
+
+	list($plugin_dir, $plugin_url) = fs_core_enhancements_get_plugin_paths();
+
+	$asset_file = $plugin_dir . 'build/index.asset.php';
+	$asset = file_exists( $asset_file )
+		? include $asset_file
+		: [
+			'version' => false,
+		];
+
 	wp_enqueue_style(
 		'fs-core-enhancements-editor',
 		$plugin_url . 'build/index.css',
@@ -59,7 +86,7 @@ function fs_core_enhancements_editor_assets() {
 		$asset['version']
 	);
 }
-add_action( 'enqueue_block_editor_assets', 'fs_core_enhancements_editor_assets' );
+add_action( 'enqueue_block_assets', 'fs_core_enhancements_editor_canvas_assets' );
 
 /**
  * Register frontend assets.

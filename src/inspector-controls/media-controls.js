@@ -60,6 +60,7 @@ export default function MediaControls( { BlockEdit, ...props } ) {
 				>
 					{ showVideoLazyToggle && (
 						<ToggleControl
+							__nextHasNoMarginBottom
 							label="Lazy Load Video"
 							checked={ !! lazyLoadVideo }
 							onChange={ () =>
@@ -73,6 +74,7 @@ export default function MediaControls( { BlockEdit, ...props } ) {
 
 					{ showForcedLazyOptOutToggle && (
 						<ToggleControl
+							__nextHasNoMarginBottom
 							label="Disable forced image lazy loading"
 							checked={ !! disableForcedLazyLoading }
 							onChange={ () =>
@@ -88,6 +90,7 @@ export default function MediaControls( { BlockEdit, ...props } ) {
 					{ isVideoBlock && (
 						<>
 							<ToggleControl
+								__nextHasNoMarginBottom
 								label="Use custom play button"
 								checked={ !! useCustomPlayButton }
 								onChange={ () =>

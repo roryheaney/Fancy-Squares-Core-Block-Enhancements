@@ -145,6 +145,7 @@ export default function Edit( props ) {
 					initialOpen={ true }
 				>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Responsive tabs',
 							'fancy-squares-core-enhancements'
@@ -159,6 +160,7 @@ export default function Edit( props ) {
 						}
 					/>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Vertical tabs',
 							'fancy-squares-core-enhancements'

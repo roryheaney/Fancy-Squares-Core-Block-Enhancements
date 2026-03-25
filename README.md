@@ -4,14 +4,14 @@ Extend core blocks with Bootstrap-style utility classes, breakpoint width contro
 
 ## Current Version
 
--   `1.1.4`
+-   `1.1.5`
 
-## Release Highlights (1.1.4)
+## Release Highlights (1.1.5)
 
--   Span format modal now uses structured token selectors (combobox + chips) instead of raw token fields.
--   Span editing preserves unknown existing classes and inline style declarations when re-applying format settings.
--   Class option maps are lazy-loaded in the editor to reduce initial bundle cost.
--   Documentation updated for theme-token flow and class option map location.
+-   Updated editor controls to WP 6.7+ / 6.8+ component props (`__nextHasNoMarginBottom`, `__next40pxDefaultSize`) to remove deprecation warnings from plugin controls.
+-   Migrated interactive directives to current Interactivity API event patterns (`data-wp-on--*` with synced handlers).
+-   Moved span format modal styling to dedicated SCSS structure and simplified color selection to swatches-only for stable editor behavior.
+-   Moved editor canvas stylesheet enqueue to iframe-safe loading via block asset hooks.
 
 ## Requirements
 

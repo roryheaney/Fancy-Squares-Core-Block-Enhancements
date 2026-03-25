@@ -56,6 +56,8 @@ export default function Edit( props ) {
 			<InspectorControls>
 				<PanelBody title="Wrapper Settings" initialOpen={ false }>
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label="HTML Element"
 						value={ elementTag }
 						options={ ELEMENT_OPTIONS }

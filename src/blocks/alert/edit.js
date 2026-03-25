@@ -67,6 +67,8 @@ export default function Edit( props ) {
 					initialOpen={ false }
 				>
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Alert Style',
 							'fancy-squares-core-enhancements'

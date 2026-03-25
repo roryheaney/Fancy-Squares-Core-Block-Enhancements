@@ -60,6 +60,8 @@ export default function Edit( props ) {
 					initialOpen={ false }
 				>
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Transition',
 							'fancy-squares-core-enhancements'
@@ -71,6 +73,8 @@ export default function Edit( props ) {
 						}
 					/>
 					<RangeControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Transition duration (ms)',
 							'fancy-squares-core-enhancements'

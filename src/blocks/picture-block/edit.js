@@ -9,7 +9,7 @@ import {
 	Button,
 	TextControl,
 	FormTokenField,
-	CheckboxControl,
+	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
@@ -348,7 +348,8 @@ export default function Edit( props ) {
 					) }
 					initialOpen
 				>
-					<CheckboxControl
+					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Show Values',
 							'fancy-squares-core-enhancements'
@@ -394,6 +395,8 @@ export default function Edit( props ) {
 								) }
 							</p>
 							<TextControl
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
 								label={ __(
 									'Filler Image Alt',
 									'fancy-squares-core-enhancements'
@@ -444,6 +447,8 @@ export default function Edit( props ) {
 					/>
 
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Aspect Ratio',
 							'fancy-squares-core-enhancements'
@@ -463,6 +468,8 @@ export default function Edit( props ) {
 							) }
 						</p>
 						<FormTokenField
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 							value={ getDisplayValues(
 								borderClass,
 								borderOptions,
@@ -508,6 +515,8 @@ export default function Edit( props ) {
 							) }
 						</p>
 						<FormTokenField
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 							value={ getDisplayValues(
 								borderRadiusClass,
 								borderRadiusOptions,

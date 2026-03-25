@@ -103,7 +103,7 @@ $initial_context = [
 				class="fs-tabs__tab"
 				data-fs-tab-id="<?php echo esc_attr( $tab['id'] ); ?>"
 				data-wp-context='<?php echo wp_json_encode( [ 'tabId' => $tab['id'] ] ); ?>'
-				data-wp-on-async--click="actions.setActiveTab"
+				data-wp-on--click="actions.setActiveTab"
 				data-wp-on--keydown="actions.handleKeyDown"
 				data-wp-class--is-active="state.isActive"
 				data-wp-bind--aria-selected="state.ariaSelected"
@@ -140,7 +140,7 @@ $initial_context = [
 						id="<?php echo esc_attr( $accordion_id ); ?>"
 						type="button"
 						class="fs-tabs__accordion-trigger"
-						data-wp-on-async--click="actions.setActiveTab"
+						data-wp-on--click="actions.setActiveTab"
 						data-wp-on--keydown="actions.handleKeyDown"
 						data-wp-class--is-active="state.isActive"
 						data-wp-bind--aria-expanded="state.ariaSelected"

@@ -164,6 +164,8 @@ export default function Edit( props ) {
 					initialOpen
 				>
 					<RangeControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Slides to show',
 							'fancy-squares-core-enhancements'
@@ -176,6 +178,8 @@ export default function Edit( props ) {
 						max={ 5 }
 					/>
 					<RangeControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Column gap',
 							'fancy-squares-core-enhancements'
@@ -189,6 +193,8 @@ export default function Edit( props ) {
 						step={ 10 }
 					/>
 					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'HTML Element',
 							'fancy-squares-core-enhancements'
@@ -203,6 +209,7 @@ export default function Edit( props ) {
 						}
 					/>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Dots navigation',
 							'fancy-squares-core-enhancements'
@@ -213,6 +220,7 @@ export default function Edit( props ) {
 						checked={ pagination }
 					/>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Arrows navigation',
 							'fancy-squares-core-enhancements'
@@ -223,6 +231,7 @@ export default function Edit( props ) {
 						checked={ navigation }
 					/>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Autoplay',
 							'fancy-squares-core-enhancements'
@@ -233,6 +242,7 @@ export default function Edit( props ) {
 						checked={ autoplay }
 					/>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Infinite loop',
 							'fancy-squares-core-enhancements'
@@ -246,6 +256,8 @@ export default function Edit( props ) {
 					/>
 					{ autoplay && (
 						<RangeControl
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 							label={ __(
 								'Delay (ms)',
 								'fancy-squares-core-enhancements'
@@ -263,6 +275,7 @@ export default function Edit( props ) {
 					{ slidesToShow === 1 && (
 						<>
 							<ToggleControl
+								__nextHasNoMarginBottom
 								label={ __(
 									'Enable Fade',
 									'fancy-squares-core-enhancements'
@@ -279,6 +292,7 @@ export default function Edit( props ) {
 								}
 							/>
 							<ToggleControl
+								__nextHasNoMarginBottom
 								label={ __(
 									'Use fractional slides',
 									'fancy-squares-core-enhancements'
@@ -297,6 +311,8 @@ export default function Edit( props ) {
 							/>
 							{ fractionalSlidesEnabled && (
 								<RangeControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 									label={ __(
 										'Fractional slides per view',
 										'fancy-squares-core-enhancements'
@@ -317,6 +333,7 @@ export default function Edit( props ) {
 
 					{ autoplay && (
 						<ToggleControl
+							__nextHasNoMarginBottom
 							label={ __(
 								'Enable Play/Pause Button',
 								'fancy-squares-core-enhancements'
@@ -330,6 +347,7 @@ export default function Edit( props ) {
 						/>
 					) }
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Enable auto height',
 							'fancy-squares-core-enhancements'
@@ -340,6 +358,7 @@ export default function Edit( props ) {
 						}
 					/>
 					<ToggleControl
+						__nextHasNoMarginBottom
 						label={ __(
 							'Enforce equal slide height',
 							'fancy-squares-core-enhancements'
@@ -383,6 +402,8 @@ export default function Edit( props ) {
 							>
 								<strong>{ breakpointLabel }</strong>
 								<TextControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 									label={ __(
 										'Min screen width (px)',
 										'fancy-squares-core-enhancements'
@@ -400,6 +421,8 @@ export default function Edit( props ) {
 									}
 								/>
 								<RangeControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
 									label={ __(
 										'Slides to show',
 										'fancy-squares-core-enhancements'
@@ -442,6 +465,8 @@ export default function Edit( props ) {
 					initialOpen={ false }
 				>
 					<RangeControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 						label={ __(
 							'Speed (ms)',
 							'fancy-squares-core-enhancements'

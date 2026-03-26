@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/advanced-dropdown-item",
+	"title": "Advanced Dropdown Item",
+	"category": "layout",
+	"parent": [ "fs-blocks/advanced-dropdown" ],
+	"icon": "menu",
+	"description": "Single list item with optional link and dropdown panel content.",
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"__experimentalLayout": true,
+		"interactivity": true
+	},
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "New Item"
+		},
+		"itemId": {
+			"type": "string",
+			"default": ""
+		},
+		"url": {
+			"type": "string",
+			"default": ""
+		},
+		"opensInNewTab": {
+			"type": "boolean",
+			"default": false
+		},
+		"rel": {
+			"type": "string",
+			"default": ""
+		},
+		"hasDropdown": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"textdomain": "fancy-squares-core-enhancements",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

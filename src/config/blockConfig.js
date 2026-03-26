@@ -130,6 +130,10 @@ export const BLOCK_CONFIG = {
 		classOptions: [ 'display', 'position', 'zindex' ],
 		...SHARED_SPACING_CONFIG,
 	},
+	'fs-blocks/advanced-dropdown': {
+		classOptions: [ 'display', 'position', 'zindex' ],
+		...SHARED_SPACING_CONFIG,
+	},
 	'fs-blocks/accordion-interactive': {
 		classOptions: [ 'display', 'position', 'zindex' ],
 		...SHARED_SPACING_CONFIG,

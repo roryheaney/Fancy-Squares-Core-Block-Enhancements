@@ -101,6 +101,7 @@ function fs_core_enhancements_button_modal_render( $block_content, $block ) {
 
 			$processor->set_attribute( 'aria-controls', $modal_id );
 			$processor->set_attribute( 'aria-haspopup', 'dialog' );
+			$processor->set_attribute( 'aria-expanded', 'false' );
 			$processor->set_attribute( 'type', 'button' );
 			$processor->add_class( 'wp-element-button--modal-btn' );
 

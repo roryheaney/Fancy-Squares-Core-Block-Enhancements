@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fs-blocks/advanced-dropdown",
+	"title": "FS Advanced Dropdown",
+	"category": "layout",
+	"icon": "menu",
+	"description": "List-based dropdown navigation with per-item links and nested content.",
+	"keywords": [ "dropdown", "list", "navigation" ],
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"__experimentalLayout": true,
+		"interactivity": true
+	},
+	"attributes": {
+		"blockId": {
+			"type": "string",
+			"default": ""
+		},
+		"activeItem": {
+			"type": "string",
+			"default": ""
+		},
+		"defaultFirstItemVisible": {
+			"type": "boolean",
+			"default": false
+		},
+		"topLevelLayout": {
+			"type": "string",
+			"default": "horizontal"
+		},
+		"leftMobileBehavior": {
+			"type": "string",
+			"default": "inline"
+		},
+		"additionalClasses": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		}
+	},
+	"textdomain": "fancy-squares-core-enhancements",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js"
+}

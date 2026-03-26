@@ -50,8 +50,8 @@ Notes:
 -   The contract is extendable: any interactive source that emits the configured
     event with a stable `itemId` (and supports the showcase media field) can
     drive the gallery.
--   Existing tabs events emit `detail.from`/`detail.to` (not `detail.itemId`), so
-    tabs must be extended to include `itemId` if you use them as a source.
+-   Tabs lifecycle events now include `detail.itemId` (alongside `detail.from` and
+    `detail.to`), so tabs can be used as a showcase source without custom event mapping.
 -   Each showcase instance is scoped to its wrapper, so multiple showcases on
     a page operate independently.
 
@@ -62,6 +62,23 @@ Extensibility contract:
     `shown.fs.accordion`).
 -   Each source item must have a stable `itemId` attribute.
 -   The item block must expose the showcase media field (`showcaseMediaId`).
+
+### Advanced Dropdown settings
+
+The `FS Advanced Dropdown` block includes block-level settings for default panel
+behavior and top-level layout:
+
+-   **Default first item visible**: when enabled, the first dropdown-enabled
+    item becomes the fallback visible panel whenever no item is actively open.
+-   **Top-level layout**:
+    -   `Horizontal` keeps dropdown behavior under top items.
+    -   `Left` renders top items in a left column with a single shared panel on
+        the side (tabs-like) on desktop, and rehomes each panel back inside its
+        parent list item on mobile.
+-   **Left layout mobile behavior** (only when Top-level layout is `Left`):
+    -   `Inline panels` (default): mobile rehomes each panel under its parent item.
+    -   `List only (no panels)`: mobile hides dropdown panels and toggles so the
+        top-level list is rendered as links/labels only.
 
 ### Token class selectors
 
@@ -268,6 +285,8 @@ Custom blocks under `src/blocks/` are disabled by default. Use Settings > Fancy 
 -   `fs-blocks/showcase-gallery`: gallery block that renders media from the showcase context; transition controls (fade/slide/zoom).
 -   `fs-blocks/tabs-interactive`: tabbed container using WordPress Interactivity API; display/position/zindex tokens; padding and positive margin controls; CustomEvents API (hide, hidden, show, shown).
 -   `fs-blocks/tab-item-interactive`: child tab item with title and content; uses Interactivity API for state management.
+-   `fs-blocks/advanced-dropdown`: list-based dropdown container using WordPress Interactivity API; desktop opens on hover/focus with click fallback and keyboard support; supports "default first item visible" fallback and top-level layout modes (`horizontal` and tabs-like `left`); display/position/zindex tokens; padding and positive margin controls; tab-like editor workflow for managing many items.
+-   `fs-blocks/advanced-dropdown-item`: child dropdown item with title, link URL, target/rel options, and optional nested dropdown panel content.
 -   `fs-blocks/modal`: modal dialog using WordPress Interactivity API with Bootstrap 5 animations; size options (small/default/large/xl/fullscreen); centered positioning; scrollable content; static backdrop; keyboard navigation (Tab/Shift+Tab focus trap, Escape to close); focus management; CustomEvents API (show, shown, hide, hidden); ARIA compliant with always-visible close button.
 -   `fs-blocks/carousel`: carousel container with Swiper-powered navigation, autoplay, and responsive breakpoints; display/position/zindex tokens; padding and positive margin controls.
 -   `fs-blocks/carousel-slide`: child slide block with vertical alignment and core block content.

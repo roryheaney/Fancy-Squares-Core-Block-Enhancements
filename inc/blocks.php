@@ -78,6 +78,18 @@ function fs_core_enhancements_get_custom_blocks() {
 			),
 			'path' => $get_block_path( 'tabs-interactive' ),
 		],
+		'advanced-dropdown' => [
+			'name' => 'fs-blocks/advanced-dropdown',
+			'label' => __(
+				'Advanced Dropdown',
+				'fancy-squares-core-enhancements'
+			),
+			'description' => __(
+				'List-based dropdown navigation with per-item links and nested content.',
+				'fancy-squares-core-enhancements'
+			),
+			'path' => $get_block_path( 'advanced-dropdown' ),
+		],
 		'accordion-interactive' => [
 			'name' => 'fs-blocks/accordion-interactive',
 			'label' => __(
@@ -145,6 +157,7 @@ function fs_core_enhancements_get_enabled_blocks() {
 function fs_core_enhancements_get_child_block_slugs() {
 	return [
 		'tabs-interactive' => [ 'tab-item-interactive' ],
+		'advanced-dropdown' => [ 'advanced-dropdown-item' ],
 		'accordion-interactive' => [ 'accordion-item-interactive' ],
 		'content-showcase' => [ 'showcase-gallery' ],
 		'carousel' => [ 'carousel-slide' ],

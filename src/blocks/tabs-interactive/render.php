@@ -58,6 +58,7 @@ if ( '' === $active_tab || ! in_array( $active_tab, $tab_ids, true ) ) {
 
 $responsive_enabled = isset( $attributes['responsiveTabs'] ) && $attributes['responsiveTabs'];
 $vertical_enabled = isset( $attributes['verticalTabs'] ) && $attributes['verticalTabs'];
+$tab_orientation = $vertical_enabled ? 'vertical' : 'horizontal';
 $classes = [];
 if ( $responsive_enabled ) {
 	$classes[] = 'fs-tabs--responsive';
@@ -90,7 +91,7 @@ $initial_context = [
 	data-wp-interactive="fancySquaresTabsInteractive"
 	<?php echo wp_interactivity_data_wp_context( $initial_context ); ?>
 >
-	<div class="fs-tabs__tablist" role="tablist" aria-orientation="horizontal">
+	<div class="fs-tabs__tablist" role="tablist" aria-orientation="<?php echo esc_attr( $tab_orientation ); ?>">
 		<?php foreach ( $tabs as $tab ) : ?>
 			<?php
 			$tab_button_id = $block_id . '-tab-' . $tab['id'];

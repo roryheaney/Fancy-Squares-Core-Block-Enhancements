@@ -89,6 +89,7 @@ store( 'fancySquaresTabsInteractive', {
 					detail: {
 						from: previousTab,
 						to: context.tabId,
+						itemId: previousTab,
 					},
 				} );
 				if ( ! previousButton.dispatchEvent( hideEvent ) ) {
@@ -103,6 +104,7 @@ store( 'fancySquaresTabsInteractive', {
 					detail: {
 						from: previousTab,
 						to: context.tabId,
+						itemId: context.tabId,
 					},
 				} );
 				if ( ! newButton.dispatchEvent( showEvent ) ) {
@@ -145,6 +147,7 @@ store( 'fancySquaresTabsInteractive', {
 										detail: {
 											from: previousTab,
 											to: context.tabId,
+											itemId: previousTab,
 										},
 									} )
 								);
@@ -157,6 +160,7 @@ store( 'fancySquaresTabsInteractive', {
 								detail: {
 									from: previousTab,
 									to: context.tabId,
+									itemId: previousTab,
 								},
 							} )
 						);
@@ -199,6 +203,7 @@ store( 'fancySquaresTabsInteractive', {
 											detail: {
 												from: previousTab,
 												to: context.tabId,
+												itemId: context.tabId,
 											},
 										} )
 									);
@@ -212,6 +217,7 @@ store( 'fancySquaresTabsInteractive', {
 								detail: {
 									from: previousTab,
 									to: context.tabId,
+									itemId: context.tabId,
 								},
 							} )
 						);
@@ -238,11 +244,22 @@ store( 'fancySquaresTabsInteractive', {
 				tablist.querySelectorAll( '[role="tab"]' )
 			);
 			const currentIndex = tabs.indexOf( ref );
+			if ( currentIndex === -1 ) {
+				return;
+			}
+
+			const orientation =
+				tablist.getAttribute( 'aria-orientation' ) === 'vertical'
+					? 'vertical'
+					: 'horizontal';
 
 			let nextIndex = -1;
 
 			switch ( event.key ) {
 				case 'ArrowLeft':
+					if ( orientation !== 'horizontal' ) {
+						break;
+					}
 					event.preventDefault();
 					nextIndex = currentIndex - 1;
 					if ( nextIndex < 0 ) {
@@ -250,6 +267,29 @@ store( 'fancySquaresTabsInteractive', {
 					}
 					break;
 				case 'ArrowRight':
+					if ( orientation !== 'horizontal' ) {
+						break;
+					}
+					event.preventDefault();
+					nextIndex = currentIndex + 1;
+					if ( nextIndex >= tabs.length ) {
+						nextIndex = 0;
+					}
+					break;
+				case 'ArrowUp':
+					if ( orientation !== 'vertical' ) {
+						break;
+					}
+					event.preventDefault();
+					nextIndex = currentIndex - 1;
+					if ( nextIndex < 0 ) {
+						nextIndex = tabs.length - 1;
+					}
+					break;
+				case 'ArrowDown':
+					if ( orientation !== 'vertical' ) {
+						break;
+					}
 					event.preventDefault();
 					nextIndex = currentIndex + 1;
 					if ( nextIndex >= tabs.length ) {

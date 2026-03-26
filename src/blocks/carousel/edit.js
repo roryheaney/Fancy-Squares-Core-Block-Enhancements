@@ -16,6 +16,7 @@ import { useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 
 import { generateClassName } from '../../utils/helpers';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const TEMPLATE = [ [ 'fs-blocks/carousel-slide' ] ];
@@ -57,7 +58,6 @@ export default function Edit( props ) {
 		autoHeight,
 		enforceHeight,
 		elementTag,
-		blockId,
 		additionalClasses,
 	} = attributes;
 
@@ -94,11 +94,12 @@ export default function Edit( props ) {
 		}
 	}, [ additionalClasses, generatedClassName, setAttributes ] );
 
-	useEffect( () => {
-		if ( ! blockId ) {
-			setAttributes( { blockId: clientId } );
-		}
-	}, [ blockId, clientId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/carousel',
+		attributeKey: 'blockId',
+		setAttributes,
+	} );
 
 	useEffect( () => {
 		if ( slidesToShow !== 1 ) {

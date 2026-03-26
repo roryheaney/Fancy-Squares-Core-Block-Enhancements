@@ -9,8 +9,8 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 
 export default function Edit( {
 	clientId,
@@ -22,11 +22,12 @@ export default function Edit( {
 		attributes;
 	const previewMediaType = showcaseMediaType || showcaseMedia?.type || '';
 
-	useEffect( () => {
-		if ( ! itemId ) {
-			setAttributes( { itemId: clientId } );
-		}
-	}, [ clientId, itemId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/accordion-item-interactive',
+		attributeKey: 'itemId',
+		setAttributes,
+	} );
 
 	const activeItem = context[ 'fs-blocks/accordion-interactive/activeItem' ];
 	const isActiveItem = activeItem === ( itemId || clientId );

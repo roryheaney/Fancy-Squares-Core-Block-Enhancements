@@ -12,6 +12,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const TEMPLATE = [ [ 'fs-blocks/tab-item-interactive' ] ];
@@ -19,13 +20,8 @@ const ALLOWED_BLOCKS = [ 'fs-blocks/tab-item-interactive' ];
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
-	const {
-		blockId,
-		activeTab,
-		responsiveTabs,
-		verticalTabs,
-		additionalClasses,
-	} = attributes;
+	const { activeTab, responsiveTabs, verticalTabs, additionalClasses } =
+		attributes;
 	const { selectBlock } = useDispatch( blockEditorStore );
 
 	const { childBlocks } = useSelect(
@@ -47,11 +43,12 @@ export default function Edit( props ) {
 		[ childBlocks ]
 	);
 
-	useEffect( () => {
-		if ( ! blockId ) {
-			setAttributes( { blockId: clientId } );
-		}
-	}, [ blockId, clientId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/tabs-interactive',
+		attributeKey: 'blockId',
+		setAttributes,
+	} );
 
 	const hasInitializedRef = useRef( false );
 	useEffect( () => {

@@ -16,6 +16,7 @@ import { __ } from '@wordpress/i18n';
 import { copy } from '@wordpress/icons';
 
 import { generateClassName } from '../../utils/helpers';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const ALLOWED_BLOCKS = [
@@ -42,7 +43,7 @@ const TEMPLATE = [
 ];
 
 export default function Edit( props ) {
-	const { attributes, setAttributes, name } = props;
+	const { attributes, setAttributes, name, clientId } = props;
 	const {
 		modalId,
 		size,
@@ -57,16 +58,12 @@ export default function Edit( props ) {
 
 	const [ copySuccess, setCopySuccess ] = useState( false );
 
-	// Auto-generate modalId on block insert if empty
-	useEffect( () => {
-		if ( ! modalId ) {
-			// Generate unique ID similar to wp_unique_id() format
-			const timestamp = Date.now().toString( 36 );
-			const random = Math.random().toString( 36 ).substring( 2, 7 );
-			const generatedId = `modal-${ timestamp }${ random }`;
-			setAttributes( { modalId: generatedId } );
-		}
-	}, [ modalId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/modal',
+		attributeKey: 'modalId',
+		setAttributes,
+	} );
 
 	const generatedClassName = useMemo(
 		() => generateClassName( attributes, name, BLOCK_CONFIG ),

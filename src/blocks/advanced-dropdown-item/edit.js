@@ -13,8 +13,9 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { useEffect, useMemo } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 
 const REL_TOKENS = [
 	'alternate',
@@ -94,11 +95,12 @@ export default function Edit( { clientId, attributes, setAttributes } ) {
 		setRelTokens( relTokens.filter( ( item ) => item !== token ) );
 	};
 
-	useEffect( () => {
-		if ( ! itemId ) {
-			setAttributes( { itemId: clientId } );
-		}
-	}, [ clientId, itemId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/advanced-dropdown-item',
+		attributeKey: 'itemId',
+		setAttributes,
+	} );
 
 	const { isActiveItem } = useSelect(
 		( select ) => {

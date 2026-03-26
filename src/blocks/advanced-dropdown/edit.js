@@ -12,6 +12,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const TEMPLATE = [ [ 'fs-blocks/advanced-dropdown-item' ] ];
@@ -33,7 +34,6 @@ const getFallbackActiveItem = ( items ) => {
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
 	const {
-		blockId,
 		activeItem,
 		defaultFirstItemVisible,
 		topLevelLayout = 'horizontal',
@@ -62,11 +62,12 @@ export default function Edit( props ) {
 		[ childBlocks ]
 	);
 
-	useEffect( () => {
-		if ( ! blockId ) {
-			setAttributes( { blockId: clientId } );
-		}
-	}, [ blockId, clientId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/advanced-dropdown',
+		attributeKey: 'blockId',
+		setAttributes,
+	} );
 
 	const hasInitializedRef = useRef( false );
 	useEffect( () => {

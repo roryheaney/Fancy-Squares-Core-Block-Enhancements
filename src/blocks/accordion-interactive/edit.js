@@ -11,12 +11,12 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 
 import { generateClassName } from '../../utils/helpers';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
-	const { blockId, activeItem, openFirstItem, additionalClasses } =
-		attributes;
+	const { activeItem, openFirstItem, additionalClasses } = attributes;
 
 	const { childBlocks } = useSelect(
 		( select ) => ( {
@@ -34,11 +34,12 @@ export default function Edit( props ) {
 		[ childBlocks ]
 	);
 
-	useEffect( () => {
-		if ( ! blockId ) {
-			setAttributes( { blockId: clientId } );
-		}
-	}, [ clientId, blockId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/accordion-interactive',
+		attributeKey: 'blockId',
+		setAttributes,
+	} );
 
 	// Reset activeItem on initial mount (page load), but allow changes during session
 	const hasInitializedRef = useRef( false );

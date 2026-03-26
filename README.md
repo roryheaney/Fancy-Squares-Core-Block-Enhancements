@@ -4,14 +4,16 @@ Extend core blocks with Bootstrap-style utility classes, breakpoint width contro
 
 ## Current Version
 
--   `1.1.5`
+-   `1.1.6`
 
-## Release Highlights (1.1.5)
+## Release Highlights (1.1.6)
 
 -   Updated editor controls to WP 6.7+ / 6.8+ component props (`__nextHasNoMarginBottom`, `__next40pxDefaultSize`) to remove deprecation warnings from plugin controls.
 -   Migrated interactive directives to current Interactivity API event patterns (`data-wp-on--*` with synced handlers).
 -   Moved span format modal styling to dedicated SCSS structure and simplified color selection to swatches-only for stable editor behavior.
 -   Moved editor canvas stylesheet enqueue to iframe-safe loading via block asset hooks.
+-   Added editor-time ID self-healing for FS interactive blocks so duplicated/inserted instances regenerate unique IDs on save.
+-   Added safe scoped remap for duplicated `core/button` modal triggers when a copied trigger and copied modal live in the same duplicated container subtree.
 
 ## Requirements
 

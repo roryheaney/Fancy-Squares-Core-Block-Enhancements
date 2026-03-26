@@ -14,6 +14,7 @@ import { __ } from '@wordpress/i18n';
 
 import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
+import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const TEMPLATE = [
@@ -59,7 +60,6 @@ const LAYOUT_OPTIONS = [
 export default function Edit( props ) {
 	const { attributes, setAttributes, clientId, name } = props;
 	const {
-		blockId,
 		layoutType,
 		hideGalleryOnMobile,
 		sourceEventName,
@@ -81,11 +81,12 @@ export default function Edit( props ) {
 		}
 	}, [ additionalClasses, generatedClassName, setAttributes ] );
 
-	useEffect( () => {
-		if ( ! blockId ) {
-			setAttributes( { blockId: clientId } );
-		}
-	}, [ blockId, clientId, setAttributes ] );
+	useEnsureUniqueAttributeId( {
+		clientId,
+		blockName: 'fs-blocks/content-showcase',
+		attributeKey: 'blockId',
+		setAttributes,
+	} );
 
 	const layoutClass = layoutType
 		? `fs-content-showcase--layout-${ layoutType }`

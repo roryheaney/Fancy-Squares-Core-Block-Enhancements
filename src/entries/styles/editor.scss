@@ -4,6 +4,7 @@
 // ==========================================
 
 @use "../../styles/components/columns";
+@use "../../styles/components/framework-compat";
 @use "../../assets/scss/admin-styles";
 @use "../../assets/scss/cover-block";
 @use "../../assets/scss/video-block";
@@ -11,3 +12,4 @@
 @use "../../assets/scss/carousel-block";
 @use "../../assets/scss/carousel-block-editor";
 @include columns.render-column-enhancements();
+@include framework-compat.render-framework-compat-utilities();

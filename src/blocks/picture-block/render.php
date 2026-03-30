@@ -68,7 +68,7 @@ $img_classes = [];
 $img_style   = '';
 if ( ! empty( $border_class ) ) {
 	$img_classes = array_merge( $img_classes, $border_class );
-	$img_style   = 'border-style: solid;';
+	$img_style   = 'border-style: solid; border-width: 1px;';
 }
 if ( ! empty( $radius_class ) ) {
 	$img_classes = array_merge( $img_classes, $radius_class );

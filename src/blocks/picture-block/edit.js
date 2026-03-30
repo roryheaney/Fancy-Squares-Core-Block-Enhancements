@@ -232,6 +232,7 @@ export default function Edit( props ) {
 		if ( borderTokens.length ) {
 			classes.push( ...borderTokens );
 			styleObj.borderStyle = 'solid';
+			styleObj.borderWidth = '1px';
 		}
 		if ( radiusTokens.length ) {
 			classes.push( ...radiusTokens );

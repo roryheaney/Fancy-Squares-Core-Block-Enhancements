@@ -30,10 +30,10 @@
 
 - Theme-driven framework tokens are the default source for spacing/breakpoints/options.
 - Token generation flow:
-  - `--theme-json-path`
-  - `FS_THEME_JSON_PATH`
-  - local plugin `theme.json` (if present)
-  - `data/style-tokens.default.json` fallback
+    - `--theme-json-path`
+    - `FS_THEME_JSON_PATH`
+    - local plugin `theme.json` (if present)
+    - `data/style-tokens.default.json` fallback
 - Keep UI options aligned with generated token artifacts; do not hardcode extra options in controls when generated values exist.
 
 ## Project Map
@@ -52,10 +52,10 @@
 ## Generated File Guardrails
 
 - Do not hand-edit generated outputs:
-  - `build/**`
-  - `src/config/generated/**`
-  - `src/styles/generated/**`
-  - `data/bootstrap-classes/generated-spacing-options.js`
+    - `build/**`
+    - `src/config/generated/**`
+    - `src/styles/generated/**`
+    - `data/bootstrap-classes/generated-spacing-options.js`
 - Regenerate via scripts (`npm run tokens:site`, `npm run build`).
 
 ## Runtime Invariants
@@ -67,7 +67,7 @@
 - Per-block opt-out for forced lazy image loading uses `disableForcedLazyLoading`.
 - `core/video` lazy-load and custom play button behavior run through render filters + `src/entries/frontend/index.js`.
 - Modal trigger conversion for `core/button` uses Interactivity API attributes and `aria-haspopup="dialog"`.
-- CDN Bootstrap/Swiper registrations include SRI + `crossorigin`.
+- CDN Swiper registrations include SRI + `crossorigin`.
 
 ## Block Conventions
 

@@ -1,0 +1,238 @@
+@use "sass:map";
+
+$fs-border-widths: (
+	1: 1px,
+	2: 2px,
+	3: 3px,
+	4: 4px,
+	5: 5px,
+);
+
+$fs-border-colors: (
+	"primary": var(--fs-border-primary, var(--wp--preset--color--primary, #0d6efd)),
+	"secondary": var(--fs-border-secondary, var(--wp--preset--color--secondary, #6c757d)),
+	"success": var(--fs-border-success, var(--wp--preset--color--success, #198754)),
+	"danger": var(--fs-border-danger, var(--wp--preset--color--danger, #dc3545)),
+	"warning": var(--fs-border-warning, var(--wp--preset--color--warning, #ffc107)),
+	"info": var(--fs-border-info, var(--wp--preset--color--info, #0dcaf0)),
+	"light": var(--fs-border-light, var(--wp--preset--color--light, #f8f9fa)),
+	"dark": var(--fs-border-dark, var(--wp--preset--color--dark, #212529)),
+	"white": var(--fs-border-white, #fff),
+);
+
+$fs-alert-variants: (
+	"primary": (
+		"color": var(--fs-alert-primary-color, #084298),
+		"bg": var(--fs-alert-primary-bg, #cfe2ff),
+		"border": var(--fs-alert-primary-border, #b6d4fe),
+	),
+	"secondary": (
+		"color": var(--fs-alert-secondary-color, #41464b),
+		"bg": var(--fs-alert-secondary-bg, #e2e3e5),
+		"border": var(--fs-alert-secondary-border, #d3d6d8),
+	),
+	"success": (
+		"color": var(--fs-alert-success-color, #0f5132),
+		"bg": var(--fs-alert-success-bg, #d1e7dd),
+		"border": var(--fs-alert-success-border, #badbcc),
+	),
+	"danger": (
+		"color": var(--fs-alert-danger-color, #842029),
+		"bg": var(--fs-alert-danger-bg, #f8d7da),
+		"border": var(--fs-alert-danger-border, #f5c2c7),
+	),
+	"warning": (
+		"color": var(--fs-alert-warning-color, #664d03),
+		"bg": var(--fs-alert-warning-bg, #fff3cd),
+		"border": var(--fs-alert-warning-border, #ffecb5),
+	),
+	"info": (
+		"color": var(--fs-alert-info-color, #055160),
+		"bg": var(--fs-alert-info-bg, #cff4fc),
+		"border": var(--fs-alert-info-border, #b6effb),
+	),
+	"light": (
+		"color": var(--fs-alert-light-color, #636464),
+		"bg": var(--fs-alert-light-bg, #fefefe),
+		"border": var(--fs-alert-light-border, #fdfdfe),
+	),
+	"dark": (
+		"color": var(--fs-alert-dark-color, #141619),
+		"bg": var(--fs-alert-dark-bg, #d3d3d4),
+		"border": var(--fs-alert-dark-border, #bcbebf),
+	),
+);
+
+$fs-rounded-values: (
+	0: 0,
+	1: 0.2rem,
+	2: 0.25rem,
+	3: 0.375rem,
+	4: 0.5rem,
+	5: 1rem,
+);
+
+$fs-rounded-top: (
+	"top-left": "border-top-left-radius",
+	"top-right": "border-top-right-radius",
+);
+
+$fs-rounded-end: (
+	"top-right": "border-top-right-radius",
+	"bottom-right": "border-bottom-right-radius",
+);
+
+$fs-rounded-bottom: (
+	"bottom-right": "border-bottom-right-radius",
+	"bottom-left": "border-bottom-left-radius",
+);
+
+$fs-rounded-start: (
+	"top-left": "border-top-left-radius",
+	"bottom-left": "border-bottom-left-radius",
+);
+
+@mixin fs-render-border-utilities() {
+	$default-border-color: var(--fs-border-default, currentcolor);
+	$default-border-width: var(--fs-border-width-1, 1px);
+
+	.border-0 {
+		border: 0 !important;
+	}
+
+	@each $width-key, $width-value in $fs-border-widths {
+		.border-#{$width-key} {
+			border-style: solid !important;
+			border-width: $width-value !important;
+			border-color: $default-border-color !important;
+		}
+	}
+
+	$side-properties: (
+		"top": "border-top",
+		"end": "border-right",
+		"bottom": "border-bottom",
+		"start": "border-left",
+	);
+
+	@each $side, $property in $side-properties {
+		.border-#{$side} {
+			#{$property}: $default-border-width solid $default-border-color !important;
+		}
+
+		.border-#{$side}-0 {
+			#{$property}: 0 !important;
+		}
+
+		@each $width-key, $width-value in $fs-border-widths {
+			.border-#{$side}-#{$width-key} {
+				#{$property}-style: solid !important;
+				#{$property}-width: $width-value !important;
+				#{$property}-color: $default-border-color !important;
+			}
+		}
+	}
+
+	@each $color-key, $color-value in $fs-border-colors {
+		.border-#{$color-key} {
+			border-color: $color-value !important;
+		}
+	}
+}
+
+@mixin fs-render-rounded-utilities() {
+
+	@each $radius-key, $radius-value in $fs-rounded-values {
+		.rounded-#{$radius-key} {
+			border-radius: $radius-value !important;
+		}
+	}
+
+	.rounded-circle {
+		border-radius: 50% !important;
+	}
+
+	.rounded-pill {
+		border-radius: 50rem !important;
+	}
+
+	.rounded-top {
+		border-top-left-radius: map.get( $fs-rounded-values, 2 ) !important;
+		border-top-right-radius: map.get( $fs-rounded-values, 2 ) !important;
+	}
+
+	.rounded-end {
+		border-top-right-radius: map.get( $fs-rounded-values, 2 ) !important;
+		border-bottom-right-radius: map.get( $fs-rounded-values, 2 ) !important;
+	}
+
+	.rounded-bottom {
+		border-bottom-right-radius: map.get( $fs-rounded-values, 2 ) !important;
+		border-bottom-left-radius: map.get( $fs-rounded-values, 2 ) !important;
+	}
+
+	.rounded-start {
+		border-top-left-radius: map.get( $fs-rounded-values, 2 ) !important;
+		border-bottom-left-radius: map.get( $fs-rounded-values, 2 ) !important;
+	}
+
+	@each $radius-key, $radius-value in $fs-rounded-values {
+		.rounded-top-#{$radius-key} {
+
+			@each $property in map.values( $fs-rounded-top ) {
+				#{$property}: $radius-value !important;
+			}
+		}
+
+		.rounded-end-#{$radius-key} {
+
+			@each $property in map.values( $fs-rounded-end ) {
+				#{$property}: $radius-value !important;
+			}
+		}
+
+		.rounded-bottom-#{$radius-key} {
+
+			@each $property in map.values( $fs-rounded-bottom ) {
+				#{$property}: $radius-value !important;
+			}
+		}
+
+		.rounded-start-#{$radius-key} {
+
+			@each $property in map.values( $fs-rounded-start ) {
+				#{$property}: $radius-value !important;
+			}
+		}
+	}
+}
+
+@mixin fs-render-alert-utilities() {
+
+	.wp-block-fs-blocks-alert.alert {
+		position: relative;
+		padding: var(--fs-alert-padding-y, 1rem) var(--fs-alert-padding-x, 1rem);
+		margin-bottom: 1rem;
+		border: 1px solid transparent;
+		border-radius: map.get( $fs-rounded-values, 2 );
+	}
+
+	.wp-block-fs-blocks-alert.alert p:last-child {
+		margin-bottom: 0;
+	}
+
+	@each $variant, $values in $fs-alert-variants {
+		.wp-block-fs-blocks-alert.alert-#{$variant} {
+			color: map.get( $values, "color" );
+			background-color: map.get( $values, "bg" );
+			border-color: map.get( $values, "border" );
+		}
+	}
+}
+
+@mixin render-framework-compat-utilities() {
+
+	@include fs-render-alert-utilities();
+	@include fs-render-border-utilities();
+	@include fs-render-rounded-utilities();
+}

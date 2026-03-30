@@ -5,13 +5,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! defined( 'FS_CORE_ENHANCEMENTS_OPTION_BOOTSTRAP' ) ) {
-	define(
-		'FS_CORE_ENHANCEMENTS_OPTION_BOOTSTRAP',
-		'fs_core_enhancements_bootstrap_cdn'
-	);
-}
-
 if ( ! defined( 'FS_CORE_ENHANCEMENTS_OPTION_UTILITIES' ) ) {
 	define(
 		'FS_CORE_ENHANCEMENTS_OPTION_UTILITIES',
@@ -37,23 +30,12 @@ function fs_core_enhancements_sanitize_enabled_blocks( $value ) {
 	return array_values( array_unique( $enabled ) );
 }
 
-function fs_core_enhancements_sanitize_bootstrap_cdn( $value ) {
-	$value = sanitize_key( $value );
-	$allowed = [ 'off', 'editor', 'both' ];
-
-	if ( ! in_array( $value, $allowed, true ) ) {
-		return 'off';
-	}
-
-	return $value;
-}
-
 function fs_core_enhancements_sanitize_utilities_css( $value ) {
 	$value = sanitize_key( $value );
 	$allowed = [ 'off', 'editor', 'both' ];
 
 	if ( ! in_array( $value, $allowed, true ) ) {
-		return 'off';
+		return 'both';
 	}
 
 	return $value;
@@ -71,20 +53,10 @@ function fs_core_enhancements_register_settings() {
 	);
 	register_setting(
 		'fs_core_enhancements_settings',
-		FS_CORE_ENHANCEMENTS_OPTION_BOOTSTRAP,
-		[
-			'type' => 'string',
-			'default' => 'off',
-			'sanitize_callback' =>
-				'fs_core_enhancements_sanitize_bootstrap_cdn',
-		]
-	);
-	register_setting(
-		'fs_core_enhancements_settings',
 		FS_CORE_ENHANCEMENTS_OPTION_UTILITIES,
 		[
 			'type' => 'string',
-			'default' => 'off',
+			'default' => 'both',
 			'sanitize_callback' =>
 				'fs_core_enhancements_sanitize_utilities_css',
 		]
@@ -110,14 +82,10 @@ function fs_core_enhancements_render_settings_page() {
 
 	$utilities_setting = get_option(
 		FS_CORE_ENHANCEMENTS_OPTION_UTILITIES,
-		'off'
+		'both'
 	);
 	$blocks = fs_core_enhancements_get_custom_blocks();
 	$enabled = fs_core_enhancements_get_enabled_blocks();
-	$bootstrap_setting = get_option(
-		FS_CORE_ENHANCEMENTS_OPTION_BOOTSTRAP,
-		'off'
-	);
 	?>
 	<div class="wrap">
 		<h1><?php echo esc_html__( 'Fancy Squares Blocks', 'fancy-squares-core-enhancements' ); ?></h1>
@@ -137,41 +105,7 @@ function fs_core_enhancements_render_settings_page() {
 						<th scope="row">
 							<?php
 							echo esc_html__(
-								'Include Bootstrap 5 CDN',
-								'fancy-squares-core-enhancements'
-							);
-							?>
-						</th>
-						<td>
-							<label for="fs-core-enhancements-bootstrap">
-								<?php
-								echo esc_html__(
-									'Choose where Bootstrap 5 loads.',
-									'fancy-squares-core-enhancements'
-								);
-								?>
-							</label>
-							<select
-								id="fs-core-enhancements-bootstrap"
-								name="<?php echo esc_attr( FS_CORE_ENHANCEMENTS_OPTION_BOOTSTRAP ); ?>"
-							>
-								<option value="off" <?php selected( $bootstrap_setting, 'off' ); ?>>
-									<?php echo esc_html__( 'Off (theme only)', 'fancy-squares-core-enhancements' ); ?>
-								</option>
-								<option value="editor" <?php selected( $bootstrap_setting, 'editor' ); ?>>
-									<?php echo esc_html__( 'Editor only', 'fancy-squares-core-enhancements' ); ?>
-								</option>
-								<option value="both" <?php selected( $bootstrap_setting, 'both' ); ?>>
-									<?php echo esc_html__( 'Editor + front end', 'fancy-squares-core-enhancements' ); ?>
-							</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">
-							<?php
-							echo esc_html__(
-								'Load Bootstrap Utilities CSS',
+								'Load Utilities CSS',
 								'fancy-squares-core-enhancements'
 							);
 							?>
@@ -180,7 +114,7 @@ function fs_core_enhancements_render_settings_page() {
 							<label for="fs-core-enhancements-utilities">
 								<?php
 								echo esc_html__(
-									'Enable if your site does not have Bootstrap utilities (margins, padding, display, flexbox, etc.).',
+									'Enable when your site does not already provide these utility classes.',
 									'fancy-squares-core-enhancements'
 								);
 								?>
@@ -202,7 +136,7 @@ function fs_core_enhancements_render_settings_page() {
 							<p class="description">
 								<?php
 								echo esc_html__(
-									'Generates utility classes (m-*, p-*, d-flex, etc.). Only enable if needed.',
+									'Includes spacing, display, flexbox, gap, position, z-index, and blend utility classes.',
 									'fancy-squares-core-enhancements'
 								);
 								?>
@@ -233,65 +167,10 @@ function fs_core_enhancements_render_settings_page() {
 	<?php
 }
 
-function fs_core_enhancements_enqueue_bootstrap_cdn() {
-	$bootstrap_setting = get_option(
-		FS_CORE_ENHANCEMENTS_OPTION_BOOTSTRAP,
-		'off'
-	);
-
-	if ( 'off' === $bootstrap_setting ) {
-		return;
-	}
-
-	if ( 'editor' === $bootstrap_setting ) {
-		if ( ! is_admin() ) {
-			return;
-		}
-	}
-
-	wp_enqueue_style(
-		'fs-core-enhancements-bootstrap5',
-		'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
-		[],
-		'5.3.3'
-	);
-	wp_style_add_data(
-		'fs-core-enhancements-bootstrap5',
-		'integrity',
-		'sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH'
-	);
-	wp_style_add_data(
-		'fs-core-enhancements-bootstrap5',
-		'crossorigin',
-		'anonymous'
-	);
-	wp_enqueue_script(
-		'fs-core-enhancements-bootstrap5',
-		'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
-		[],
-		'5.3.3',
-		true
-	);
-	wp_script_add_data(
-		'fs-core-enhancements-bootstrap5',
-		'integrity',
-		'sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz'
-	);
-	wp_script_add_data(
-		'fs-core-enhancements-bootstrap5',
-		'crossorigin',
-		'anonymous'
-	);
-}
-add_action(
-	'enqueue_block_assets',
-	'fs_core_enhancements_enqueue_bootstrap_cdn'
-);
-
 function fs_core_enhancements_enqueue_utilities_css() {
 	$utilities_setting = get_option(
 		FS_CORE_ENHANCEMENTS_OPTION_UTILITIES,
-		'off'
+		'both'
 	);
 
 	if ( 'off' === $utilities_setting ) {
@@ -307,12 +186,10 @@ function fs_core_enhancements_enqueue_utilities_css() {
 	$plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
 	$plugin_dir = plugin_dir_path( dirname( __DIR__ ) . '/fancy-squares-core-enhancements.php' );
 
-	// Check if utilities CSS exists
 	if ( ! file_exists( $plugin_dir . 'build/utilities.css' ) ) {
 		return;
 	}
 
-	// Load asset file for version
 	$asset_file = $plugin_dir . 'build/utilities.asset.php';
 	if ( file_exists( $asset_file ) ) {
 		$asset = include $asset_file;
@@ -332,5 +209,3 @@ add_action(
 	'enqueue_block_assets',
 	'fs_core_enhancements_enqueue_utilities_css'
 );
-
-

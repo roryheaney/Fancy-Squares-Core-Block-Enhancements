@@ -238,6 +238,13 @@ const toSpacingScaleFromScale = ( spacingScale ) => {
 	return toSpacingScaleFromPresets( generatedPresets );
 };
 
+const SUPPORTED_FRAMEWORK_OPTION_SET_KEYS = new Set( [
+	'bleedCoverOptions',
+	'alertOptions',
+	'borderOptions',
+	'borderRadiusOptions',
+] );
+
 const normalizeFrameworkOptionSets = ( optionSets ) => {
 	if ( ! optionSets || typeof optionSets !== 'object' ) {
 		return {};
@@ -246,6 +253,10 @@ const normalizeFrameworkOptionSets = ( optionSets ) => {
 	const normalized = {};
 
 	for ( const [ key, options ] of Object.entries( optionSets ) ) {
+		if ( ! SUPPORTED_FRAMEWORK_OPTION_SET_KEYS.has( key ) ) {
+			continue;
+		}
+
 		if ( ! Array.isArray( options ) || options.length === 0 ) {
 			continue;
 		}
@@ -628,6 +639,7 @@ fs.writeFileSync(
 console.log( `[tokens] Generated ${ scssOutPath }` );
 console.log( `[tokens] Generated ${ jsTokensOutPath }` );
 console.log( `[tokens] Generated ${ generatedOptionsOutPath }` );
+
 
 
 

@@ -1,9 +1,4 @@
-import { columnsLayoutOptions } from './framework-option-sets';
-
 const SELECT_NONE_OPTION = [ { label: 'Select one', value: 'none' } ];
-const INHERIT_COLUMNS_OPTION = columnsLayoutOptions.find(
-	( option ) => option.value === ''
-) || { label: 'Inherit from Columns', value: '' };
 const ALL_SPACING_SIDES = [
 	'all',
 	'horizontal',
@@ -89,12 +84,6 @@ export const BLOCK_CONFIG = {
 			'alignItems',
 			'justifyContent',
 		],
-		dropdown: {
-			attributeKey: 'columnsLayout',
-			label: 'Columns Layout',
-			default: '',
-			options: columnsLayoutOptions,
-		},
 		hasConstrainToggle: true,
 	},
 	'core/column': {
@@ -105,12 +94,6 @@ export const BLOCK_CONFIG = {
 			'selfAlignment',
 			'order',
 		],
-		dropdown: {
-			attributeKey: 'columnsLayout',
-			label: 'Column Layout Override',
-			default: '',
-			options: [ INHERIT_COLUMNS_OPTION ],
-		},
 		hasWidthControls: true,
 		allowedPaddingControls: ALL_SPACING_SIDES,
 	},

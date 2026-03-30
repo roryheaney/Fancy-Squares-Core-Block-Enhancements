@@ -206,11 +206,11 @@ function fs_core_enhancements_get_utilities_setting() {
 		? FS_CORE_ENHANCEMENTS_OPTION_UTILITIES
 		: 'fs_core_enhancements_utilities_css';
 
-	$value = get_option( $option_name, 'off' );
+	$value = get_option( $option_name, 'both' );
 	$allowed = [ 'off', 'editor', 'both' ];
 
 	if ( ! is_string( $value ) || ! in_array( $value, $allowed, true ) ) {
-		return 'off';
+		return 'both';
 	}
 
 	return $value;
@@ -286,6 +286,158 @@ function fs_core_enhancements_is_utility_token( $token ) {
 }
 
 /**
+ * Split a class-like string into unique class tokens.
+ *
+ * @param string $value Input class string.
+ *
+ * @return string[]
+ */
+function fs_core_enhancements_split_tokens( $value ) {
+	if ( ! is_string( $value ) ) {
+		return [];
+	}
+
+	$value = trim( $value );
+	if ( '' === $value ) {
+		return [];
+	}
+
+	$tokens = preg_split( '/\s+/', $value );
+	if ( ! is_array( $tokens ) ) {
+		return [];
+	}
+
+	$tokens = array_filter(
+		$tokens,
+		static function ( $token ) {
+			return is_string( $token ) && '' !== $token;
+		}
+	);
+
+	return array_values( array_unique( $tokens ) );
+}
+
+/**
+ * Extract class-like tokens from block attributes.
+ *
+ * @param array $attrs Block attributes.
+ *
+ * @return string[]
+ */
+function fs_core_enhancements_extract_tokens_from_attrs( $attrs ) {
+	if ( ! is_array( $attrs ) ) {
+		return [];
+	}
+
+	$tokens = [];
+
+	foreach ( $attrs as $value ) {
+		if ( is_string( $value ) ) {
+			foreach ( fs_core_enhancements_split_tokens( $value ) as $token ) {
+				$tokens[ $token ] = true;
+			}
+			continue;
+		}
+
+		if ( ! is_array( $value ) ) {
+			continue;
+		}
+
+		foreach ( $value as $entry ) {
+			if ( ! is_string( $entry ) ) {
+				continue;
+			}
+
+			foreach ( fs_core_enhancements_split_tokens( $entry ) as $token ) {
+				$tokens[ $token ] = true;
+			}
+		}
+	}
+
+	return array_keys( $tokens );
+}
+
+/**
+ * Extract class tokens from rendered block markup.
+ *
+ * @param string $block_content Rendered block markup.
+ *
+ * @return string[]
+ */
+function fs_core_enhancements_extract_tokens_from_block_content(
+	$block_content
+) {
+	if (
+		! is_string( $block_content ) ||
+		'' === $block_content ||
+		false === strpos( $block_content, 'class=' )
+	) {
+		return [];
+	}
+
+	$matches = [];
+	preg_match_all(
+		'/\bclass=(["\'])(.*?)\1/s',
+		$block_content,
+		$matches,
+		PREG_SET_ORDER
+	);
+
+	if ( empty( $matches ) ) {
+		return [];
+	}
+
+	$tokens = [];
+
+	foreach ( $matches as $match ) {
+		if ( empty( $match[2] ) || ! is_string( $match[2] ) ) {
+			continue;
+		}
+
+		foreach ( fs_core_enhancements_split_tokens( $match[2] ) as $token ) {
+			$tokens[ $token ] = true;
+		}
+	}
+
+	return array_keys( $tokens );
+}
+
+/**
+ * Detect whether a class token is covered by frontend-styles.css.
+ *
+ * @param string $token Candidate class token.
+ *
+ * @return bool
+ */
+function fs_core_enhancements_is_frontend_style_token( $token ) {
+	if ( ! is_string( $token ) ) {
+		return false;
+	}
+
+	$token = trim( $token );
+	if ( '' === $token ) {
+		return false;
+	}
+
+	$patterns = [
+		'/^wp-block-column--column(?:-[a-z0-9-]+)?$/',
+		'/^cover-negative-margin-(?:left|right)$/',
+		'/^(?:is-style-bootstrap|wp-block-columns--constrained)$/',
+		'/^alert-[a-z0-9-]+$/',
+		'/^border-(?:0|[1-5]|(?:top|end|bottom|start)(?:-(?:0|[1-5]))?|(?:primary|secondary|success|danger|warning|info|light|dark|white))$/',
+		'/^rounded-(?:circle|pill|top|end|bottom|start|[0-5]|(?:top|end|bottom|start)-[0-5])$/',
+	];
+
+	foreach ( $patterns as $pattern ) {
+		if ( 1 === preg_match( $pattern, $token ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Determine whether a block uses generated utility classes.
  *
  * @param array $attrs Block attributes.
@@ -310,28 +462,9 @@ function fs_core_enhancements_block_needs_utilities( $attrs ) {
 		if ( $is_spacing_attribute && is_string( $value ) && '' !== trim( $value ) ) {
 			return true;
 		}
-
-		if ( 'Classes' === substr( $key, -7 ) ) {
-			if ( is_array( $value ) ) {
-				foreach ( $value as $token ) {
-					if ( fs_core_enhancements_is_utility_token( $token ) ) {
-						return true;
-					}
-				}
-			} elseif ( is_string( $value ) && fs_core_enhancements_is_utility_token( $value ) ) {
-				return true;
-			}
-		}
 	}
 
-	$class_name = isset( $attrs['className'] ) && is_string( $attrs['className'] )
-		? $attrs['className']
-		: '';
-	if ( '' === $class_name ) {
-		return false;
-	}
-
-	foreach ( preg_split( '/\s+/', $class_name ) as $token ) {
+	foreach ( fs_core_enhancements_extract_tokens_from_attrs( $attrs ) as $token ) {
 		if ( fs_core_enhancements_is_utility_token( $token ) ) {
 			return true;
 		}
@@ -349,36 +482,68 @@ function fs_core_enhancements_block_needs_utilities( $attrs ) {
  * @return bool
  */
 function fs_core_enhancements_block_needs_frontend_style( $block_name, $attrs ) {
-	$class_name = isset( $attrs['className'] ) && is_string( $attrs['className'] )
-		? $attrs['className']
-		: '';
+	foreach ( fs_core_enhancements_extract_tokens_from_attrs( $attrs ) as $token ) {
+		if ( fs_core_enhancements_is_frontend_style_token( $token ) ) {
+			return true;
+		}
+	}
 
 	switch ( $block_name ) {
-		case 'core/columns':
-			return false !== strpos( $class_name, 'is-style-bootstrap' )
-				|| false !== strpos( $class_name, 'wp-block-columns--constrained' );
-		case 'core/column':
-			return false !== strpos( $class_name, 'wp-block-column--column' );
-		case 'core/cover':
-			if (
-				false !== strpos( $class_name, 'cover-negative-margin-left' ) ||
-				false !== strpos( $class_name, 'cover-negative-margin-right' )
-			) {
-				return true;
-			}
-
-			$bleed_cover = isset( $attrs['bleedCover'] ) && is_string( $attrs['bleedCover'] )
-				? $attrs['bleedCover']
-				: '';
-			return false !== strpos( $bleed_cover, 'cover-negative-margin' );
 		case 'core/video':
 			return ! empty( $attrs['useCustomPlayButton'] );
+		case 'fs-blocks/alert':
 		case 'fs-blocks/dynamic-picture-block':
 		case 'fs-blocks/carousel':
 			return true;
 		default:
 			return false;
 	}
+}
+
+/**
+ * Determine whether rendered markup includes classes that require frontend styles.
+ *
+ * @param string $block_name    Block name.
+ * @param string $block_content Rendered block content.
+ *
+ * @return bool
+ */
+function fs_core_enhancements_block_content_needs_frontend_style(
+	$block_name,
+	$block_content
+) {
+	unset( $block_name );
+
+	foreach (
+		fs_core_enhancements_extract_tokens_from_block_content( $block_content )
+		as $token
+	) {
+		if ( fs_core_enhancements_is_frontend_style_token( $token ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Determine whether rendered markup includes generated utility classes.
+ *
+ * @param string $block_content Rendered block content.
+ *
+ * @return bool
+ */
+function fs_core_enhancements_block_content_needs_utilities( $block_content ) {
+	foreach (
+		fs_core_enhancements_extract_tokens_from_block_content( $block_content )
+		as $token
+	) {
+		if ( fs_core_enhancements_is_utility_token( $token ) ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -413,11 +578,20 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 		? $block['attrs']
 		: [];
 
-	if ( fs_core_enhancements_block_needs_frontend_style( $block_name, $attrs ) ) {
+	$needs_frontend_style = fs_core_enhancements_block_needs_frontend_style(
+		$block_name,
+		$attrs
+	) || fs_core_enhancements_block_content_needs_frontend_style(
+		$block_name,
+		$block_content
+	);
+	if ( $needs_frontend_style ) {
 		fs_core_enhancements_enqueue_frontend_style();
 	}
 
-	if ( fs_core_enhancements_block_needs_utilities( $attrs ) ) {
+	$needs_utilities = fs_core_enhancements_block_needs_utilities( $attrs )
+		|| fs_core_enhancements_block_content_needs_utilities( $block_content );
+	if ( $needs_utilities ) {
 		fs_core_enhancements_enqueue_utilities_style();
 	}
 

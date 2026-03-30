@@ -4,8 +4,10 @@
 // ==========================================
 
 @use "../../styles/components/columns";
+@use "../../styles/components/framework-compat";
 @use "../../assets/scss/cover-block";
 @use "../../assets/scss/video-block";
 @use "../../assets/scss/picture-block";
 @use "../../assets/scss/carousel-block";
 @include columns.render-column-enhancements();
+@include framework-compat.render-framework-compat-utilities();

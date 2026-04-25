@@ -14,13 +14,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$block_id = isset( $attributes['blockId'] ) ? $attributes['blockId'] : '';
-$block_id = '' !== $block_id ? sanitize_html_class( $block_id ) : '';
-if ( '' === $block_id ) {
-	$block_id = wp_unique_id( 'fs-tabs-interactive-' );
-} else {
-	$block_id = 'fs-tabs-interactive-' . $block_id;
-}
+$block_id = fs_core_enhancements_get_prefixed_block_id(
+	$attributes,
+	'fs-tabs-interactive-'
+);
 
 $active_tab = '';
 
@@ -67,14 +64,7 @@ if ( $vertical_enabled ) {
 	$classes[] = 'fs-tabs--vertical';
 }
 
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = array_merge( $classes, $attributes['additionalClasses'] );
-}
-
-$classes = array_map( 'sanitize_html_class', $classes );
+$classes = fs_core_enhancements_get_sanitized_classes( $classes, $attributes );
 $wrapper_attributes = get_block_wrapper_attributes(
 	[
 		'class' => implode( ' ', $classes ),

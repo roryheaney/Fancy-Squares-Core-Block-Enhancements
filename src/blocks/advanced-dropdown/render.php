@@ -9,13 +9,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$block_id = isset( $attributes['blockId'] ) ? $attributes['blockId'] : '';
-$block_id = '' !== $block_id ? sanitize_html_class( $block_id ) : '';
-if ( '' === $block_id ) {
-	$block_id = wp_unique_id( 'fs-advanced-dropdown-' );
-} else {
-	$block_id = 'fs-advanced-dropdown-' . $block_id;
-}
+$block_id = fs_core_enhancements_get_prefixed_block_id(
+	$attributes,
+	'fs-advanced-dropdown-'
+);
 
 $top_level_layout = isset( $attributes['topLevelLayout'] )
 	? sanitize_key( (string) $attributes['topLevelLayout'] )
@@ -86,13 +83,7 @@ foreach ( $items as $item ) {
 	}
 }
 
-$classes = [];
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = array_map( 'sanitize_html_class', $attributes['additionalClasses'] );
-}
+$classes = fs_core_enhancements_get_sanitized_classes( [], $attributes );
 
 if ( 'left' === $top_level_layout ) {
 	$classes[] = 'fs-advanced-dropdown--layout-left';

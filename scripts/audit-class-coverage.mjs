@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
+const failures = [];
 
 const tokenSourceFiles = [
 	'data/bootstrap-classes/display-options.js',
@@ -22,6 +23,11 @@ const cssBundles = {
 	utilities: 'build/utilities.css',
 	frontend: 'build/frontend-styles.css',
 };
+
+const manifestPath = 'data/class-families.json';
+const baselinePath = 'data/class-family-baseline.snapshot.json';
+const assetsPath = 'inc/assets.php';
+const assetsMatcherPaths = [ assetsPath, 'inc/assets-token-detection.php' ];
 
 const syntheticTokenFamilies = [
 	{
@@ -50,51 +56,129 @@ const syntheticTokenFamilies = [
 	},
 ];
 
-const enqueueRouteChecks = [
-	{
-		name: 'utilities-family-detector',
-		snippet: 'mix-blend-[a-z-]+',
-	},
-	{
-		name: 'column-width-detector',
-		snippet: 'wp-block-column--column(?:-[a-z0-9-]+)?',
-	},
-	{
-		name: 'cover-bleed-detector',
-		snippet: 'cover-negative-margin-(?:left|right)',
-	},
-	{
-		name: 'columns-constrain-detector',
-		snippet: '(?:is-style-bootstrap|wp-block-columns--constrained)',
-	},
-	{
-		name: 'alert-family-detector',
-		snippet: 'alert-[a-z0-9-]+',
-	},
-	{
-		name: 'border-family-detector',
-		snippet: 'border-(?:0|[1-5]|(?:top|end|bottom|start)',
-	},
-	{
-		name: 'rounded-family-detector',
-		snippet: 'rounded-(?:circle|pill|top|end|bottom|start',
-	},
-];
-
-const utilitiesTokenRegex = /^(?:[mp][trbsexy]?-(?:[a-z0-9]+-)?(?:n)?[a-z0-9][a-z0-9-]*|[mp][trbsexy]?-(?:[a-z0-9]+-)?auto|(?:row-|column-)?gap(?:-[a-z0-9]+)?-[a-z0-9][a-z0-9-]*|d(?:-[a-z0-9]+)?-[a-z-]+|justify-content(?:-[a-z0-9]+)?-[a-z-]+|align-(?:items|self)(?:-[a-z0-9]+)?-[a-z-]+|order(?:-[a-z0-9]+)?-(?:[0-9]+|first|last)|position-[a-z]+|(?:top|bottom|start|end)-(?:0|50|100)|translate-middle(?:-x|-y)?|z-(?:n1|0|1|2|3)|mix-blend-[a-z-]+)$/;
-
-const frontendTokenPatterns = [
-	/^wp-block-column--column(?:-[a-z0-9-]+)?$/,
-	/^cover-negative-margin-(?:left|right)$/,
-	/^(?:is-style-bootstrap|wp-block-columns--constrained)$/,
-	/^alert-[a-z0-9-]+$/,
-	/^border-(?:0|[1-5]|(?:top|end|bottom|start)(?:-(?:0|[1-5]))?|(?:primary|secondary|success|danger|warning|info|light|dark|white))$/,
-	/^rounded-(?:circle|pill|top|end|bottom|start|[0-5]|(?:top|end|bottom|start)-[0-5])$/,
-];
-
 const valueRegex = /value\s*:\s*['\"]([^'\"]+)['\"]/g;
 
 const tokenSourceMap = new Map();
+const ALLOWED_RUNTIME_MATCHERS = new Set( [
+	'fs_core_enhancements_is_utility_token',
+	'fs_core_enhancements_is_frontend_style_token',
+] );
+const bundleAliasMap = {
+	utilities: 'utilities',
+	frontend: 'frontend',
+	'frontend-styles': 'frontend',
+};
+
+const readJson = ( relPath, label ) => {
+	const absPath = path.resolve( root, relPath );
+	if ( ! fs.existsSync( absPath ) ) {
+		failures.push( {
+			token: relPath,
+			type: `missing-${ label }-file`,
+			sources: [ relPath ],
+		} );
+		return null;
+	}
+
+	try {
+		const parsed = JSON.parse( fs.readFileSync( absPath, 'utf8' ) );
+		if ( ! parsed || typeof parsed !== 'object' ) {
+			throw new Error( `${ label } root value must be an object` );
+		}
+		return parsed;
+	} catch ( error ) {
+		failures.push( {
+			token: relPath,
+			type: `invalid-${ label }-json`,
+			sources: [ String( error?.message || error ) ],
+		} );
+		return null;
+	}
+};
+
+const manifest = readJson( manifestPath, 'manifest' );
+const baseline = readJson( baselinePath, 'baseline' );
+
+const familyMatchers = [];
+const runtimeFunctionsPresent = new Set();
+
+if ( manifest ) {
+	const families = Array.isArray( manifest.families ) ? manifest.families : [];
+	if ( families.length === 0 ) {
+		failures.push( {
+			token: manifestPath,
+			type: 'manifest-empty-families',
+			sources: [ manifestPath ],
+		} );
+	}
+
+	for ( const family of families ) {
+		if ( ! family || typeof family !== 'object' ) {
+			failures.push( {
+				token: manifestPath,
+				type: 'manifest-family-invalid',
+				sources: [ 'non-object family entry' ],
+			} );
+			continue;
+		}
+
+		const key = String( family.key || '' ).trim();
+		const runtimeMatcherFunction = String(
+			family.runtimeMatcherFunction || ''
+		).trim();
+		const tokenPattern = String( family.tokenPattern || '' ).trim();
+		const rawBundle = String( family.bundle || '' ).trim();
+		const bundle = bundleAliasMap[ rawBundle ] || null;
+
+		if ( ! key || ! runtimeMatcherFunction || ! tokenPattern || ! bundle ) {
+			failures.push( {
+				token: key || '(missing-key)',
+				type: 'manifest-family-missing-fields',
+				sources: [ manifestPath ],
+			} );
+			continue;
+		}
+
+		if ( ! ALLOWED_RUNTIME_MATCHERS.has( runtimeMatcherFunction ) ) {
+			failures.push( {
+				token: key,
+				type: 'manifest-family-unknown-runtime-matcher',
+				sources: [ runtimeMatcherFunction ],
+			} );
+			continue;
+		}
+
+		let regex = null;
+		try {
+			regex = new RegExp( tokenPattern );
+		} catch ( error ) {
+			failures.push( {
+				token: key,
+				type: 'manifest-family-invalid-regex',
+				sources: [ String( error?.message || error ) ],
+			} );
+			continue;
+		}
+
+		runtimeFunctionsPresent.add( runtimeMatcherFunction );
+		familyMatchers.push( {
+			key,
+			bundle,
+			runtimeMatcherFunction,
+			regex,
+		} );
+	}
+
+	for ( const requiredMatcher of ALLOWED_RUNTIME_MATCHERS ) {
+		if ( ! runtimeFunctionsPresent.has( requiredMatcher ) ) {
+			failures.push( {
+				token: requiredMatcher,
+				type: 'manifest-runtime-matcher-missing-family',
+				sources: [ manifestPath ],
+			} );
+		}
+	}
+}
 
 const addTokenSource = ( token, source ) => {
 	const cleanedToken = String( token || '' ).trim();
@@ -138,6 +222,58 @@ for ( const familyToken of syntheticTokenFamilies ) {
 	addTokenSource( familyToken.token, familyToken.source );
 }
 
+const getExpectedBundle = ( token ) => {
+	const matchedBundles = new Set();
+
+	for ( const matcher of familyMatchers ) {
+		if ( matcher.regex.test( token ) ) {
+			matchedBundles.add( matcher.bundle );
+		}
+	}
+
+	if ( matchedBundles.size === 0 ) {
+		return null;
+	}
+
+	if ( matchedBundles.size > 1 ) {
+		return 'ambiguous';
+	}
+
+	return [ ...matchedBundles ][0];
+};
+
+if ( baseline ) {
+	const fixtures = Array.isArray( baseline.fixtures ) ? baseline.fixtures : [];
+	if ( fixtures.length === 0 ) {
+		failures.push( {
+			token: baselinePath,
+			type: 'baseline-empty-fixtures',
+			sources: [ baselinePath ],
+		} );
+	}
+
+	if ( baseline.defaultUtilitiesMode !== 'both' ) {
+		failures.push( {
+			token: 'defaultUtilitiesMode',
+			type: 'baseline-utilities-mode-mismatch',
+			sources: [ `expected both, received ${ baseline.defaultUtilitiesMode }` ],
+		} );
+	}
+
+	for ( const fixture of fixtures ) {
+		const token = String( fixture?.token || '' ).trim();
+		const expectedBundle = bundleAliasMap[ fixture?.expectedBundle ] || null;
+		const actualBundle = getExpectedBundle( token );
+		if ( actualBundle !== expectedBundle ) {
+			failures.push( {
+				token,
+				type: 'baseline-parity-mismatch',
+				sources: [ `expected=${ expectedBundle } actual=${ actualBundle }` ],
+			} );
+		}
+	}
+}
+
 const cssContent = {};
 for ( const [ bundle, relPath ] of Object.entries( cssBundles ) ) {
 	const absPath = path.resolve( root, relPath );
@@ -158,37 +294,43 @@ const tokenInCss = ( token, css ) =>
 		css
 	);
 
-const getExpectedBundle = ( token ) => {
-	if ( utilitiesTokenRegex.test( token ) ) {
-		return 'utilities';
-	}
+const existingAssetsMatcherPaths = assetsMatcherPaths.filter( ( relPath ) =>
+	fs.existsSync( path.resolve( root, relPath ) )
+);
 
-	for ( const pattern of frontendTokenPatterns ) {
-		if ( pattern.test( token ) ) {
-			return 'frontend';
+if ( existingAssetsMatcherPaths.length === 0 ) {
+	failures.push( {
+		token: assetsPath,
+		type: 'missing-assets-file',
+		sources: [ assetsMatcherPaths.join( ', ' ) ],
+	} );
+} else {
+	const assetsContent = existingAssetsMatcherPaths
+		.map( ( relPath ) =>
+			fs.readFileSync( path.resolve( root, relPath ), 'utf8' )
+		)
+		.join( '\n' );
+	const requiredMarkers = [
+		'function fs_core_enhancements_get_matcher_patterns',
+		'function fs_core_enhancements_match_manifest_token',
+	];
+
+	for ( const marker of requiredMarkers ) {
+		if ( ! assetsContent.includes( marker ) ) {
+			failures.push( {
+				token: marker,
+				type: 'missing-assets-matcher-adapter',
+				sources: [ existingAssetsMatcherPaths.join( ', ' ) ],
+			} );
 		}
 	}
 
-	return null;
-};
-
-const failures = [];
-
-const assetsPath = path.resolve( root, 'inc/assets.php' );
-if ( ! fs.existsSync( assetsPath ) ) {
-	failures.push( {
-		token: 'inc/assets.php',
-		type: 'missing-enqueue-route-file',
-		sources: [ 'enqueue-route-check' ],
-	} );
-} else {
-	const assetsContent = fs.readFileSync( assetsPath, 'utf8' );
-	for ( const routeCheck of enqueueRouteChecks ) {
-		if ( ! assetsContent.includes( routeCheck.snippet ) ) {
+	for ( const runtimeMatcher of runtimeFunctionsPresent ) {
+		if ( ! assetsContent.includes( runtimeMatcher ) ) {
 			failures.push( {
-				token: routeCheck.name,
-				type: 'missing-enqueue-route',
-				sources: [ 'inc/assets.php' ],
+				token: runtimeMatcher,
+				type: 'missing-assets-runtime-matcher-reference',
+				sources: [ existingAssetsMatcherPaths.join( ', ' ) ],
 			} );
 		}
 	}
@@ -197,6 +339,15 @@ if ( ! fs.existsSync( assetsPath ) ) {
 for ( const [ token, sourceSet ] of tokenSourceMap.entries() ) {
 	const expectedBundle = getExpectedBundle( token );
 	const sources = [ ...sourceSet ];
+
+	if ( 'ambiguous' === expectedBundle ) {
+		failures.push( {
+			token,
+			type: 'ambiguous-token-family',
+			sources,
+		} );
+		continue;
+	}
 
 	if ( ! expectedBundle ) {
 		failures.push( {
@@ -229,13 +380,25 @@ if ( failures.length > 0 ) {
 			console.error(
 				` - ${ failure.token }: expected selector in ${ cssBundles[ failure.expectedBundle ] } (sources: ${ sourceList })`
 			);
-		} else if ( failure.type === 'missing-enqueue-route' ) {
+		} else if ( failure.type === 'missing-assets-matcher-adapter' ) {
 			console.error(
-				` - ${ failure.token }: missing enqueue-family detector in inc/assets.php`
+				` - ${ failure.token }: missing matcher adapter in ${ failure.sources[0] }`
 			);
-		} else if ( failure.type === 'missing-enqueue-route-file' ) {
+		} else if ( failure.type === 'missing-assets-file' ) {
 			console.error(
-				` - ${ failure.token }: required file missing (cannot verify enqueue routes)`
+				` - ${ failure.token }: required file missing (cannot verify runtime matcher sync) (${ failure.sources[0] })`
+			);
+		} else if ( failure.type === 'missing-assets-runtime-matcher-reference' ) {
+			console.error(
+				` - ${ failure.token }: runtime matcher not referenced in ${ failure.sources[0] }`
+			);
+		} else if ( failure.type === 'baseline-parity-mismatch' ) {
+			console.error(
+				` - ${ failure.token }: baseline parity mismatch (${ sourceList })`
+			);
+		} else if ( failure.type === 'ambiguous-token-family' ) {
+			console.error(
+				` - ${ failure.token }: token matches multiple family bundles (sources: ${ sourceList })`
 			);
 		} else {
 			console.error(
@@ -254,5 +417,5 @@ if ( failures.length > 0 ) {
 }
 
 console.log(
-	`[coverage] OK: ${ tokenSourceMap.size } token(s) validated across selectable class sources.`
+	`[coverage] OK: ${ tokenSourceMap.size } token(s) validated with manifest-backed family routing.`
 );

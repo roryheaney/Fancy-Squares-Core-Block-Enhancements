@@ -17,6 +17,12 @@ Relevant code:
 - Frontend style token matcher: `fs_core_enhancements_is_frontend_style_token()`
 - Utility token matcher: `fs_core_enhancements_is_utility_token()`
 
+Canonical registry for these families:
+
+- `data/class-families.json`
+- `data/class-family-baseline.snapshot.json`
+- Runtime matchers read manifest entries directly (no separate hardcoded regex fallback list).
+
 ## Utility Mode Default
 
 Utilities mode now defaults to `both` (Editor + front end).
@@ -37,18 +43,18 @@ Utilities mode now defaults to `both` (Editor + front end).
 
 | Family | Source Control | CSS Bundle | Enqueue Trigger |
 | --- | --- | --- | --- |
-| `wp-block-column--column*` | `core/column` Width Settings (`src/components/WidthControl.js`) | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | `render_block` token detection in `fs_core_enhancements_is_frontend_style_token()` |
-| `wp-block-columns--constrained`, `is-style-bootstrap` | `core/columns` Constrain toggle + parent class updates | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | `render_block` token detection in `fs_core_enhancements_is_frontend_style_token()` |
-| `cover-negative-margin-left/right` | `core/cover` Bleed dropdown | `build/frontend-styles.css` (`src/assets/scss/cover-block.scss`) | `render_block` token detection in `fs_core_enhancements_is_frontend_style_token()` |
-| `alert-*` | `fs-blocks/alert` style selector | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | Explicit `fs-blocks/alert` route + token detection |
-| `border-*`, `rounded-*` | `fs-blocks/dynamic-picture-block` controls | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | `render_block` token detection in `fs_core_enhancements_is_frontend_style_token()` |
-| Spacing/display/flex/gap/position/z-index/blend | Token fields + spacing controls | `build/utilities.css` | `render_block` token detection in `fs_core_enhancements_is_utility_token()` |
+| `wp-block-column--column*` | `core/column` Width Settings (`src/components/WidthControl.js`) | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
+| `wp-block-columns--constrained`, `is-style-bootstrap` | `core/columns` Constrain toggle + parent class updates | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
+| `cover-negative-margin-left/right` | `core/cover` Bleed dropdown | `build/frontend-styles.css` (`src/assets/scss/cover-block.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
+| `alert-*` | `fs-blocks/alert` style selector | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | Explicit `fs-blocks/alert` route + manifest-backed token detection |
+| `border-*`, `rounded-*` | `fs-blocks/dynamic-picture-block` controls | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
+| Spacing/display/flex/gap/position/z-index/blend | Token fields + spacing controls | `build/utilities.css` | Manifest-backed detection via `fs_core_enhancements_is_utility_token()` |
 
 ## Quick Troubleshooting
 
 If a class appears in the editor but not on frontend:
 
-1. Confirm class family is covered by one of the two token matchers.
+1. Confirm the class family exists in `data/class-families.json` and is mapped to the expected matcher function.
 2. Confirm utilities mode is not `off` when using utility-style classes.
 3. Confirm rendered markup contains the expected class token.
 4. Confirm the page theme calls `wp_footer()` (late style printing still depends on core hooks).

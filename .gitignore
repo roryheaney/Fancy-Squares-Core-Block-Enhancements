@@ -11,6 +11,9 @@ coverage
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
+# Build output (release artifact)
+build/
+
 # Dependency directories
 node_modules/
 

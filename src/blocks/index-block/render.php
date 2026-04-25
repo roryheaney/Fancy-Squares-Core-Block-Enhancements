@@ -18,13 +18,7 @@ $block_index = isset( $attributes['blockIndex'] )
 
 // Base classes plus any editor-generated utility classes.
 $classes = [ 'wp-block-fs-blocks-index-block', 'custom-index-block' ];
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = array_merge( $classes, $attributes['additionalClasses'] );
-}
-$classes = array_map( 'sanitize_html_class', $classes );
+$classes = fs_core_enhancements_get_sanitized_classes( $classes, $attributes );
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	[

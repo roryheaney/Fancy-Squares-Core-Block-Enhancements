@@ -13,6 +13,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { useEnsureUniqueAttributeId } from '../../utils/block-id';
+import { useSyncGeneratedClasses } from '../../utils/use-sync-generated-classes';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const TEMPLATE = [ [ 'fs-blocks/tab-item-interactive' ] ];
@@ -95,18 +96,11 @@ export default function Edit( props ) {
 		() => generateClassName( attributes, name, BLOCK_CONFIG ),
 		[ attributes, name ]
 	);
-
-	useEffect( () => {
-		const currentClasses = Array.isArray( additionalClasses )
-			? additionalClasses
-			: [];
-		const nextClasses = generatedClassName.split( ' ' ).filter( Boolean );
-		if (
-			JSON.stringify( currentClasses ) !== JSON.stringify( nextClasses )
-		) {
-			setAttributes( { additionalClasses: nextClasses } );
-		}
-	}, [ additionalClasses, generatedClassName, setAttributes ] );
+	useSyncGeneratedClasses( {
+		additionalClasses,
+		generatedClassName,
+		setAttributes,
+	} );
 
 	const blockProps = useBlockProps( {
 		className: [

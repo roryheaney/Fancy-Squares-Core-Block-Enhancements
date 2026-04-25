@@ -1,143 +1,14 @@
-import {
-	useBlockProps,
-	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
-} from '@wordpress/block-editor';
-import {
-	PanelBody,
-	Button,
-	TextControl,
-	FormTokenField,
-	ToggleControl,
-	SelectControl,
-} from '@wordpress/components';
-import { __, sprintf } from '@wordpress/i18n';
+import { useBlockProps } from '@wordpress/block-editor';
 import { useMemo, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 
+import PictureInspectorControls from './picture-inspector-controls';
+import PicturePreview from './picture-preview';
 import {
 	borderOptions,
 	borderRadiusOptions,
 } from '../../config/framework-option-sets';
-import { getDisplayValues, getValuesFromDisplay } from '../../utils/helpers.js';
-const FILLER_IMAGE_DATA =
-	'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
-const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'None', 'fancy-squares-core-enhancements' ), value: 'none' },
-	{
-		label: __( 'Square - 1:1', 'fancy-squares-core-enhancements' ),
-		value: '1-1',
-	},
-	{
-		label: __( 'Standard - 4:3', 'fancy-squares-core-enhancements' ),
-		value: '4-3',
-	},
-	{
-		label: __( 'Portrait - 3:4', 'fancy-squares-core-enhancements' ),
-		value: '3-4',
-	},
-	{
-		label: __( 'Classic - 3:2', 'fancy-squares-core-enhancements' ),
-		value: '3-2',
-	},
-	{
-		label: __(
-			'Classic Portrait - 2:3',
-			'fancy-squares-core-enhancements'
-		),
-		value: '2-3',
-	},
-	{
-		label: __( 'Wide - 16:9', 'fancy-squares-core-enhancements' ),
-		value: '16-9',
-	},
-	{
-		label: __( 'Tall - 9:16', 'fancy-squares-core-enhancements' ),
-		value: '9-16',
-	},
-];
-
-function ImageSelector( { label, imageId, imageUrl, onSelect, onRemove } ) {
-	const selectLabel = sprintf(
-		/* translators: %s: Image label. */
-		__( 'Select %s Image', 'fancy-squares-core-enhancements' ),
-		label
-	);
-	const editLabel = sprintf(
-		/* translators: %s: Image label. */
-		__( 'Edit or Replace %s Image', 'fancy-squares-core-enhancements' ),
-		label
-	);
-	const removeLabel = sprintf(
-		/* translators: %s: Image label. */
-		__( 'Remove %s Image', 'fancy-squares-core-enhancements' ),
-		label
-	);
-
-	return (
-		<MediaUploadCheck>
-			<MediaUpload
-				onSelect={ onSelect }
-				allowedTypes={ [ 'image' ] }
-				value={ imageId }
-				render={ ( { open } ) => {
-					const handleKeyDown = ( event ) => {
-						if ( event.key === 'Enter' || event.key === ' ' ) {
-							open();
-						}
-					};
-
-					return (
-						<div style={ { marginBottom: '1em' } }>
-							<Button variant="secondary" onClick={ open }>
-								{ imageId ? editLabel : selectLabel }
-							</Button>
-
-							{ imageUrl && (
-								<>
-									<button
-										type="button"
-										style={ {
-											display: 'block',
-											background: 'none',
-											border: 'none',
-											padding: 0,
-											marginTop: '0.5em',
-											cursor: 'pointer',
-										} }
-										onClick={ open }
-										onKeyDown={ handleKeyDown }
-										aria-label={ editLabel }
-									>
-										<img
-											src={ imageUrl }
-											alt=""
-											style={ {
-												maxWidth: '100%',
-												display: 'block',
-											} }
-										/>
-									</button>
-
-									<div style={ { marginTop: '0.5em' } }>
-										<Button
-											variant="tertiary"
-											onClick={ onRemove }
-										>
-											{ removeLabel }
-										</Button>
-									</div>
-								</>
-							) }
-						</div>
-					);
-				} }
-			/>
-		</MediaUploadCheck>
-	);
-}
+import { getValuesFromDisplay } from '../../utils/helpers.js';
 
 export default function Edit( props ) {
 	const { attributes, setAttributes } = props;
@@ -244,319 +115,47 @@ export default function Edit( props ) {
 		};
 	}, [ borderClass, borderRadiusClass ] );
 
-	const renderPreviewContent = () => {
-		const noBreakpoints = ! hasSmall && ! hasMedium && ! hasLarge;
-
-		if ( noBreakpoints ) {
-			if ( ! defaultImageUrl ) {
-				return (
-					<p>
-						{ __(
-							'No default image selected.',
-							'fancy-squares-core-enhancements'
-						) }
-					</p>
-				);
-			}
-			return (
-				<>
-					<img
-						src={ defaultImageUrl }
-						alt={ defaultAlt }
-						style={ { maxWidth: '100%' } }
-						{ ...imageProps }
-					/>
-					{ defaultCaption && (
-						<figcaption
-							dangerouslySetInnerHTML={ {
-								__html: defaultCaption,
-							} }
-						/>
-					) }
-				</>
-			);
-		}
-
-		let sourceSmall = null;
-		let sourceMedium = null;
-		let sourceLarge = null;
-
-		if ( hasSmall ) {
-			sourceSmall = (
-				<source media="(max-width: 600px)" srcSet={ smallImageUrl } />
-			);
-		} else if ( hasMedium ) {
-			sourceSmall = (
-				<source media="(max-width: 600px)" srcSet={ mediumImageUrl } />
-			);
-		}
-
-		if ( hasMedium && hasSmall ) {
-			sourceMedium = (
-				<source
-					media="(min-width: 601px) and (max-width: 1023px)"
-					srcSet={ mediumImageUrl }
-				/>
-			);
-		} else if ( hasMedium && ! hasSmall ) {
-			sourceMedium = (
-				<source media="(max-width: 1023px)" srcSet={ mediumImageUrl } />
-			);
-		}
-
-		if ( hasLarge ) {
-			sourceLarge = (
-				<source media="(min-width: 1024px)" srcSet={ largeImageUrl } />
-			);
-		} else if ( hasMedium ) {
-			sourceLarge = (
-				<source media="(min-width: 1024px)" srcSet={ mediumImageUrl } />
-			);
-		}
-
-		const fallbackUrl = defaultImageUrl || FILLER_IMAGE_DATA;
-		const fallbackAlt = defaultImageUrl ? defaultAlt : fillerAlt;
-
-		return (
-			<>
-				<picture>
-					{ sourceSmall }
-					{ sourceMedium }
-					{ sourceLarge }
-					<img
-						src={ fallbackUrl }
-						alt={ fallbackAlt }
-						style={ { maxWidth: '100%' } }
-						{ ...imageProps }
-					/>
-				</picture>
-				{ defaultCaption && (
-					<figcaption
-						dangerouslySetInnerHTML={ { __html: defaultCaption } }
-					/>
-				) }
-			</>
-		);
-	};
-
 	return (
 		<figure { ...blockProps }>
-			<InspectorControls>
-				<PanelBody
-					title={ __(
-						'Image Settings',
-						'fancy-squares-core-enhancements'
-					) }
-					initialOpen
-				>
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __(
-							'Show Values',
-							'fancy-squares-core-enhancements'
-						) }
-						checked={ showValues }
-						onChange={ setShowValues }
-						help={ __(
-							'Display Bootstrap class names instead of labels.',
-							'fancy-squares-core-enhancements'
-						) }
-						style={ { marginBottom: '20px' } }
-					/>
-
-					<ImageSelector
-						label={ __(
-							'Default',
-							'fancy-squares-core-enhancements'
-						) }
-						imageId={ defaultImageId }
-						imageUrl={ defaultImageUrl }
-						onSelect={ onSelectImage( 'default' ) }
-						onRemove={ onRemoveImage( 'default' ) }
-					/>
-
-					{ ! defaultImageId && (
-						<div
-							style={ {
-								marginBottom: '1em',
-								padding: '0.5em',
-								background: '#f3f3f3',
-							} }
-						>
-							<p style={ { fontWeight: 'bold' } }>
-								{ __(
-									'No default image selected',
-									'fancy-squares-core-enhancements'
-								) }
-							</p>
-							<p>
-								{ __(
-									'A 1x1 transparent filler image will be used. For accessibility, provide alt text below.',
-									'fancy-squares-core-enhancements'
-								) }
-							</p>
-							<TextControl
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-								label={ __(
-									'Filler Image Alt',
-									'fancy-squares-core-enhancements'
-								) }
-								value={ fillerAlt }
-								onChange={ ( val ) =>
-									setAttributes( { fillerAlt: val } )
-								}
-								placeholder={ __(
-									'e.g. "No image provided"',
-									'fancy-squares-core-enhancements'
-								) }
-							/>
-						</div>
-					) }
-
-					<ImageSelector
-						label={ __(
-							'Small',
-							'fancy-squares-core-enhancements'
-						) }
-						imageId={ smallImageId }
-						imageUrl={ smallImageUrl }
-						onSelect={ onSelectImage( 'small' ) }
-						onRemove={ onRemoveImage( 'small' ) }
-					/>
-
-					<ImageSelector
-						label={ __(
-							'Medium',
-							'fancy-squares-core-enhancements'
-						) }
-						imageId={ mediumImageId }
-						imageUrl={ mediumImageUrl }
-						onSelect={ onSelectImage( 'medium' ) }
-						onRemove={ onRemoveImage( 'medium' ) }
-					/>
-
-					<ImageSelector
-						label={ __(
-							'Large',
-							'fancy-squares-core-enhancements'
-						) }
-						imageId={ largeImageId }
-						imageUrl={ largeImageUrl }
-						onSelect={ onSelectImage( 'large' ) }
-						onRemove={ onRemoveImage( 'large' ) }
-					/>
-
-					<SelectControl
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-						label={ __(
-							'Aspect Ratio',
-							'fancy-squares-core-enhancements'
-						) }
-						value={ aspectRatio }
-						options={ ASPECT_RATIO_OPTIONS }
-						onChange={ ( value ) =>
-							setAttributes( { aspectRatio: value } )
-						}
-					/>
-
-					<div style={ { marginTop: '1em', marginBottom: '20px' } }>
-						<p style={ { fontWeight: 'bold' } }>
-							{ __(
-								'Border Classes',
-								'fancy-squares-core-enhancements'
-							) }
-						</p>
-						<FormTokenField
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-							value={ getDisplayValues(
-								borderClass,
-								borderOptions,
-								showValues
-							) }
-							suggestions={ borderOptions.map( ( opt ) =>
-								showValues ? opt.value : opt.label
-							) }
-							onChange={ onChangeBorderTokens }
-							label={ __(
-								'Add border classes',
-								'fancy-squares-core-enhancements'
-							) }
-						/>
-						<details style={ { marginTop: '5px' } }>
-							<summary>
-								{ __(
-									'Available Border Classes',
-									'fancy-squares-core-enhancements'
-								) }
-							</summary>
-							<ul
-								style={ {
-									fontSize: '12px',
-									paddingLeft: '20px',
-									margin: '5px 0',
-								} }
-							>
-								{ borderOptions.map( ( item ) => (
-									<li key={ item.value }>
-										{ showValues ? item.value : item.label }
-									</li>
-								) ) }
-							</ul>
-						</details>
-					</div>
-
-					<div style={ { marginBottom: '20px' } }>
-						<p style={ { fontWeight: 'bold' } }>
-							{ __(
-								'Border Radius Classes',
-								'fancy-squares-core-enhancements'
-							) }
-						</p>
-						<FormTokenField
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-							value={ getDisplayValues(
-								borderRadiusClass,
-								borderRadiusOptions,
-								showValues
-							) }
-							suggestions={ borderRadiusOptions.map( ( opt ) =>
-								showValues ? opt.value : opt.label
-							) }
-							onChange={ onChangeRadiusTokens }
-							label={ __(
-								'Add radius classes',
-								'fancy-squares-core-enhancements'
-							) }
-						/>
-						<details style={ { marginTop: '5px' } }>
-							<summary>
-								{ __(
-									'Available Border Radius Classes',
-									'fancy-squares-core-enhancements'
-								) }
-							</summary>
-							<ul
-								style={ {
-									fontSize: '12px',
-									paddingLeft: '20px',
-									margin: '5px 0',
-								} }
-							>
-								{ borderRadiusOptions.map( ( item ) => (
-									<li key={ item.value }>
-										{ showValues ? item.value : item.label }
-									</li>
-								) ) }
-							</ul>
-						</details>
-					</div>
-				</PanelBody>
-			</InspectorControls>
-			{ renderPreviewContent() }
+			<PictureInspectorControls
+				showValues={ showValues }
+				setShowValues={ setShowValues }
+				defaultImageId={ defaultImageId }
+				defaultImageUrl={ defaultImageUrl }
+				smallImageId={ smallImageId }
+				smallImageUrl={ smallImageUrl }
+				mediumImageId={ mediumImageId }
+				mediumImageUrl={ mediumImageUrl }
+				largeImageId={ largeImageId }
+				largeImageUrl={ largeImageUrl }
+				fillerAlt={ fillerAlt }
+				setFillerAlt={ ( value ) =>
+					setAttributes( { fillerAlt: value } )
+				}
+				aspectRatio={ aspectRatio }
+				setAspectRatio={ ( value ) =>
+					setAttributes( { aspectRatio: value } )
+				}
+				borderClass={ borderClass }
+				borderRadiusClass={ borderRadiusClass }
+				onChangeBorderTokens={ onChangeBorderTokens }
+				onChangeRadiusTokens={ onChangeRadiusTokens }
+				onSelectImage={ onSelectImage }
+				onRemoveImage={ onRemoveImage }
+			/>
+			<PicturePreview
+				defaultImageUrl={ defaultImageUrl }
+				defaultAlt={ defaultAlt }
+				defaultCaption={ defaultCaption }
+				hasSmall={ hasSmall }
+				hasMedium={ hasMedium }
+				hasLarge={ hasLarge }
+				smallImageUrl={ smallImageUrl }
+				mediumImageUrl={ mediumImageUrl }
+				largeImageUrl={ largeImageUrl }
+				fillerAlt={ fillerAlt }
+				imageProps={ imageProps }
+			/>
 		</figure>
 	);
 }

@@ -1,0 +1,70 @@
+$positions: static, relative, absolute, fixed, sticky !default;
+$position-values: (
+	0: 0,
+	50: 50%,
+	100: 100%,
+) !default;
+$zindex-levels: (
+	n1: -1,
+	0: 0,
+	1: 1,
+	2: 2,
+	3: 3,
+) !default;
+$blend-modes: normal, multiply, screen, overlay, darken, lighten, color-dodge,
+	color-burn, hard-light, soft-light, difference, exclusion, hue, saturation,
+	color, luminosity !default;
+
+@mixin generate-position-utilities() {
+
+	@each $position in $positions {
+		.position-#{$position} {
+			position: $position !important;
+		}
+	}
+
+	@each $key, $value in $position-values {
+		.top-#{$key} {
+			top: $value !important;
+		}
+		.bottom-#{$key} {
+			bottom: $value !important;
+		}
+		.start-#{$key} {
+			left: $value !important;
+		}
+		.end-#{$key} {
+			right: $value !important;
+		}
+	}
+
+	.translate-middle {
+		transform: translate(-50%, -50%) !important;
+	}
+
+	.translate-middle-x {
+		transform: translateX(-50%) !important;
+	}
+
+	.translate-middle-y {
+		transform: translateY(-50%) !important;
+	}
+}
+
+@mixin generate-zindex-utilities() {
+
+	@each $key, $value in $zindex-levels {
+		.z-#{$key} {
+			z-index: $value !important;
+		}
+	}
+}
+
+@mixin generate-blend-utilities() {
+
+	@each $mode in $blend-modes {
+		.mix-blend-#{$mode} {
+			mix-blend-mode: $mode !important;
+		}
+	}
+}

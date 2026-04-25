@@ -1,0 +1,100 @@
+{
+	"version": 1,
+	"description": "Baseline fixture expectations from current inc/assets.php matcher behavior.",
+	"sourceFile": "inc/assets.php",
+	"sourceFunctions": [
+		"fs_core_enhancements_is_frontend_style_token",
+		"fs_core_enhancements_is_utility_token"
+	],
+	"defaultUtilitiesMode": "both",
+	"fixtures": [
+		{
+			"token": "wp-block-column--column-6",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "wp-block-column--column-md-4",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "is-style-bootstrap",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "wp-block-columns--constrained",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "cover-negative-margin-left",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "alert-primary",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "border-top-3",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "rounded-end-4",
+			"expectedBundle": "frontend-styles"
+		},
+		{
+			"token": "pt-3",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "mt-md-2",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "mx-auto",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "gap-lg-40",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "d-md-flex",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "justify-content-between",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "align-self-lg-end",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "order-md-first",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "position-sticky",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "top-50",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "translate-middle-y",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "z-n1",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "mix-blend-overlay",
+			"expectedBundle": "utilities"
+		},
+		{
+			"token": "not-a-supported-token",
+			"expectedBundle": null
+		}
+	]
+}

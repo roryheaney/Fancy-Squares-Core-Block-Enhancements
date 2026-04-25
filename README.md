@@ -4,7 +4,7 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 
 ## Current Version
 
-- `1.1.7`
+- `1.1.8`
 
 ## Requirements
 
@@ -20,6 +20,13 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 5. (Optional) Enable custom blocks in **Settings > Fancy Squares Blocks**.
 6. In the editor, use the inspector panels on supported blocks.
 
+## Release Artifact
+
+- Build and package each release as a distributable zip:
+  - `npm run build`
+  - `npm run plugin-zip`
+- Source checkouts are for development; production installs should use release zips.
+
 ## Key Default Behavior
 
 - Frontend runtime (`build/frontend.js`) is loaded only when required by rendered blocks.
@@ -32,6 +39,9 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 - Frontend bundles, enqueue triggers, class matrix, and troubleshooting: [docs/plugin/frontend-assets-and-classes.md](docs/plugin/frontend-assets-and-classes.md)
 - Block extension architecture and implementation workflows: [docs/plugin/developer-guide.md](docs/plugin/developer-guide.md)
 - Build scripts and token source pipeline: [docs/plugin/build-and-tokens.md](docs/plugin/build-and-tokens.md)
+- Class-family registry and baseline fixtures: [docs/plugin/class-families.md](docs/plugin/class-families.md)
+- Maintenance and regression policy: [docs/plugin/maintenance-regression-policy.md](docs/plugin/maintenance-regression-policy.md)
+- Release notes: [docs/plugin/release-notes.md](docs/plugin/release-notes.md)
 - Planned simplification of frontend class detection: [docs/plugin/plans/frontend-style-detection-refactor-plan.md](docs/plugin/plans/frontend-style-detection-refactor-plan.md)
 - README completeness review: [docs/plugin/readme-completeness-review.md](docs/plugin/readme-completeness-review.md)
 
@@ -89,6 +99,10 @@ Token generation reads spacing/framework values from `theme.json` and then `npm 
 ```
 
 For full token-source precedence and consumed fields, use [docs/plugin/build-and-tokens.md](docs/plugin/build-and-tokens.md).
+
+## Release Notes
+
+- Current and historical release notes: [docs/plugin/release-notes.md](docs/plugin/release-notes.md)
 
 ## Troubleshooting: Class In Editor, Not On Frontend
 

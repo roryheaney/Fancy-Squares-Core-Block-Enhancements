@@ -26,6 +26,10 @@
    - `npm run lint:all`
    - `npm run build`
 
+## Planning Rule
+
+- For planning requests, plan reviews, and design decision threads in this plugin, apply `.codex/skills/grill-me/SKILL.md` by default unless the user explicitly asks not to.
+
 ## Source of Truth Rules
 
 - Theme-driven framework tokens are the default source for spacing/breakpoints/options.
@@ -47,7 +51,6 @@
 - `src/formats/span-format.js`: RichText span editor UI/format behavior
 - `inc/`: PHP registration and server-side logic
 - `docs/`: local references for block and plugin docs
-- `docs/interactivity-api/`: Interactivity API reference set
 
 ## Generated File Guardrails
 
@@ -94,8 +97,7 @@
 
 - Update `README.md` when behavior, architecture, or public options change.
 - Put feature ideas and implementation notes in `docs/`.
-- Use `docs/interactivity-api/` for directive/store behavior references.
-- Use `docs/blocks/` for block development best practices.
+- Follow `docs/plugin/maintenance-regression-policy.md` for mandatory completion checks.
 
 ## QA Checklist
 
@@ -104,7 +106,14 @@
 - Media: forced lazy defaults and opt-out toggle behavior for cover/image.
 - Modal: keyboard navigation, focus restoration, and ARIA attributes.
 - A11y: keyboard navigation, aria attributes, and focus order.
-- Regression: run `npm run lint:all` and `npm run build` before finalizing.
+- Regression: run `npm run regression:gate` before finalizing.
+
+## Mandatory Closeout (Every Feature/Update)
+
+- `npm run regression:gate` is required for every feature, fix, refactor, and docs update in this plugin.
+- Do not finalize work if the gate fails.
+- If the gate returns warnings, report them explicitly (especially complexity warnings) even when the final status passes.
+- If duplicate-code findings are reported for plugin code files as a whole (`*.js`, `*.jsx`, `*.php`, `*.scss`, `*.mjs`, excluding build/generated/docs paths), treat them as blocking failures.
 
 ## Guardrails
 

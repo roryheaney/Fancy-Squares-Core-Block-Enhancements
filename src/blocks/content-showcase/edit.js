@@ -9,12 +9,13 @@ import {
 	ToggleControl,
 	TextControl,
 } from '@wordpress/components';
-import { useEffect, useMemo } from '@wordpress/element';
+import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import BlockEdit from '../../components/BlockEdit';
 import { generateClassName } from '../../utils/helpers';
 import { useEnsureUniqueAttributeId } from '../../utils/block-id';
+import { useSyncGeneratedClasses } from '../../utils/use-sync-generated-classes';
 import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 const TEMPLATE = [
@@ -70,16 +71,11 @@ export default function Edit( props ) {
 		() => generateClassName( attributes, name, BLOCK_CONFIG ),
 		[ attributes, name ]
 	);
-
-	useEffect( () => {
-		const nextClasses = generatedClassName.split( /\s+/ ).filter( Boolean );
-		const currentClasses = Array.isArray( additionalClasses )
-			? additionalClasses
-			: [];
-		if ( currentClasses.join( ' ' ) !== nextClasses.join( ' ' ) ) {
-			setAttributes( { additionalClasses: nextClasses } );
-		}
-	}, [ additionalClasses, generatedClassName, setAttributes ] );
+	useSyncGeneratedClasses( {
+		additionalClasses,
+		generatedClassName,
+		setAttributes,
+	} );
 
 	useEnsureUniqueAttributeId( {
 		clientId,

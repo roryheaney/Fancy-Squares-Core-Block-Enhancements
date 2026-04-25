@@ -1,0 +1,257 @@
+{
+	"version": 1,
+	"description": "Canonical class-family registry for frontend style detection and class coverage validation.",
+	"defaultUtilitiesMode": "both",
+	"families": [
+		{
+			"key": "frontend.column-width",
+			"bundle": "frontend-styles",
+			"tokenPattern": "^wp-block-column--column(?:-[a-z0-9-]+)?$",
+			"emitterSources": [
+				"src/components/WidthControl.js",
+				"src/utils/helpers.js"
+			],
+			"styleSources": [
+				"src/styles/components/_columns.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_frontend_style_token"
+		},
+		{
+			"key": "frontend.columns-layout",
+			"bundle": "frontend-styles",
+			"tokenPattern": "^(?:is-style-bootstrap|wp-block-columns--constrained)$",
+			"emitterSources": [
+				"src/components/WidthControls.js",
+				"src/extensions/core/block-enhancements.js",
+				"src/utils/helpers.js"
+			],
+			"styleSources": [
+				"src/styles/components/_columns.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_frontend_style_token"
+		},
+		{
+			"key": "frontend.cover-bleed",
+			"bundle": "frontend-styles",
+			"tokenPattern": "^cover-negative-margin-(?:left|right)$",
+			"emitterSources": [
+				"src/config/framework-option-sets.js",
+				"data/bootstrap-classes/bleed-cover-options.js"
+			],
+			"styleSources": [
+				"src/assets/scss/cover-block.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_frontend_style_token"
+		},
+		{
+			"key": "frontend.alert-variant",
+			"bundle": "frontend-styles",
+			"tokenPattern": "^alert-[a-z0-9-]+$",
+			"emitterSources": [
+				"src/config/framework-option-sets.js",
+				"data/bootstrap-classes/classes.js"
+			],
+			"styleSources": [
+				"src/styles/components/_framework-compat.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_frontend_style_token"
+		},
+		{
+			"key": "frontend.border-utility",
+			"bundle": "frontend-styles",
+			"tokenPattern": "^border-(?:0|[1-5]|(?:top|end|bottom|start)(?:-(?:0|[1-5]))?|(?:primary|secondary|success|danger|warning|info|light|dark|white))$",
+			"emitterSources": [
+				"src/config/framework-option-sets.js",
+				"data/bootstrap-classes/classes.js"
+			],
+			"styleSources": [
+				"src/styles/components/_framework-compat.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_frontend_style_token"
+		},
+		{
+			"key": "frontend.rounded-utility",
+			"bundle": "frontend-styles",
+			"tokenPattern": "^rounded-(?:circle|pill|top|end|bottom|start|[0-5]|(?:top|end|bottom|start)-[0-5])$",
+			"emitterSources": [
+				"src/config/framework-option-sets.js",
+				"data/bootstrap-classes/classes.js"
+			],
+			"styleSources": [
+				"src/styles/components/_framework-compat.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_frontend_style_token"
+		},
+		{
+			"key": "utilities.spacing",
+			"bundle": "utilities",
+			"tokenPattern": "^[mp][trbsexy]?-(?:[a-z0-9]+-)?(?:n)?[a-z0-9][a-z0-9-]*$",
+			"emitterSources": [
+				"src/components/SpacingControls.js",
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/generated-spacing-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.spacing-auto",
+			"bundle": "utilities",
+			"tokenPattern": "^[mp][trbsexy]?-(?:[a-z0-9]+-)?auto$",
+			"emitterSources": [
+				"src/components/SpacingControls.js",
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/generated-spacing-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.gap",
+			"bundle": "utilities",
+			"tokenPattern": "^(?:row-|column-)?gap(?:-[a-z0-9]+)?-[a-z0-9][a-z0-9-]*$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/generated-spacing-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.display",
+			"bundle": "utilities",
+			"tokenPattern": "^d(?:-[a-z0-9]+)?-[a-z-]+$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/display-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.justify-content",
+			"bundle": "utilities",
+			"tokenPattern": "^justify-content(?:-[a-z0-9]+)?-[a-z-]+$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/justify-content-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.align",
+			"bundle": "utilities",
+			"tokenPattern": "^align-(?:items|self)(?:-[a-z0-9]+)?-[a-z-]+$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/align-items-options.js",
+				"data/bootstrap-classes/self-alignment-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.order",
+			"bundle": "utilities",
+			"tokenPattern": "^order(?:-[a-z0-9]+)?-(?:[0-9]+|first|last)$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/order-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.position",
+			"bundle": "utilities",
+			"tokenPattern": "^position-[a-z]+$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/position-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.inset",
+			"bundle": "utilities",
+			"tokenPattern": "^(?:top|bottom|start|end)-(?:0|50|100)$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/position-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.translate",
+			"bundle": "utilities",
+			"tokenPattern": "^translate-middle(?:-x|-y)?$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/position-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.z-index",
+			"bundle": "utilities",
+			"tokenPattern": "^z-(?:n1|0|1|2|3)$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/zindex-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		},
+		{
+			"key": "utilities.blend-mode",
+			"bundle": "utilities",
+			"tokenPattern": "^mix-blend-[a-z-]+$",
+			"emitterSources": [
+				"src/components/TokenFields.js",
+				"data/bootstrap-classes/blend-mode-options.js"
+			],
+			"styleSources": [
+				"src/styles/utilities/_bootstrap-utilities.scss",
+				"src/entries/styles/utilities.scss"
+			],
+			"runtimeMatcherFunction": "fs_core_enhancements_is_utility_token"
+		}
+	]
+}

@@ -1,0 +1,217 @@
+@use "../foundation/settings" as *;
+@use "bootstrap-spacing" as spacing;
+
+$displays: none, inline, inline-block, block, grid, inline-grid, table,
+	table-row, table-cell, flex, inline-flex !default;
+
+@mixin generate-display-utilities() {
+
+	@each $display in $displays {
+		.d-#{$display} {
+			display: $display !important;
+		}
+	}
+}
+
+@mixin generate-responsive-display() {
+
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+
+		@if $breakpoint-key != xs {
+
+			@media (min-width: $breakpoint-value) {
+
+				@each $display in $displays {
+					.d-#{$breakpoint-key}-#{$display} {
+						display: $display !important;
+					}
+				}
+			}
+		}
+	}
+}
+
+@mixin generate-flex-utilities() {
+
+	.justify-content-start {
+		justify-content: flex-start !important;
+	}
+
+	.justify-content-end {
+		justify-content: flex-end !important;
+	}
+
+	.justify-content-center {
+		justify-content: center !important;
+	}
+
+	.justify-content-between {
+		justify-content: space-between !important;
+	}
+
+	.align-items-start {
+		align-items: flex-start !important;
+	}
+
+	.align-items-end {
+		align-items: flex-end !important;
+	}
+
+	.align-items-center {
+		align-items: center !important;
+	}
+
+	.align-items-baseline {
+		align-items: baseline !important;
+	}
+
+	.align-items-stretch {
+		align-items: stretch !important;
+	}
+
+	.align-self-auto {
+		align-self: auto !important;
+	}
+
+	.align-self-start {
+		align-self: flex-start !important;
+	}
+
+	.align-self-end {
+		align-self: flex-end !important;
+	}
+
+	.align-self-center {
+		align-self: center !important;
+	}
+
+	.align-self-baseline {
+		align-self: baseline !important;
+	}
+
+	.align-self-stretch {
+		align-self: stretch !important;
+	}
+
+	@for $i from 0 through 5 {
+		.order-#{$i} {
+			order: $i !important;
+		}
+	}
+
+	.order-first {
+		order: -1 !important;
+	}
+
+	.order-last {
+		order: 6 !important;
+	}
+}
+
+@mixin generate-responsive-flex() {
+
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+
+		@if $breakpoint-key != xs {
+
+			@media (min-width: $breakpoint-value) {
+				.justify-content-#{$breakpoint-key}-start {
+					justify-content: flex-start !important;
+				}
+				.justify-content-#{$breakpoint-key}-end {
+					justify-content: flex-end !important;
+				}
+				.justify-content-#{$breakpoint-key}-center {
+					justify-content: center !important;
+				}
+				.justify-content-#{$breakpoint-key}-between {
+					justify-content: space-between !important;
+				}
+				.align-items-#{$breakpoint-key}-start {
+					align-items: flex-start !important;
+				}
+				.align-items-#{$breakpoint-key}-end {
+					align-items: flex-end !important;
+				}
+				.align-items-#{$breakpoint-key}-center {
+					align-items: center !important;
+				}
+				.align-items-#{$breakpoint-key}-baseline {
+					align-items: baseline !important;
+				}
+				.align-items-#{$breakpoint-key}-stretch {
+					align-items: stretch !important;
+				}
+				.align-self-#{$breakpoint-key}-auto {
+					align-self: auto !important;
+				}
+				.align-self-#{$breakpoint-key}-start {
+					align-self: flex-start !important;
+				}
+				.align-self-#{$breakpoint-key}-end {
+					align-self: flex-end !important;
+				}
+				.align-self-#{$breakpoint-key}-center {
+					align-self: center !important;
+				}
+				.align-self-#{$breakpoint-key}-baseline {
+					align-self: baseline !important;
+				}
+				.align-self-#{$breakpoint-key}-stretch {
+					align-self: stretch !important;
+				}
+
+				@for $i from 0 through 5 {
+					.order-#{$breakpoint-key}-#{$i} {
+						order: $i !important;
+					}
+				}
+				.order-#{$breakpoint-key}-first {
+					order: -1 !important;
+				}
+				.order-#{$breakpoint-key}-last {
+					order: 6 !important;
+				}
+			}
+		}
+	}
+}
+
+@mixin generate-gap-utilities() {
+
+	@each $size-key, $size in spacing.$spacers {
+		.gap-#{$size-key} {
+			gap: $size !important;
+		}
+		.row-gap-#{$size-key} {
+			row-gap: $size !important;
+		}
+		.column-gap-#{$size-key} {
+			column-gap: $size !important;
+		}
+	}
+}
+
+@mixin generate-responsive-gap() {
+
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+
+		@if $breakpoint-key != xs {
+
+			@media (min-width: $breakpoint-value) {
+
+				@each $size-key, $size in spacing.$spacers {
+					.gap-#{$breakpoint-key}-#{$size-key} {
+						gap: $size !important;
+					}
+					.row-gap-#{$breakpoint-key}-#{$size-key} {
+						row-gap: $size !important;
+					}
+					.column-gap-#{$breakpoint-key}-#{$size-key} {
+						column-gap: $size !important;
+					}
+				}
+			}
+		}
+	}
+}

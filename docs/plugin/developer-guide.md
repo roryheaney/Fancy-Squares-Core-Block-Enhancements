@@ -55,6 +55,12 @@ Typical custom block flow:
 - Class generation: `src/utils/helpers.js`
 - Parent class update (`is-style-bootstrap`): `src/extensions/core/block-enhancements.js`
 
+## Maintenance and Regression Workflow
+
+- For every feature/update, run `npm run regression:gate` before finalizing.
+- Policy and required evidence format: `docs/plugin/maintenance-regression-policy.md`.
+- The regression quality gate evaluates plugin code quality as a whole (`*.js`, `*.jsx`, `*.php`, `*.scss`, `*.mjs`), not only changed files, with exclusions documented in the maintenance policy.
+
 ## Guardrails
 
 - Do not hand-edit generated outputs:

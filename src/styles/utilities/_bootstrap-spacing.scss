@@ -1,0 +1,197 @@
+@use "sass:meta";
+@use "../foundation/settings" as *;
+
+$spacers: $framework-spacing-scale !default;
+$spacing-properties: (
+	m: margin,
+	p: padding,
+) !default;
+$spacing-sides: (
+	t: top,
+	b: bottom,
+	s: left,
+	e: right,
+	x: (
+		left,
+		right,
+	),
+	y: (
+		top,
+		bottom,
+	),
+) !default;
+
+@mixin generate-spacing-utilities() {
+
+	@each $prop-key, $prop in $spacing-properties {
+
+		@each $size-key, $size in $spacers {
+			.#{$prop-key}-#{$size-key} {
+				#{$prop}: $size !important;
+			}
+
+			@each $side-key, $side in $spacing-sides {
+
+				@if meta.type-of($side) == "list" {
+					.#{$prop-key}#{$side-key}-#{$size-key} {
+
+						@each $s in $side {
+							#{$prop}-#{$s}: $size !important;
+						}
+					}
+				} @else {
+					.#{$prop-key}#{$side-key}-#{$size-key} {
+						#{$prop}-#{$side}: $size !important;
+					}
+				}
+			}
+		}
+
+		@if $prop-key == m {
+
+			@each $size-key, $size in $spacers {
+
+				@if $size-key != 0 {
+					.#{$prop-key}-n#{$size-key} {
+						#{$prop}: calc(#{$size} * -1) !important;
+					}
+
+					@each $side-key, $side in $spacing-sides {
+
+						@if meta.type-of($side) == "list" {
+							.#{$prop-key}#{$side-key}-n#{$size-key} {
+
+								@each $s in $side {
+									#{$prop}-#{$s}: calc(#{$size} * -1) !important;
+								}
+							}
+						} @else {
+							.#{$prop-key}#{$side-key}-n#{$size-key} {
+								#{$prop}-#{$side}: calc(#{$size} * -1) !important;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.m-auto {
+		margin: auto !important;
+	}
+
+	.mx-auto {
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+
+	.my-auto {
+		margin-top: auto !important;
+		margin-bottom: auto !important;
+	}
+
+	.mt-auto {
+		margin-top: auto !important;
+	}
+
+	.mb-auto {
+		margin-bottom: auto !important;
+	}
+
+	.ms-auto {
+		margin-left: auto !important;
+	}
+
+	.me-auto {
+		margin-right: auto !important;
+	}
+}
+
+@mixin generate-responsive-spacing() {
+
+	@each $breakpoint-key, $breakpoint-value in $grid-breakpoints {
+
+		@if $breakpoint-key != xs {
+
+			@media (min-width: $breakpoint-value) {
+
+				@each $prop-key, $prop in $spacing-properties {
+
+					@each $size-key, $size in $spacers {
+						.#{$prop-key}-#{$breakpoint-key}-#{$size-key} {
+							#{$prop}: $size !important;
+						}
+
+						@each $side-key, $side in $spacing-sides {
+
+							@if meta.type-of($side) == "list" {
+								.#{$prop-key}#{$side-key}-#{$breakpoint-key}-#{$size-key} {
+
+									@each $s in $side {
+										#{$prop}-#{$s}: $size !important;
+									}
+								}
+							} @else {
+								.#{$prop-key}#{$side-key}-#{$breakpoint-key}-#{$size-key} {
+									#{$prop}-#{$side}: $size !important;
+								}
+							}
+						}
+					}
+
+					@if $prop-key == m {
+
+						@each $size-key, $size in $spacers {
+
+							@if $size-key != 0 {
+								.#{$prop-key}-#{$breakpoint-key}-n#{$size-key} {
+									#{$prop}: calc(#{$size} * -1) !important;
+								}
+
+								@each $side-key, $side in $spacing-sides {
+
+									@if meta.type-of($side) == "list" {
+										.#{$prop-key}#{$side-key}-#{$breakpoint-key}-n#{$size-key} {
+
+											@each $s in $side {
+												#{$prop}-#{$s}: calc(#{$size} * -1) !important;
+											}
+										}
+									} @else {
+										.#{$prop-key}#{$side-key}-#{$breakpoint-key}-n#{$size-key} {
+											#{$prop}-#{$side}: calc(#{$size} * -1) !important;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				.m-#{$breakpoint-key}-auto {
+					margin: auto !important;
+				}
+				.mx-#{$breakpoint-key}-auto {
+					margin-left: auto !important;
+					margin-right: auto !important;
+				}
+				.my-#{$breakpoint-key}-auto {
+					margin-top: auto !important;
+					margin-bottom: auto !important;
+				}
+				.mt-#{$breakpoint-key}-auto {
+					margin-top: auto !important;
+				}
+				.mb-#{$breakpoint-key}-auto {
+					margin-bottom: auto !important;
+				}
+				.ms-#{$breakpoint-key}-auto {
+					margin-left: auto !important;
+				}
+				.me-#{$breakpoint-key}-auto {
+					margin-right: auto !important;
+				}
+			}
+		}
+	}
+}

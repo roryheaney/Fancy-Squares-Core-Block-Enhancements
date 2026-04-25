@@ -6,17 +6,10 @@ import {
 } from '@wordpress/rich-text';
 
 import { RichTextToolbarButton, useSettings } from '@wordpress/block-editor';
-
-import {
-	Modal,
-	Button,
-	ComboboxControl,
-	ColorPalette,
-	ToggleControl,
-} from '@wordpress/components';
-
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+import SpanFormatModal from './span-format-modal';
 import '../assets/scss/_span-format.scss';
 
 let spanClassOptionsPromise = null;
@@ -40,252 +33,64 @@ const dedupeTokens = ( tokens ) => [
 	...new Set( ( Array.isArray( tokens ) ? tokens : [] ).filter( Boolean ) ),
 ];
 
-const getOptionLabel = ( option, showValues ) => {
-	if ( ! option ) {
-		return '';
-	}
+const getOptionValues = ( options ) =>
+	( Array.isArray( options ) ? options : [] ).map(
+		( option ) => option.value
+	);
 
-	if ( showValues ) {
-		return option.value;
-	}
+const classifySpanTokens = ( classAttr, loadedClassOptions ) => {
+	const classArray = ( classAttr || '' )
+		.split( /\s+/ )
+		.filter( ( token ) => token && token !== 'fs-span-base' );
 
-	return option.label || option.value;
+	const displayVals = getOptionValues( loadedClassOptions.displayOptions );
+	const marginVals = getOptionValues( loadedClassOptions.marginOptions );
+	const paddingVals = getOptionValues( loadedClassOptions.paddingOptions );
+	const positionVals = getOptionValues( loadedClassOptions.positionOptions );
+
+	return classArray.reduce(
+		( grouped, token ) => {
+			if ( displayVals.includes( token ) ) {
+				grouped.displayTokens.push( token );
+				return grouped;
+			}
+			if ( marginVals.includes( token ) ) {
+				grouped.marginTokens.push( token );
+				return grouped;
+			}
+			if ( paddingVals.includes( token ) ) {
+				grouped.paddingTokens.push( token );
+				return grouped;
+			}
+			if ( positionVals.includes( token ) ) {
+				grouped.positionTokens.push( token );
+				return grouped;
+			}
+			grouped.otherTokens.push( token );
+			return grouped;
+		},
+		{
+			displayTokens: [],
+			marginTokens: [],
+			paddingTokens: [],
+			positionTokens: [],
+			otherTokens: [],
+		}
+	);
 };
 
-function TokenSelectorControl( {
-	label,
-	options,
-	values,
-	onAddToken,
-	onRemoveToken,
-	showValues,
-} ) {
-	const [ pendingToken, setPendingToken ] = useState( '' );
+const parseSpanStyleDeclarations = ( styleAttr ) => {
+	const declarations = ( styleAttr || '' )
+		.split( ';' )
+		.map( ( declaration ) => declaration.trim() )
+		.filter( Boolean );
 
-	const selectOptions = ( Array.isArray( options ) ? options : [] ).map(
-		( option ) => ( {
-			value: option.value,
-			label: getOptionLabel( option, showValues ),
-		} )
-	);
-
-	return (
-		<div className="fs-span-token-control">
-			<div className="fs-span-token-control__header">{ label }</div>
-			<div className="fs-span-token-control__picker">
-				<ComboboxControl
-					__next40pxDefaultSize
-					__nextHasNoMarginBottom
-					label={ __( 'Search and select class', 'fs-blocks' ) }
-					value={ pendingToken }
-					options={ selectOptions }
-					onChange={ ( nextValue ) =>
-						setPendingToken( nextValue || '' )
-					}
-				/>
-				<Button
-					variant="secondary"
-					onClick={ () => {
-						if ( ! pendingToken ) {
-							return;
-						}
-						onAddToken( pendingToken );
-						setPendingToken( '' );
-					} }
-					disabled={ ! pendingToken }
-				>
-					{ __( 'Add', 'fs-blocks' ) }
-				</Button>
-			</div>
-			<div className="fs-span-token-control__chips">
-				{ values.length === 0 && (
-					<span className="fs-span-token-control__empty">
-						{ __( 'No classes selected.', 'fs-blocks' ) }
-					</span>
-				) }
-				{ values.map( ( token ) => {
-					const matchedOption = ( options || [] ).find(
-						( option ) => option.value === token
-					);
-					const tokenLabel = matchedOption
-						? getOptionLabel( matchedOption, showValues )
-						: token;
-
-					return (
-						<Button
-							key={ `${ label }-${ token }` }
-							variant="tertiary"
-							onClick={ () => onRemoveToken( token ) }
-							className="fs-span-token-control__chip"
-						>
-							{ tokenLabel } &times;
-						</Button>
-					);
-				} ) }
-			</div>
-		</div>
-	);
-}
-
-/*
- * Edit component for the "fs/span" RichText format.
- *
- * @param {Object}   props
- * @param {boolean}  props.isActive   Whether this format is currently active.
- * @param {Object}   props.value      The RichText value object.
- * @param {Function} props.onChange   Callback to update the RichText value.
- *
- * @return {JSX.Element} The element to render.
- */
-function EditSpan( { isActive, value, onChange } ) {
-	// Modal open/close
-	const [ isModalOpen, setIsModalOpen ] = useState( false );
-	const [ classOptionsReady, setClassOptionsReady ] = useState( false );
-	const [ classOptions, setClassOptions ] = useState( {
-		displayOptions: [],
-		marginOptions: [],
-		paddingOptions: [],
-		positionOptions: [],
-	} );
-
-	// States for class tokens
-	const [ displayTokens, setDisplayTokens ] = useState( [] );
-	const [ marginTokens, setMarginTokens ] = useState( [] );
-	const [ paddingTokens, setPaddingTokens ] = useState( [] );
-	const [ positionTokens, setPositionTokens ] = useState( [] );
-	const [ otherTokens, setOtherTokens ] = useState( [] );
-
-	// States for inline color styles
-	const [ textColor, setTextColor ] = useState( '' );
-	const [ backgroundColor, setBackgroundColor ] = useState( '' );
-	const [ otherStyleDeclarations, setOtherStyleDeclarations ] = useState(
-		[]
-	);
-
-	// Toggle between showing class labels or values
-	const [ showValues, setShowValues ] = useState( false );
-
-	const [ themePalette = [] ] = useSettings( 'color.palette' );
-
-	/**
-	 * Toggle the format: if it's active, parse existing data so user can edit;
-	 * otherwise, open the modal fresh.
-	 */
-	async function onToggleFormat() {
-		const loadedClassOptions = await ensureClassOptionsLoaded();
-
-		if ( isActive ) {
-			populateExistingFormat( loadedClassOptions );
-		} else {
-			resetEditingState();
-			openModal();
-		}
-	}
-
-	function resetEditingState() {
-		setDisplayTokens( [] );
-		setMarginTokens( [] );
-		setPaddingTokens( [] );
-		setPositionTokens( [] );
-		setOtherTokens( [] );
-		setTextColor( '' );
-		setBackgroundColor( '' );
-		setOtherStyleDeclarations( [] );
-	}
-
-	async function ensureClassOptionsLoaded() {
-		if ( classOptionsReady ) {
-			return classOptions;
-		}
-
-		const loaded = await loadSpanClassOptions();
-		setClassOptions( loaded );
-		setClassOptionsReady( true );
-		return loaded;
-	}
-
-	function openModal() {
-		setIsModalOpen( true );
-	}
-	function closeModal() {
-		setIsModalOpen( false );
-	}
-
-	/**
-	 * Parse the existing <span> attributes: classes & inline style
-	 *
-	 * @param {Object} loadedClassOptions Loaded token option arrays.
-	 */
-	function populateExistingFormat( loadedClassOptions = classOptions ) {
-		const activeSpan = getActiveFormat( value, 'fs/span' );
-		if ( ! activeSpan ) {
-			openModal();
-			return;
-		}
-
-		// 1) Classes
-		const classAttr = activeSpan.attributes?.class || '';
-		// Remove base class
-		const classArray = classAttr
-			.split( /\s+/ )
-			.filter( ( c ) => c && c !== 'fs-span-base' );
-
-		// Convert arrays to plain strings for membership checks
-		const displayVals = loadedClassOptions.displayOptions.map(
-			( o ) => o.value
-		);
-		const marginVals = loadedClassOptions.marginOptions.map(
-			( o ) => o.value
-		);
-		const paddingVals = loadedClassOptions.paddingOptions.map(
-			( o ) => o.value
-		);
-		const positionVals = loadedClassOptions.positionOptions.map(
-			( o ) => o.value
-		);
-
-		const pickedDisplay = [];
-		const pickedMargin = [];
-		const pickedPadding = [];
-		const pickedPosition = [];
-		const pickedOther = [];
-
-		classArray.forEach( ( cls ) => {
-			if ( displayVals.includes( cls ) ) {
-				pickedDisplay.push( cls );
-			} else if ( marginVals.includes( cls ) ) {
-				pickedMargin.push( cls );
-			} else if ( paddingVals.includes( cls ) ) {
-				pickedPadding.push( cls );
-			} else if ( positionVals.includes( cls ) ) {
-				pickedPosition.push( cls );
-			} else {
-				pickedOther.push( cls );
-			}
-		} );
-
-		setDisplayTokens( pickedDisplay );
-		setMarginTokens( pickedMargin );
-		setPaddingTokens( pickedPadding );
-		setPositionTokens( pickedPosition );
-		setOtherTokens( pickedOther );
-
-		// 2) Inline styles (preserve unknown declarations).
-		const styleAttr = activeSpan.attributes?.style || '';
-		const declarations = styleAttr
-			.split( ';' )
-			.map( ( declaration ) => declaration.trim() )
-			.filter( Boolean );
-
-		let nextTextColor = '';
-		let nextBackgroundColor = '';
-		const nextOtherDeclarations = [];
-
-		declarations.forEach( ( declaration ) => {
+	return declarations.reduce(
+		( parsed, declaration ) => {
 			const separatorIndex = declaration.indexOf( ':' );
 			if ( separatorIndex < 0 ) {
-				nextOtherDeclarations.push( declaration );
-				return;
+				parsed.otherStyleDeclarations.push( declaration );
+				return parsed;
 			}
 
 			const property = declaration
@@ -297,30 +102,105 @@ function EditSpan( { isActive, value, onChange } ) {
 				.trim();
 
 			if ( property === 'color' ) {
-				nextTextColor = propertyValue;
-				return;
+				parsed.textColor = propertyValue;
+				return parsed;
 			}
 
 			if ( property === 'background-color' ) {
-				nextBackgroundColor = propertyValue;
-				return;
+				parsed.backgroundColor = propertyValue;
+				return parsed;
 			}
 
-			nextOtherDeclarations.push( `${ property }: ${ propertyValue }` );
-		} );
+			parsed.otherStyleDeclarations.push(
+				`${ property }: ${ propertyValue }`
+			);
+			return parsed;
+		},
+		{
+			textColor: '',
+			backgroundColor: '',
+			otherStyleDeclarations: [],
+		}
+	);
+};
 
-		setTextColor( nextTextColor );
-		setBackgroundColor( nextBackgroundColor );
-		setOtherStyleDeclarations( nextOtherDeclarations );
+function EditSpan( { isActive, value, onChange } ) {
+	const [ isModalOpen, setIsModalOpen ] = useState( false );
+	const [ classOptionsReady, setClassOptionsReady ] = useState( false );
+	const [ classOptions, setClassOptions ] = useState( {
+		displayOptions: [],
+		marginOptions: [],
+		paddingOptions: [],
+		positionOptions: [],
+	} );
 
+	const [ displayTokens, setDisplayTokens ] = useState( [] );
+	const [ marginTokens, setMarginTokens ] = useState( [] );
+	const [ paddingTokens, setPaddingTokens ] = useState( [] );
+	const [ positionTokens, setPositionTokens ] = useState( [] );
+	const [ otherTokens, setOtherTokens ] = useState( [] );
+
+	const [ textColor, setTextColor ] = useState( '' );
+	const [ backgroundColor, setBackgroundColor ] = useState( '' );
+	const [ otherStyleDeclarations, setOtherStyleDeclarations ] = useState(
+		[]
+	);
+	const [ showValues, setShowValues ] = useState( false );
+
+	const [ themePalette = [] ] = useSettings( 'color.palette' );
+
+	const openModal = () => setIsModalOpen( true );
+	const closeModal = () => setIsModalOpen( false );
+
+	const resetEditingState = () => {
+		setDisplayTokens( [] );
+		setMarginTokens( [] );
+		setPaddingTokens( [] );
+		setPositionTokens( [] );
+		setOtherTokens( [] );
+		setTextColor( '' );
+		setBackgroundColor( '' );
+		setOtherStyleDeclarations( [] );
+	};
+
+	const ensureClassOptionsLoaded = async () => {
+		if ( classOptionsReady ) {
+			return classOptions;
+		}
+
+		const loaded = await loadSpanClassOptions();
+		setClassOptions( loaded );
+		setClassOptionsReady( true );
+		return loaded;
+	};
+
+	const populateExistingFormat = ( loadedClassOptions = classOptions ) => {
+		const activeSpan = getActiveFormat( value, 'fs/span' );
+		if ( ! activeSpan ) {
+			openModal();
+			return;
+		}
+
+		const groupedTokens = classifySpanTokens(
+			activeSpan.attributes?.class || '',
+			loadedClassOptions
+		);
+		setDisplayTokens( groupedTokens.displayTokens );
+		setMarginTokens( groupedTokens.marginTokens );
+		setPaddingTokens( groupedTokens.paddingTokens );
+		setPositionTokens( groupedTokens.positionTokens );
+		setOtherTokens( groupedTokens.otherTokens );
+
+		const parsedStyles = parseSpanStyleDeclarations(
+			activeSpan.attributes?.style || ''
+		);
+		setTextColor( parsedStyles.textColor );
+		setBackgroundColor( parsedStyles.backgroundColor );
+		setOtherStyleDeclarations( parsedStyles.otherStyleDeclarations );
 		openModal();
-	}
+	};
 
-	/**
-	 * Apply or update the format around the selected text
-	 */
-	function applySpanFormat() {
-		// Combine chosen tokens
+	const applySpanFormat = () => {
 		const allTokens = dedupeTokens( [
 			...displayTokens,
 			...marginTokens,
@@ -330,7 +210,6 @@ function EditSpan( { isActive, value, onChange } ) {
 		] );
 		const classString = `fs-span-base ${ allTokens.join( ' ' ) }`.trim();
 
-		// Build inline style
 		const styleParts = [];
 		if ( textColor ) {
 			styleParts.push( `color: ${ textColor }` );
@@ -341,35 +220,44 @@ function EditSpan( { isActive, value, onChange } ) {
 		styleParts.push( ...otherStyleDeclarations );
 		const styleString = styleParts.join( '; ' );
 
-		// If user sets no classes or colors, remove format entirely
 		const noExtra = classString === 'fs-span-base' && ! styleString;
 		if ( noExtra ) {
-			const removed = removeFormat( value, 'fs/span' );
-			onChange( removed );
+			onChange( removeFormat( value, 'fs/span' ) );
 			closeModal();
 			return;
 		}
 
-		// Otherwise, apply or update
-		const newValue = applyFormat( value, {
-			type: 'fs/span',
-			attributes: {
-				class: classString,
-				style: styleString,
-			},
-		} );
-		onChange( newValue );
+		onChange(
+			applyFormat( value, {
+				type: 'fs/span',
+				attributes: {
+					class: classString,
+					style: styleString,
+				},
+			} )
+		);
 		closeModal();
-	}
+	};
 
-	/**
-	 * Remove the <span> format entirely
-	 */
-	function removeSpanFormat() {
-		const removed = removeFormat( value, 'fs/span' );
-		onChange( removed );
+	const removeSpanFormat = () => {
+		onChange( removeFormat( value, 'fs/span' ) );
 		closeModal();
-	}
+	};
+
+	const onToggleFormat = async () => {
+		const loadedClassOptions = await ensureClassOptionsLoaded();
+		if ( isActive ) {
+			populateExistingFormat( loadedClassOptions );
+			return;
+		}
+		resetEditingState();
+		openModal();
+	};
+
+	const addToken = ( setter ) => ( token ) =>
+		setter( ( current ) => dedupeTokens( [ ...current, token ] ) );
+	const removeToken = ( setter ) => ( token ) =>
+		setter( ( current ) => current.filter( ( item ) => item !== token ) );
 
 	return (
 		<>
@@ -380,164 +268,38 @@ function EditSpan( { isActive, value, onChange } ) {
 				isActive={ isActive }
 			/>
 
-			{ isModalOpen && (
-				<Modal
-					title={ __( 'Span Settings', 'fs-blocks' ) }
-					onRequestClose={ closeModal }
-					isDismissible={ true }
-					className="fs-span-modal"
-				>
-					<h3>{ __( 'Bootstrap Classes', 'fs-blocks' ) }</h3>
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __( 'Show Classes', 'fs-blocks' ) }
-						checked={ showValues }
-						onChange={ setShowValues }
-						help={ __(
-							'Display class names instead of labels.',
-							'fs-blocks'
-						) }
-						className="fs-span-modal__show-values-toggle"
-					/>
-					<div className="fs-span-modal__token-grid">
-						<TokenSelectorControl
-							label={ __( 'Display', 'fs-blocks' ) }
-							options={ classOptions.displayOptions }
-							values={ displayTokens }
-							showValues={ showValues }
-							onAddToken={ ( token ) =>
-								setDisplayTokens( ( current ) =>
-									dedupeTokens( [ ...current, token ] )
-								)
-							}
-							onRemoveToken={ ( token ) =>
-								setDisplayTokens( ( current ) =>
-									current.filter( ( item ) => item !== token )
-								)
-							}
-						/>
-						<TokenSelectorControl
-							label={ __( 'Margin', 'fs-blocks' ) }
-							options={ classOptions.marginOptions }
-							values={ marginTokens }
-							showValues={ showValues }
-							onAddToken={ ( token ) =>
-								setMarginTokens( ( current ) =>
-									dedupeTokens( [ ...current, token ] )
-								)
-							}
-							onRemoveToken={ ( token ) =>
-								setMarginTokens( ( current ) =>
-									current.filter( ( item ) => item !== token )
-								)
-							}
-						/>
-						<TokenSelectorControl
-							label={ __( 'Padding', 'fs-blocks' ) }
-							options={ classOptions.paddingOptions }
-							values={ paddingTokens }
-							showValues={ showValues }
-							onAddToken={ ( token ) =>
-								setPaddingTokens( ( current ) =>
-									dedupeTokens( [ ...current, token ] )
-								)
-							}
-							onRemoveToken={ ( token ) =>
-								setPaddingTokens( ( current ) =>
-									current.filter( ( item ) => item !== token )
-								)
-							}
-						/>
-						<TokenSelectorControl
-							label={ __( 'Position', 'fs-blocks' ) }
-							options={ classOptions.positionOptions }
-							values={ positionTokens }
-							showValues={ showValues }
-							onAddToken={ ( token ) =>
-								setPositionTokens( ( current ) =>
-									dedupeTokens( [ ...current, token ] )
-								)
-							}
-							onRemoveToken={ ( token ) =>
-								setPositionTokens( ( current ) =>
-									current.filter( ( item ) => item !== token )
-								)
-							}
-						/>
-					</div>
-					{ otherTokens.length > 0 && (
-						<p className="fs-span-modal__preserved-note">
-							{ __(
-								'Additional existing classes are preserved:',
-								'fs-blocks'
-							) }{ ' ' }
-							<code>{ otherTokens.join( ' ' ) }</code>
-						</p>
-					) }
-
-					<hr className="fs-span-modal__separator" />
-
-					<h3>{ __( 'Colors', 'fs-blocks' ) }</h3>
-					<div className="fs-span-modal__color-grid">
-						<div className="fs-span-modal__color-column">
-							<strong>{ __( 'Text Color', 'fs-blocks' ) }</strong>
-							<ColorPalette
-								colors={ themePalette }
-								value={ textColor || undefined }
-								onChange={ ( nextColor ) =>
-									setTextColor( nextColor || '' )
-								}
-								clearable
-								disableCustomColors={ true }
-							/>
-						</div>
-
-						<div className="fs-span-modal__color-column">
-							<strong>
-								{ __( 'Background Color', 'fs-blocks' ) }
-							</strong>
-							<ColorPalette
-								colors={ themePalette }
-								value={ backgroundColor || undefined }
-								onChange={ ( nextColor ) =>
-									setBackgroundColor( nextColor || '' )
-								}
-								clearable
-								disableCustomColors={ true }
-							/>
-						</div>
-					</div>
-					{ otherStyleDeclarations.length > 0 && (
-						<p className="fs-span-modal__preserved-note">
-							{ __(
-								'Additional existing inline styles are preserved:',
-								'fs-blocks'
-							) }{ ' ' }
-							<code>{ otherStyleDeclarations.join( '; ' ) }</code>
-						</p>
-					) }
-
-					<div className="fs-span-modal__actions">
-						<Button variant="primary" onClick={ applySpanFormat }>
-							{ __( 'Apply', 'fs-blocks' ) }
-						</Button>
-						<Button
-							variant="secondary"
-							onClick={ removeSpanFormat }
-						>
-							{ __( 'Remove Format', 'fs-blocks' ) }
-						</Button>
-						<Button variant="tertiary" onClick={ closeModal }>
-							{ __( 'Cancel', 'fs-blocks' ) }
-						</Button>
-					</div>
-				</Modal>
-			) }
+			<SpanFormatModal
+				isModalOpen={ isModalOpen }
+				closeModal={ closeModal }
+				showValues={ showValues }
+				setShowValues={ setShowValues }
+				classOptions={ classOptions }
+				displayTokens={ displayTokens }
+				marginTokens={ marginTokens }
+				paddingTokens={ paddingTokens }
+				positionTokens={ positionTokens }
+				otherTokens={ otherTokens }
+				textColor={ textColor }
+				setTextColor={ setTextColor }
+				backgroundColor={ backgroundColor }
+				setBackgroundColor={ setBackgroundColor }
+				otherStyleDeclarations={ otherStyleDeclarations }
+				themePalette={ themePalette }
+				onAddDisplayToken={ addToken( setDisplayTokens ) }
+				onRemoveDisplayToken={ removeToken( setDisplayTokens ) }
+				onAddMarginToken={ addToken( setMarginTokens ) }
+				onRemoveMarginToken={ removeToken( setMarginTokens ) }
+				onAddPaddingToken={ addToken( setPaddingTokens ) }
+				onRemovePaddingToken={ removeToken( setPaddingTokens ) }
+				onAddPositionToken={ addToken( setPositionTokens ) }
+				onRemovePositionToken={ removeToken( setPositionTokens ) }
+				applySpanFormat={ applySpanFormat }
+				removeSpanFormat={ removeSpanFormat }
+			/>
 		</>
 	);
 }
 
-// Finally, registerFormatType with our uppercase component
 registerFormatType( 'fs/span', {
 	title: __( 'Span', 'fs-blocks' ),
 	tagName: 'span',

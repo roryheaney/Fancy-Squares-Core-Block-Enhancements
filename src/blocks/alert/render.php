@@ -18,21 +18,7 @@ $classes = [ 'wp-block-fs-blocks-alert', 'alert' ];
 if ( '' !== $alert_style ) {
 	$classes[] = $alert_style;
 }
-
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = array_merge( $classes, $attributes['additionalClasses'] );
-}
-
-$classes = array_map( 'sanitize_html_class', $classes );
-$classes = array_filter(
-	$classes,
-	static function ( $value ) {
-		return '' !== $value;
-	}
-);
+$classes = fs_core_enhancements_get_sanitized_classes( $classes, $attributes );
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	[

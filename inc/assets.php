@@ -297,7 +297,7 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 	}
 
 	if ( 'core/cover' === $block_name ) {
-		if ( ! empty( $attrs['lazyLoadVideo'] ) ) {
+		if ( ! empty( $attrs['lazyLoadVideo'] ) && empty( $attrs['useEmbedBackground'] ) ) {
 			fs_core_enhancements_enqueue_frontend_runtime();
 		}
 		return $block_content;

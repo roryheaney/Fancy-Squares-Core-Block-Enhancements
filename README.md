@@ -23,8 +23,8 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 ## Release Artifact
 
 - Build and package each release as a distributable zip:
-  - `npm run build`
-  - `npm run plugin-zip`
+    - `npm run build`
+    - `npm run plugin-zip`
 - Source checkouts are for development; production installs should use release zips.
 
 ## Key Default Behavior
@@ -32,6 +32,7 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 - Frontend runtime (`build/frontend.js`) is loaded only when required by rendered blocks.
 - Frontend style bundle (`build/frontend-styles.css`) is loaded only when required by rendered classes/features.
 - Utilities CSS mode now defaults to `Editor + front end` (`both`).
+- `npm run regression:gate` enforces first-paint parity and interaction performance guard invariants for interactive blocks.
 
 ## Documentation Map
 

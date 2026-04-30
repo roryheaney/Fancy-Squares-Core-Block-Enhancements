@@ -17,23 +17,8 @@ if ( 'section' !== $element_tag ) {
 	$element_tag = 'div';
 }
 
-$single_class = isset( $attributes['singularSelectClass'] )
-	? sanitize_html_class( $attributes['singularSelectClass'] )
-	: '';
+$classes = fs_core_enhancements_get_sanitized_classes( [], $attributes );
 
-$classes = [];
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = $attributes['additionalClasses'];
-}
-
-if ( '' !== $single_class && ! in_array( $single_class, $classes, true ) ) {
-	$classes[] = $single_class;
-}
-
-$classes = array_map( 'sanitize_html_class', $classes );
 $wrapper_attributes = get_block_wrapper_attributes(
 	[
 		'class' => implode( ' ', $classes ),

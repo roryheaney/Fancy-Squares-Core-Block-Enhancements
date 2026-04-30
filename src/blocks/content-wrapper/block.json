@@ -6,11 +6,17 @@
 	"category": "layout",
 	"icon": "screenoptions",
 	"description": "A wrapper block that can hold inner blocks, choosing either div or section as the element tag.",
-	"keywords": [ "wrapper", "layout" ],
+	"keywords": [
+		"wrapper",
+		"layout"
+	],
 	"supports": {
 		"html": false,
 		"anchor": true,
-		"align": [ "wide", "full" ],
+		"align": [
+			"wide",
+			"full"
+		],
 		"color": {
 			"text": true,
 			"background": true,
@@ -28,10 +34,6 @@
 				"type": "string"
 			},
 			"default": []
-		},
-		"singularSelectClass": {
-			"type": "string",
-			"default": ""
 		}
 	},
 	"textdomain": "fancy-squares-core-enhancements",

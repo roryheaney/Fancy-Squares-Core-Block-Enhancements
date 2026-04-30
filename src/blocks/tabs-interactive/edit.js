@@ -7,7 +7,7 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useEffect, useMemo, useRef } from '@wordpress/element';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import BlockEdit from '../../components/BlockEdit';
@@ -21,9 +21,9 @@ const ALLOWED_BLOCKS = [ 'fs-blocks/tab-item-interactive' ];
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
-	const { activeTab, responsiveTabs, verticalTabs, additionalClasses } =
-		attributes;
+	const { responsiveTabs, verticalTabs, additionalClasses } = attributes;
 	const { selectBlock } = useDispatch( blockEditorStore );
+	const [ editorActiveTab, setEditorActiveTab ] = useState( '' );
 
 	const { childBlocks } = useSelect(
 		( select ) => ( {
@@ -51,43 +51,32 @@ export default function Edit( props ) {
 		setAttributes,
 	} );
 
-	const hasInitializedRef = useRef( false );
 	useEffect( () => {
 		if ( tabs.length === 0 ) {
-			if ( activeTab ) {
-				setAttributes( { activeTab: '' } );
+			if ( editorActiveTab ) {
+				setEditorActiveTab( '' );
 			}
 			return;
 		}
 
-		// Only reset to first tab on initial mount
-		if ( ! hasInitializedRef.current ) {
-			hasInitializedRef.current = true;
-			const firstTabId = tabs[ 0 ].tabId;
-			if ( activeTab !== firstTabId ) {
-				setAttributes( { activeTab: firstTabId } );
-			}
-		} else {
-			// After initialization, just validate activeTab exists in current tabs
-			const tabIds = tabs.map( ( tab ) => tab.tabId );
-			if ( ! activeTab || ! tabIds.includes( activeTab ) ) {
-				setAttributes( { activeTab: tabs[ 0 ].tabId } );
-			}
+		const tabIds = tabs.map( ( tab ) => tab.tabId );
+		if ( ! editorActiveTab || ! tabIds.includes( editorActiveTab ) ) {
+			setEditorActiveTab( tabs[ 0 ].tabId );
 		}
-	}, [ activeTab, setAttributes, tabs ] );
+	}, [ editorActiveTab, tabs ] );
 
 	const previousCountRef = useRef( tabs.length );
 	useEffect( () => {
 		if ( tabs.length > previousCountRef.current ) {
 			const newTab = tabs[ tabs.length - 1 ];
-			setAttributes( { activeTab: newTab.tabId } );
+			setEditorActiveTab( newTab.tabId );
 			selectBlock( newTab.clientId );
 		}
 		previousCountRef.current = tabs.length;
-	}, [ selectBlock, setAttributes, tabs ] );
+	}, [ selectBlock, tabs ] );
 
 	const handleTabClick = ( tab ) => {
-		setAttributes( { activeTab: tab.tabId } );
+		setEditorActiveTab( tab.tabId );
 		selectBlock( tab.clientId );
 	};
 
@@ -175,12 +164,16 @@ export default function Edit( props ) {
 								key={ tab.clientId }
 								type="button"
 								className={ `fs-tabs__tab ${
-									activeTab === tab.tabId ? 'is-active' : ''
+									editorActiveTab === tab.tabId
+										? 'is-active'
+										: ''
 								}` }
 								onClick={ () => handleTabClick( tab ) }
 								role="tab"
 								aria-selected={
-									activeTab === tab.tabId ? 'true' : 'false'
+									editorActiveTab === tab.tabId
+										? 'true'
+										: 'false'
 								}
 							>
 								{ tab.title }

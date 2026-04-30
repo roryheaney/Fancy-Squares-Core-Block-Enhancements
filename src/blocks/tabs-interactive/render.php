@@ -91,7 +91,7 @@ $initial_context = [
 			<button
 				id="<?php echo esc_attr( $tab_button_id ); ?>"
 				type="button"
-				class="fs-tabs__tab"
+				class="fs-tabs__tab<?php echo $is_active ? ' is-active' : ''; ?>"
 				data-fs-tab-id="<?php echo esc_attr( $tab['id'] ); ?>"
 				data-wp-context='<?php echo wp_json_encode( [ 'tabId' => $tab['id'] ] ); ?>'
 				data-wp-on--click="actions.setActiveTab"
@@ -119,7 +119,7 @@ $initial_context = [
 			?>
 			<div
 				id="<?php echo esc_attr( $pane_id ); ?>"
-				class="fs-tabs__panel"
+				class="fs-tabs__panel<?php echo $is_active ? ' is-active' : ''; ?>"
 				data-fs-tab-id="<?php echo esc_attr( $tab['id'] ); ?>"
 				data-wp-context='<?php echo wp_json_encode( [ 'tabId' => $tab['id'] ] ); ?>'
 				data-wp-class--is-active="state.isActive"
@@ -130,7 +130,7 @@ $initial_context = [
 					<button
 						id="<?php echo esc_attr( $accordion_id ); ?>"
 						type="button"
-						class="fs-tabs__accordion-trigger"
+						class="fs-tabs__accordion-trigger<?php echo $is_active ? ' is-active' : ''; ?>"
 						data-wp-on--click="actions.setActiveTab"
 						data-wp-on--keydown="actions.handleKeyDown"
 						data-wp-class--is-active="state.isActive"

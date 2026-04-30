@@ -60,6 +60,8 @@ Typical custom block flow:
 - For every feature/update, run `npm run regression:gate` before finalizing.
 - Policy and required evidence format: `docs/plugin/maintenance-regression-policy.md`.
 - The regression quality gate evaluates plugin code quality as a whole (`*.js`, `*.jsx`, `*.php`, `*.scss`, `*.mjs`), not only changed files, with exclusions documented in the maintenance policy.
+- The core regression checks enforce first-paint parity invariants for interactive server render output via `scripts/lib/regression-first-paint-checks.mjs`.
+- The core regression checks enforce interaction performance guard invariants for tabs/dropdown frontend behavior via `scripts/lib/regression-performance-guard-checks.mjs`.
 
 ## Guardrails
 

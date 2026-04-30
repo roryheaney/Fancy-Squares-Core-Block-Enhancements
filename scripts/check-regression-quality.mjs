@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { runFirstPaintParityChecks } from './lib/regression-first-paint-checks.mjs';
+import { runPerformanceGuardChecks } from './lib/regression-performance-guard-checks.mjs';
 import { runSourceChecks } from './lib/regression-quality-source-checks.mjs';
 
 const root = process.cwd();
@@ -196,6 +198,9 @@ const getAllSourceFiles = () => {
 };
 
 const runCoreChecks = () => {
+	runFirstPaintParityChecks( { root, addFailure } );
+	runPerformanceGuardChecks( { root, addFailure } );
+
 	const manifest = readJson( 'data/class-families.json' );
 	if ( manifest ) {
 		const families = Array.isArray( manifest.families ) ? manifest.families : [];

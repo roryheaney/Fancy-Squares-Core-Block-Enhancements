@@ -34,6 +34,7 @@ Padding, margin, and negative margin panels appear only for blocks configured in
 
 - List Settings: adds list semantics to `core/columns` and `core/column`
 - Media Settings: lazy video loading, custom play overlay, forced image lazy-loading opt-out
+- Cover embed background: for `core/cover`, enable **Use embed background** and paste a YouTube/Vimeo URL to replace native cover media
 - Modal Settings: converts `core/button` into a modal trigger
 
 ### RichText span format
@@ -63,6 +64,7 @@ Custom blocks (`fs-blocks/*`) are disabled by default and can be enabled in sett
 
 - `generateClassName()` composes token, spacing, and width classes.
 - `core/image` and cover background images are forced to `loading="lazy"` + `decoding="async"` unless `disableForcedLazyLoading` is set.
+- `core/cover` embed mode (`useEmbedBackground`) supports YouTube and Vimeo only, normalizes YouTube to `youtube-nocookie.com`, and enforces autoplay/loop/muted non-interactive iframe background behavior.
 - Carousel uses Swiper assets only when carousel blocks render.
 - Frontend style/runtime bundles load conditionally based on rendered content.
 

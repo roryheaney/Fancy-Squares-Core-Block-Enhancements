@@ -17,6 +17,8 @@ Relevant code:
 - Frontend style token matcher: `fs_core_enhancements_is_frontend_style_token()`
 - Utility token matcher: `fs_core_enhancements_is_utility_token()`
 
+`core/cover` embed mode (`useEmbedBackground`) is rendered server-side in `inc/render-filters/cover.php` and does not require frontend runtime JS.
+
 Canonical registry for these families:
 
 - `data/class-families.json`
@@ -46,6 +48,7 @@ Utilities mode now defaults to `both` (Editor + front end).
 | `wp-block-column--column*` | `core/column` Width Settings (`src/components/WidthControl.js`) | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
 | `wp-block-columns--constrained`, `is-style-bootstrap` | `core/columns` Constrain toggle + parent class updates | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
 | `cover-negative-margin-left/right` | `core/cover` Bleed dropdown | `build/frontend-styles.css` (`src/assets/scss/cover-block.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
+| `fs-cover-embed-background` | `core/cover` embed mode | Inline style on injected iframe (`inc/render-filters/cover.php`) | Render filter injects iframe when `useEmbedBackground` and valid YouTube/Vimeo URL are present |
 | `alert-*` | `fs-blocks/alert` style selector | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | Explicit `fs-blocks/alert` route + manifest-backed token detection |
 | `border-*`, `rounded-*` | `fs-blocks/dynamic-picture-block` controls | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
 | Spacing/display/flex/gap/position/z-index/blend | Token fields + spacing controls | `build/utilities.css` | Manifest-backed detection via `fs_core_enhancements_is_utility_token()` |

@@ -27,6 +27,7 @@
 		"data",
 		"inc",
 		"fancy-squares-core-enhancements.php",
+		"readme.txt",
 		"README.md"
 	],
 	"dependencies": {

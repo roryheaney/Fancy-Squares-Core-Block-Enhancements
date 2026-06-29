@@ -12,6 +12,10 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { useEnsureUniqueAttributeId } from '../../utils/block-id';
 
+const isRichTextTitleSpaceKeyDown = ( event ) =>
+	event.key === ' ' &&
+	event.target.closest( '.block-editor-rich-text__editable' );
+
 export default function Edit( {
 	clientId,
 	attributes,
@@ -100,6 +104,10 @@ export default function Edit( {
 	};
 
 	const handleTriggerKeyDown = ( event ) => {
+		if ( isRichTextTitleSpaceKeyDown( event ) ) {
+			return;
+		}
+
 		if ( event.key === 'Enter' || event.key === ' ' ) {
 			event.preventDefault();
 			handleTriggerClick( event );

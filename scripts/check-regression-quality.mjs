@@ -206,6 +206,52 @@ const runCoreChecks = () => {
 	runFirstPaintParityChecks( { root, addFailure } );
 	runPerformanceGuardChecks( { root, addFailure } );
 
+	const accordionItemEditPath =
+		'src/blocks/accordion-item-interactive/edit.js';
+	const accordionItemEditAbsPath = path.resolve(
+		root,
+		accordionItemEditPath
+	);
+	if ( ! fs.existsSync( accordionItemEditAbsPath ) ) {
+		addFailure( `${ accordionItemEditPath }: file missing` );
+	} else {
+		const accordionItemEditContent = fs.readFileSync(
+			accordionItemEditAbsPath,
+			'utf8'
+		);
+		const keydownHandlerMatch = accordionItemEditContent.match(
+			/const\s+handleTriggerKeyDown\s*=\s*\(\s*event\s*\)\s*=>\s*\{([\s\S]*?)^\s*\};/m
+		);
+
+		if ( ! keydownHandlerMatch ) {
+			addFailure(
+				`${ accordionItemEditPath }: handleTriggerKeyDown handler missing`
+			);
+		} else {
+			const handlerBody = keydownHandlerMatch[1];
+			const richTextSpacePredicateMatch = accordionItemEditContent.match(
+				/const\s+isRichTextTitleSpaceKeyDown\s*=\s*\(\s*event\s*\)\s*=>\s*event\.key\s*===\s*' '\s*&&\s*event\.target\.closest\(\s*'\.block-editor-rich-text__editable'\s*\)\s*;/
+			);
+			const richTextSpaceGuardMatch = handlerBody.match(
+				/if\s*\(\s*isRichTextTitleSpaceKeyDown\(\s*event\s*\)\s*\)\s*\{\s*return;\s*\}/
+			);
+			const triggerSpaceHandlerIndex = handlerBody.indexOf(
+				"event.key === 'Enter' || event.key === ' '"
+			);
+
+			if (
+				! richTextSpacePredicateMatch ||
+				! richTextSpaceGuardMatch ||
+				triggerSpaceHandlerIndex < 0 ||
+				richTextSpaceGuardMatch.index > triggerSpaceHandlerIndex
+			) {
+				addFailure(
+					`${ accordionItemEditPath }: handleTriggerKeyDown must return before handling Space from the RichText title editor`
+				);
+			}
+		}
+	}
+
 	const manifest = readJson( 'data/class-families.json' );
 	if ( manifest ) {
 		const families = Array.isArray( manifest.families ) ? manifest.families : [];

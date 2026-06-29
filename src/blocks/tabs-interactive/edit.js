@@ -7,7 +7,7 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
+import { useEffect, useMemo, useRef } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import BlockEdit from '../../components/BlockEdit';
@@ -21,9 +21,10 @@ const ALLOWED_BLOCKS = [ 'fs-blocks/tab-item-interactive' ];
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
-	const { responsiveTabs, verticalTabs, additionalClasses } = attributes;
+	const { responsiveTabs, verticalTabs, additionalClasses, activeTab } =
+		attributes;
 	const { selectBlock } = useDispatch( blockEditorStore );
-	const [ editorActiveTab, setEditorActiveTab ] = useState( '' );
+	const editorActiveTab = activeTab || '';
 
 	const { childBlocks } = useSelect(
 		( select ) => ( {
@@ -54,29 +55,29 @@ export default function Edit( props ) {
 	useEffect( () => {
 		if ( tabs.length === 0 ) {
 			if ( editorActiveTab ) {
-				setEditorActiveTab( '' );
+				setAttributes( { activeTab: '' } );
 			}
 			return;
 		}
 
 		const tabIds = tabs.map( ( tab ) => tab.tabId );
 		if ( ! editorActiveTab || ! tabIds.includes( editorActiveTab ) ) {
-			setEditorActiveTab( tabs[ 0 ].tabId );
+			setAttributes( { activeTab: tabs[ 0 ].tabId } );
 		}
-	}, [ editorActiveTab, tabs ] );
+	}, [ editorActiveTab, setAttributes, tabs ] );
 
 	const previousCountRef = useRef( tabs.length );
 	useEffect( () => {
 		if ( tabs.length > previousCountRef.current ) {
 			const newTab = tabs[ tabs.length - 1 ];
-			setEditorActiveTab( newTab.tabId );
+			setAttributes( { activeTab: newTab.tabId } );
 			selectBlock( newTab.clientId );
 		}
 		previousCountRef.current = tabs.length;
-	}, [ selectBlock, tabs ] );
+	}, [ selectBlock, setAttributes, tabs ] );
 
 	const handleTabClick = ( tab ) => {
-		setEditorActiveTab( tab.tabId );
+		setAttributes( { activeTab: tab.tabId } );
 		selectBlock( tab.clientId );
 	};
 

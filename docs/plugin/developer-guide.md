@@ -14,9 +14,9 @@ Core blocks are extended through `registerBlockExtension()`.
 - Class generation: `generateClassName()` in `src/utils/helpers.js`
 - Inspector panels: `src/components/BlockEdit.js`
 
-### 2) Custom blocks (`fs-blocks/*`) via direct block edit wiring
+### 2) Custom blocks (`fs-blocks/*`)
 
-Custom block edit files render `<BlockEdit {...props} />` directly and sync generated classes to attributes for server rendering.
+Custom blocks with extension controls render `<BlockEdit {...props} />` in `edit.js` and sync generated classes to attributes for server rendering. Child blocks and purpose-built blocks may use direct editor controls instead.
 
 Typical custom block flow:
 

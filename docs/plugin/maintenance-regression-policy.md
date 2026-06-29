@@ -32,6 +32,7 @@ The duplicate/complexity scan excludes:
 
 - `build/**`
 - `node_modules/**`
+- `.kilo/**`
 - `docs/**`
 - `src/config/generated/**`
 - `src/styles/generated/**`

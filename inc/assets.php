@@ -172,7 +172,7 @@ function fs_core_enhancements_register_frontend_assets() {
 		);
 	}
 }
-add_action( 'wp_enqueue_scripts', 'fs_core_enhancements_register_frontend_assets' );
+add_action( 'init', 'fs_core_enhancements_register_frontend_assets' );
 
 /**
  * Conditionally enqueue the frontend stylesheet bundle.

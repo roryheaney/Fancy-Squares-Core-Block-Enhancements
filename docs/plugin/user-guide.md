@@ -9,7 +9,7 @@ The **Visibility / Position Classes** panel exposes curated utility-style tokens
 ### Width Settings (`core/column`)
 
 - Width classes emit tokens like `wp-block-column--column-6` or `wp-block-column--column-md-4`.
-- `Auto` emits the `auto` token.
+- `Auto` stores `auto` in the width attribute and does not emit a width class.
 - `Inherit` clears the width attribute.
 
 Breakpoints:

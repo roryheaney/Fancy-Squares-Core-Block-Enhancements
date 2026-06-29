@@ -48,4 +48,5 @@ Token generation resolves `theme.json` from:
 - Generated artifacts:
   - `src/config/generated/**`
   - `src/styles/generated/**`
+  - `data/bootstrap-classes/generated-spacing-options.js`
   - `build/**`

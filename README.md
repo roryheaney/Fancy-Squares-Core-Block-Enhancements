@@ -31,6 +31,7 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 
 - Frontend runtime (`build/frontend.js`) is loaded only when required by rendered blocks.
 - Frontend style bundle (`build/frontend-styles.css`) is loaded only when required by rendered classes/features.
+- Frontend asset handles are registered on `init` so render-time conditional enqueues work before `wp_head()` in block themes.
 - Utilities CSS mode now defaults to `Editor + front end` (`both`).
 - `npm run regression:gate` enforces first-paint parity and interaction performance guard invariants for interactive blocks.
 
@@ -43,8 +44,6 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 - Class-family registry and baseline fixtures: [docs/plugin/class-families.md](docs/plugin/class-families.md)
 - Maintenance and regression policy: [docs/plugin/maintenance-regression-policy.md](docs/plugin/maintenance-regression-policy.md)
 - Release notes: [docs/plugin/release-notes.md](docs/plugin/release-notes.md)
-- Planned simplification of frontend class detection: [docs/plugin/plans/frontend-style-detection-refactor-plan.md](docs/plugin/plans/frontend-style-detection-refactor-plan.md)
-- README completeness review: [docs/plugin/readme-completeness-review.md](docs/plugin/readme-completeness-review.md)
 
 ## Supported Blocks (Grouped)
 
@@ -110,7 +109,8 @@ For full token-source precedence and consumed fields, use [docs/plugin/build-and
 1. Confirm whether the class family belongs to `frontend-styles` or `utilities`.
 2. Confirm rendered markup includes the expected class token.
 3. Confirm Utilities mode is not `off` when using utility-style classes.
-4. Confirm your theme outputs `wp_footer()`.
+4. Confirm frontend asset handles register on `init`, not `wp_enqueue_scripts`.
+5. Confirm your theme outputs `wp_footer()`.
 
 Use the full checklist in [docs/plugin/frontend-assets-and-classes.md](docs/plugin/frontend-assets-and-classes.md#quick-troubleshooting).
 

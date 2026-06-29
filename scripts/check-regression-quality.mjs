@@ -10,7 +10,12 @@ const failures = [];
 const warnings = [];
 
 const SOURCE_EXTENSIONS = new Set( [ '.js', '.jsx', '.php', '.scss', '.mjs' ] );
-const EXCLUDED_TOP_LEVEL_DIRS = new Set( [ 'node_modules', 'build', '.git' ] );
+const EXCLUDED_TOP_LEVEL_DIRS = new Set( [
+	'node_modules',
+	'build',
+	'.git',
+	'.kilo',
+] );
 const EXCLUDED_PATH_PREFIXES = [
 	'docs/',
 	'src/config/generated/',

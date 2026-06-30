@@ -4,6 +4,7 @@ import path from 'node:path';
 import { runFirstPaintParityChecks } from './lib/regression-first-paint-checks.mjs';
 import { runPerformanceGuardChecks } from './lib/regression-performance-guard-checks.mjs';
 import { runSourceChecks } from './lib/regression-quality-source-checks.mjs';
+import { runColumnsPresetChecks } from './lib/regression-columns-preset-checks.mjs';
 
 const root = process.cwd();
 const failures = [];
@@ -205,6 +206,7 @@ const getAllSourceFiles = () => {
 const runCoreChecks = () => {
 	runFirstPaintParityChecks( { root, addFailure } );
 	runPerformanceGuardChecks( { root, addFailure } );
+	runColumnsPresetChecks( { root, addFailure } );
 
 	const accordionItemEditPath =
 		'src/blocks/accordion-item-interactive/edit.js';

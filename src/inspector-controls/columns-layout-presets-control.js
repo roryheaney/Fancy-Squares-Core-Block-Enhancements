@@ -19,6 +19,9 @@ const DEFAULT_PRESET_VALUE = COLUMN_LAYOUT_PRESETS[ 0 ]?.value || '';
 const getChildColumnLabel = ( count ) =>
 	`${ count } child column${ count === 1 ? '' : 's' }`;
 
+const NO_CHILD_COLUMNS_WARNING =
+	'No child columns were found. Add columns before applying a layout preset.';
+
 export default function ColumnsLayoutPresetsControl( { clientId } ) {
 	const [ selectedPreset, setSelectedPreset ] =
 		useState( DEFAULT_PRESET_VALUE );
@@ -46,8 +49,7 @@ export default function ColumnsLayoutPresetsControl( { clientId } ) {
 		if ( ! updates || childColumns.length === 0 ) {
 			setNotice( {
 				status: 'warning',
-				message:
-					'No child columns were found. Add columns before applying a layout preset.',
+				message: NO_CHILD_COLUMNS_WARNING,
 			} );
 			return;
 		}
@@ -68,8 +70,7 @@ export default function ColumnsLayoutPresetsControl( { clientId } ) {
 		if ( childColumns.length === 0 ) {
 			setNotice( {
 				status: 'warning',
-				message:
-					'No child columns were found. Add columns before applying a layout preset.',
+				message: NO_CHILD_COLUMNS_WARNING,
 			} );
 			return;
 		}

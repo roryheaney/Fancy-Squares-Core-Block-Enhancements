@@ -13,6 +13,10 @@
 		margin-bottom: 1.5rem;
 	}
 
+	.fs-tabs__panels {
+		position: relative;
+	}
+
 	// Hide tabs on mobile when responsive mode is enabled
 	&.fs-tabs--responsive .fs-tabs__tablist {
 		display: none; // Mobile: hidden by default
@@ -63,7 +67,6 @@
 	.fs-tabs__panel {
 		// Desktop: use opacity for smooth fade
 		transition: opacity 0.15s linear;
-		position: relative;
 
 		// Inactive panels on desktop - fade out and remove from flow
 		&:not(.is-active) {

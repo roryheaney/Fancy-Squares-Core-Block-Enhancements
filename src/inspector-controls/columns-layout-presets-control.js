@@ -11,6 +11,7 @@ import {
 	COLUMN_LAYOUT_PRESETS,
 	getColumnsLayoutPreset,
 	getColumnsLayoutPresetAttributeUpdates,
+	getColumnsLayoutResetAttributeUpdates,
 } from './columns-layout-presets';
 
 const DEFAULT_PRESET_VALUE = COLUMN_LAYOUT_PRESETS[ 0 ]?.value || '';
@@ -63,12 +64,37 @@ export default function ColumnsLayoutPresetsControl( { clientId } ) {
 		} );
 	};
 
+	const resetColumns = () => {
+		if ( childColumns.length === 0 ) {
+			setNotice( {
+				status: 'warning',
+				message:
+					'No child columns were found. Add columns before applying a layout preset.',
+			} );
+			return;
+		}
+
+		const updates = getColumnsLayoutResetAttributeUpdates();
+
+		childColumns.forEach( ( childId ) => {
+			updateBlockAttributes( childId, updates );
+		} );
+
+		setNotice( {
+			status: 'success',
+			message: `Width settings cleared on ${ getChildColumnLabel(
+				childColumns.length
+			) }. Columns reverted to default equal-width behavior.`,
+		} );
+	};
+
 	return (
 		<PanelBody title="Columns Layout Presets" initialOpen={ false }>
 			<p className="greyd-inspector-help">
 				Apply a responsive layout preset to the current child columns.
 				This sets each child column&apos;s Width Settings once; you can
-				adjust individual columns afterward.
+				adjust individual columns afterward. Reset removes applied
+				widths so columns revert to default equal-width behavior.
 			</p>
 			<SelectControl
 				__nextHasNoMarginBottom
@@ -90,6 +116,13 @@ export default function ColumnsLayoutPresetsControl( { clientId } ) {
 			) }
 			<Button variant="secondary" onClick={ applyPreset }>
 				Apply layout preset
+			</Button>
+			<Button
+				variant="secondary"
+				onClick={ resetColumns }
+				className="fs-columns-layout-presets__reset"
+			>
+				Reset columns
 			</Button>
 			{ notice && (
 				<Notice

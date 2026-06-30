@@ -109,6 +109,15 @@ const runPresetUiChecks = ( { root, addFailure } ) => {
 					description: 'no child warning',
 					snippet: 'No child columns were found. Add columns before applying a layout preset.',
 				},
+				{
+					description: 'reset helper import',
+					snippet: 'getColumnsLayoutResetAttributeUpdates',
+				},
+				{ description: 'reset button label', snippet: 'Reset columns' },
+				{
+					description: 'reset success confirmation',
+					snippet: 'Width settings cleared on',
+				},
 			],
 			addFailure
 		);

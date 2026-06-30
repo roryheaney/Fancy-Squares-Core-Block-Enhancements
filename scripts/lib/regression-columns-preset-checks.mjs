@@ -124,7 +124,73 @@ const runPresetUiChecks = ( { root, addFailure } ) => {
 	}
 };
 
+const runPresetDocsChecks = ( { root, addFailure } ) => {
+	const userGuidePath = 'docs/plugin/user-guide.md';
+	const userGuideContent = readRequiredFile(
+		root,
+		userGuidePath,
+		addFailure,
+		'columns layout preset user docs checks'
+	);
+
+	if ( userGuideContent ) {
+		requireSnippets(
+			userGuidePath,
+			userGuideContent,
+			[
+				{
+					description: 'columns layout presets heading',
+					snippet: '### Columns Layout Presets (`core/columns`)',
+				},
+				{
+					description: 'one-time helper explanation',
+					snippet:
+						'Preset applications update child column Width Settings once.',
+				},
+				{
+					description: '2-up preset docs',
+					snippet: '`1 mobile / 2 md+`',
+				},
+				{
+					description: 'md breakpoint docs',
+					snippet: 'Base to 12 columns and Md+',
+				},
+			],
+			addFailure
+		);
+	}
+
+	const developerGuidePath = 'docs/plugin/developer-guide.md';
+	const developerGuideContent = readRequiredFile(
+		root,
+		developerGuidePath,
+		addFailure,
+		'columns layout preset developer docs checks'
+	);
+
+	if ( developerGuideContent ) {
+		requireSnippets(
+			developerGuidePath,
+			developerGuideContent,
+			[
+				{
+					description: 'preset UI source docs',
+					snippet:
+						'Parent preset UI: `src/inspector-controls/columns-layout-presets-control.js`',
+				},
+				{
+					description: 'preset mapping source docs',
+					snippet:
+						'Preset mapping: `src/inspector-controls/columns-layout-presets.js`',
+				},
+			],
+			addFailure
+		);
+	}
+};
+
 export const runColumnsPresetChecks = ( { root, addFailure } ) => {
 	runPresetHelperChecks( { root, addFailure } );
 	runPresetUiChecks( { root, addFailure } );
+	runPresetDocsChecks( { root, addFailure } );
 };

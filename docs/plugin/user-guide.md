@@ -23,6 +23,20 @@ Breakpoints:
 
 When any child column has custom width values, parent `core/columns` is auto-updated with `is-style-bootstrap`. When no widths are set, that class is removed.
 
+### Columns Layout Presets (`core/columns`)
+
+The **Columns Layout Presets** panel applies common responsive layouts to the current child columns. Choose a preset and select **Apply layout preset** to set each child column's Width Settings once.
+
+Preset applications update child column Width Settings once. Individual child columns remain editable afterward.
+
+Presets:
+
+- `1 mobile / 2 md+`: sets Base to 12 columns and Md+ to 6 columns.
+- `1 mobile / 3 md+`: sets Base to 12 columns and Md+ to 4 columns.
+- `1 mobile / 4 md+`: sets Base to 12 columns and Md+ to 3 columns.
+
+Applying a preset clears Sm, Lg, Xl, and Xxl child width values so Md can carry the selected layout upward.
+
 ### Spacing controls
 
 Padding, margin, and negative margin panels appear only for blocks configured in `BLOCK_CONFIG`.

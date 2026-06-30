@@ -52,8 +52,11 @@ Typical custom block flow:
 ## Width Settings
 
 - UI: `src/components/WidthControl.js`, `src/components/WidthControls.js`
+- Parent preset UI: `src/inspector-controls/columns-layout-presets-control.js`
+- Preset mapping: `src/inspector-controls/columns-layout-presets.js`
 - Class generation: `src/utils/helpers.js`
 - Parent class update (`is-style-bootstrap`): `src/extensions/core/block-enhancements.js`
+- Regression checks: `scripts/lib/regression-columns-preset-checks.mjs`
 
 ## Maintenance and Regression Workflow
 

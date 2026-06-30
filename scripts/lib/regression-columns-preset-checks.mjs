@@ -39,20 +39,37 @@ const runPresetHelperChecks = ( { root, addFailure } ) => {
 			{ description: '2-up preset value', snippet: "value: 'one-mobile-two-md'" },
 			{ description: '3-up preset value', snippet: "value: 'one-mobile-three-md'" },
 			{ description: '4-up preset value', snippet: "value: 'one-mobile-four-md'" },
-			{ description: '2-up md width mapping', snippet: 'mdColumns: 6' },
-			{ description: '3-up md width mapping', snippet: 'mdColumns: 4' },
-			{ description: '4-up md width mapping', snippet: 'mdColumns: 3' },
 			{
-				description: 'base width assignment',
-				snippet: "[ getBreakpointAttributeKey( 'width', '' ) ]: BASE_COLUMN_WIDTH",
+				description: 'lg preset value',
+				snippet: "value: 'one-mobile-two-md-four-lg'",
 			},
 			{
-				description: 'md width assignment',
-				snippet: "[ getBreakpointAttributeKey( 'width', 'md' ) ]:",
+				description: '2-up widths map',
+				snippet: "widths: { '': 12, md: 6 }",
 			},
 			{
-				description: 'stale breakpoint clear list',
-				snippet: "WIDTH_BREAKPOINTS_TO_CLEAR = [ 'sm', 'lg', 'xl', 'xxl' ]",
+				description: '3-up widths map',
+				snippet: "widths: { '': 12, md: 4 }",
+			},
+			{
+				description: '4-up widths map',
+				snippet: "widths: { '': 12, md: 3 }",
+			},
+			{
+				description: 'lg preset widths map',
+				snippet: "widths: { '': 12, md: 6, lg: 3 }",
+			},
+			{
+				description: 'WIDTH_BREAKPOINT_KEYS import',
+				snippet: 'WIDTH_BREAKPOINT_KEYS',
+			},
+			{
+				description: 'reset helper export',
+				snippet: 'export const getColumnsLayoutResetAttributeUpdates',
+			},
+			{
+				description: 'buildWidthClass helper',
+				snippet: 'buildWidthClass',
 			},
 		],
 		addFailure

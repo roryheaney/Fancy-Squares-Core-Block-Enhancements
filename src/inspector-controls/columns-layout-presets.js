@@ -1,29 +1,41 @@
-import { getBreakpointAttributeKey } from '../config/breakpoints';
+import {
+	getBreakpointAttributeKey,
+	WIDTH_BREAKPOINT_KEYS,
+} from '../config/breakpoints';
 
-const BASE_COLUMN_WIDTH = 'wp-block-column--column-12';
-const WIDTH_BREAKPOINTS_TO_CLEAR = [ 'sm', 'lg', 'xl', 'xxl' ];
+const buildWidthClass = ( breakpoint, count ) =>
+	breakpoint
+		? `wp-block-column--column-${ breakpoint }-${ count }`
+		: `wp-block-column--column-${ count }`;
 
 export const COLUMN_LAYOUT_PRESETS = [
 	{
 		value: 'one-mobile-two-md',
 		label: '1 mobile / 2 md+',
-		mdColumns: 6,
+		widths: { '': 12, md: 6 },
 		summary:
 			'This will set Base to 12 columns and Md+ to 6 columns on each current child column.',
 	},
 	{
 		value: 'one-mobile-three-md',
 		label: '1 mobile / 3 md+',
-		mdColumns: 4,
+		widths: { '': 12, md: 4 },
 		summary:
 			'This will set Base to 12 columns and Md+ to 4 columns on each current child column.',
 	},
 	{
 		value: 'one-mobile-four-md',
 		label: '1 mobile / 4 md+',
-		mdColumns: 3,
+		widths: { '': 12, md: 3 },
 		summary:
 			'This will set Base to 12 columns and Md+ to 3 columns on each current child column.',
+	},
+	{
+		value: 'one-mobile-two-md-four-lg',
+		label: '1 mobile / 2 md / 4 lg+',
+		widths: { '': 12, md: 6, lg: 3 },
+		summary:
+			'This will set Base to 12 columns, Md to 6 columns, and Lg+ to 3 columns on each current child column.',
 	},
 ];
 
@@ -37,13 +49,21 @@ export const getColumnsLayoutPresetAttributeUpdates = ( presetValue ) => {
 		return null;
 	}
 
-	const mdColumnWidth = `wp-block-column--column-md-${ preset.mdColumns }`;
-	const updates = {
-		[ getBreakpointAttributeKey( 'width', '' ) ]: BASE_COLUMN_WIDTH,
-		[ getBreakpointAttributeKey( 'width', 'md' ) ]: mdColumnWidth,
-	};
+	const updates = {};
 
-	for ( const breakpoint of WIDTH_BREAKPOINTS_TO_CLEAR ) {
+	for ( const breakpoint of WIDTH_BREAKPOINT_KEYS ) {
+		const count = preset.widths[ breakpoint ];
+		updates[ getBreakpointAttributeKey( 'width', breakpoint ) ] =
+			count === undefined ? '' : buildWidthClass( breakpoint, count );
+	}
+
+	return updates;
+};
+
+export const getColumnsLayoutResetAttributeUpdates = () => {
+	const updates = {};
+
+	for ( const breakpoint of WIDTH_BREAKPOINT_KEYS ) {
 		updates[ getBreakpointAttributeKey( 'width', breakpoint ) ] = '';
 	}
 

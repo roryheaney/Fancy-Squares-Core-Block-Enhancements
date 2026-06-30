@@ -34,8 +34,11 @@ Presets:
 - `1 mobile / 2 md+`: sets Base to 12 columns and Md+ to 6 columns.
 - `1 mobile / 3 md+`: sets Base to 12 columns and Md+ to 4 columns.
 - `1 mobile / 4 md+`: sets Base to 12 columns and Md+ to 3 columns.
+- `1 mobile / 2 md / 4 lg+`: sets Base to 12 columns, Md to 6 columns, and Lg+ to 3 columns.
 
-Applying a preset clears Sm, Lg, Xl, and Xxl child width values so Md can carry the selected layout upward.
+Applying a preset clears non-declared breakpoint width values so the selected layout carries upward.
+
+**Reset columns** clears all width attributes on every child column. Reset removes applied widths so columns revert to default equal-width behavior. After reset, the parent `is-style-bootstrap` class is removed automatically when no child widths remain custom.
 
 ### Spacing controls
 

@@ -181,6 +181,14 @@ const runPresetDocsChecks = ( { root, addFailure } ) => {
 					description: 'md breakpoint docs',
 					snippet: 'Base to 12 columns and Md+',
 				},
+				{
+					description: 'lg preset docs',
+					snippet: '`1 mobile / 2 md / 4 lg+`',
+				},
+				{
+					description: 'reset docs',
+					snippet: 'Reset removes applied widths',
+				},
 			],
 			addFailure
 		);

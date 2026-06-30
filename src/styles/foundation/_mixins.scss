@@ -3,6 +3,7 @@
 // ==========================================
 
 @use "sass:map";
+@use "sass:math";
 @use "./settings" as *;
 
 /// Mixin: media-breakpoint-up($breakpoint)
@@ -20,8 +21,6 @@
 	}
 }
 
-$half-gap: $framework-half-gap !default;
-
 @mixin make-col($size: false) {
 
 	@if $size == false {
@@ -31,9 +30,14 @@ $half-gap: $framework-half-gap !default;
 		width: auto;
 		max-width: none;
 	} @else {
-		$pct: calc(100% * $size / 12);
-		width: calc(#{$pct} - #{$half-gap});
-		min-width: calc(#{$pct} - #{$half-gap});
-		max-width: calc(#{$pct} - #{$half-gap});
+		$column-ratio: math.div($size, 12);
+		$column-width: math.percentage($column-ratio);
+		$gap-ratio: 1 - $column-ratio;
+
+		@if $gap-ratio == 0 {
+			flex: 0 0 $column-width;
+		} @else {
+			flex: 0 0 calc(#{$column-width} - var(--wp--style--block-gap, 0.5em) * #{$gap-ratio});
+		}
 	}
 }

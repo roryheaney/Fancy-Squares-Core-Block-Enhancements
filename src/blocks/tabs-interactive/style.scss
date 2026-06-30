@@ -63,6 +63,7 @@
 	.fs-tabs__panel {
 		// Desktop: use opacity for smooth fade
 		transition: opacity 0.15s linear;
+		position: relative;
 
 		// Inactive panels on desktop - fade out and remove from flow
 		&:not(.is-active) {
@@ -207,7 +208,6 @@
 
 		// Keep flex layout on desktop even with responsive mode
 		&.fs-tabs--responsive {
-
 			@media (min-width: map.get($grid-breakpoints, md)) {
 				display: flex;
 				flex-direction: row;
@@ -259,4 +259,3 @@
 		}
 	}
 }
-

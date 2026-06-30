@@ -4,7 +4,7 @@ Extend core blocks with token-driven classes, responsive width controls, and int
 
 ## Current Version
 
-- `1.1.8`
+- `1.2.0`
 
 ## Requirements
 

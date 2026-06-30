@@ -65,7 +65,6 @@ export const frameworkTokens = {
 			"size": "clamp(4rem, 8vw, 7rem)"
 		}
 	},
-	"halfGap": "12px",
 	"containerPaddingX": "0"
 };
 export const frameworkSpacingScaleKeys = ["0","10","20","30","40","50","60","70","80"];

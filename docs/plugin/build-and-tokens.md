@@ -28,7 +28,6 @@ Token generation resolves `theme.json` from:
 - `settings.custom.framework.optionSets`
 - `settings.custom.framework.breakpoints`
 - `settings.custom.framework.containerMaxWidths`
-- `settings.custom.framework.halfGap`
 - `settings.custom.framework.containerPaddingX`
 
 ## Spacing Rules

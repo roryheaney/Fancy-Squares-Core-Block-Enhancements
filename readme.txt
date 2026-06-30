@@ -4,7 +4,7 @@ Tags: gutenberg, blocks, interactivity, editor
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.2.24
-Stable tag: 1.1.8
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,14 @@ Yes. Custom blocks are available and can be enabled from Settings > Fancy Square
 No. Frontend runtime and styles are conditionally loaded based on rendered block features and classes.
 
 == Changelog ==
+
+= 1.2.0 =
+* Added Columns Layout Presets panel to core/columns with responsive presets (1 mobile / 2 md+, 1 mobile / 3 md+, 1 mobile / 4 md+, 1 mobile / 2 md / 4 lg+).
+* Added Reset columns action to clear applied widths and revert to default equal-width behavior.
+* Fixed editor broken states where the active tab item content was hidden.
+* Fixed styles not loading.
+* Modal audit fixes.
+* General audit and code quality improvements.
 
 = 1.1.8 =
 * Current stable release.

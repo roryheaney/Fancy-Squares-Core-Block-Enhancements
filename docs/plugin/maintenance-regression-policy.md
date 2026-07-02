@@ -22,6 +22,8 @@ Run this command before finalizing any update:
 
 - Fail if lint/build/regression gate commands fail.
 - Fail if duplicate-code findings are detected across plugin code files as a whole (`*.js`, `*.jsx`, `*.php`, `*.scss`, `*.mjs`), excluding build/generated/docs paths.
+- Fail if first-paint parity invariants fail in `scripts/lib/regression-first-paint-checks.mjs` (tabs, advanced-dropdown, showcase-gallery server-render invariants).
+- Fail if interaction performance guard invariants fail in `scripts/lib/regression-performance-guard-checks.mjs` (tabs and advanced-dropdown frontend guard invariants).
 - Warn (non-blocking) on complexity hotspots across plugin code files as a whole (`*.js`, `*.jsx`, `*.php`, `*.scss`, `*.mjs`), excluding build/generated/docs paths.
 
 ### Scope Exclusions (Code-Quality Scan)
@@ -30,6 +32,7 @@ The duplicate/complexity scan excludes:
 
 - `build/**`
 - `node_modules/**`
+- `.kilo/**`
 - `docs/**`
 - `src/config/generated/**`
 - `src/styles/generated/**`
@@ -43,3 +46,4 @@ Agents must report:
 2. Final status for each command (`PASS`, `FAIL`, or `PASS_WITH_WARNINGS`).
 3. Any warnings (especially complexity warnings), even when overall gate passes.
 4. Any duplicate-code failures with file references and why they failed the gate.
+5. Any parity/performance guard failures from `regression-first-paint-checks` or `regression-performance-guard-checks` with file references.

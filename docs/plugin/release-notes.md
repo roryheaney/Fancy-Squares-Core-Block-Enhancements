@@ -1,5 +1,40 @@
 # Release Notes
 
+## 1.2.0 - 2026-06-30
+
+### Added
+
+- Columns Layout Presets panel on parent `core/columns` inspector.
+- Responsive layout presets:
+  - `1 mobile / 2 md+`
+  - `1 mobile / 3 md+`
+  - `1 mobile / 4 md+`
+  - `1 mobile / 2 md / 4 lg+`
+- One-time apply helper that writes existing child `core/column` Width Settings.
+- Reset columns action that clears all child width attributes and reverts to default equal-width behavior.
+- Admin help text, summaries, and confirmation/warning notices.
+- Source-level regression checks for preset mappings, UI, and docs.
+- User and developer documentation for presets and reset behavior.
+
+### Fixed
+
+- Editor broken states where the active tab item content was hidden due to parent/child active-tab state desync.
+- Styles not loading.
+- Modal audit fixes.
+
+### Changed
+
+- Generalized preset data model from single `mdColumns` field to per-preset `widths` maps with a derived breakpoint clear list.
+- Extracted shared no-child-columns warning constant.
+- Removed the unused `settings.custom.framework.halfGap` token field from generated framework tokens after columns moved to `--wp--style--block-gap` based sizing.
+- General audit and code quality improvements across editor and render paths.
+
+### Validation
+
+- `npm run lint:all` passed.
+- `npm run build` passed.
+- `npm run regression:gate` passed.
+
 ## 1.1.8 - 2026-03-30
 
 ### Changed

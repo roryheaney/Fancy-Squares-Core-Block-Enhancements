@@ -3,9 +3,13 @@
 /**
  * Plugin Name: Fancy Squares - Core Block Enhancements
  * Description: Adds additional classes and unique dropdowns to core blocks (heading, paragraph, list, button, columns, etc.).
- * Version: 1.1.8
+ * Version: 1.2.0
+ * Requires at least: 6.9
+ * Tested up to: 6.9
+ * Requires PHP: 7.2.24
  * Author: Rory Heaney
  * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: fancy-squares-core-enhancements
  * Domain Path: /languages
  */

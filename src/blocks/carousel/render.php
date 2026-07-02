@@ -124,14 +124,7 @@ if (
 }
 
 $classes = [ 'swiper', 'wp-block-fs-blocks-carousel' ];
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = array_merge( $classes, $attributes['additionalClasses'] );
-}
-
-$classes = array_map( 'sanitize_html_class', $classes );
+$classes = fs_core_enhancements_get_sanitized_classes( $classes, $attributes );
 
 $block_id_source = '';
 if ( ! empty( $attributes['anchor'] ) ) {

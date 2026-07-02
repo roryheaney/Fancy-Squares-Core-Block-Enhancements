@@ -8,7 +8,9 @@
 
 ## Enqueue Model
 
-Assets are registered on `wp_enqueue_scripts`, and conditionally enqueued during block rendering.
+Frontend asset handles are registered on `init`, and conditionally enqueued during block rendering.
+
+This timing matters for block themes. WordPress builds block-template HTML before `wp_head()` so rendered blocks can add scripts and styles for the head. Because the conditional checks run from `render_block`, the handles must already be registered before `wp_enqueue_scripts` runs. If registration moves back to `wp_enqueue_scripts`, pages can render the expected class tokens while missing `build/frontend-styles.css` or `build/utilities.css`.
 
 Relevant code:
 
@@ -16,6 +18,8 @@ Relevant code:
 - Conditional detection: `inc/assets.php` (`fs_core_enhancements_maybe_enqueue_frontend_runtime`)
 - Frontend style token matcher: `fs_core_enhancements_is_frontend_style_token()`
 - Utility token matcher: `fs_core_enhancements_is_utility_token()`
+
+`core/cover` embed mode (`useEmbedBackground`) is rendered server-side in `inc/render-filters/cover.php` and does not require frontend runtime JS.
 
 Canonical registry for these families:
 
@@ -45,7 +49,8 @@ Utilities mode now defaults to `both` (Editor + front end).
 | --- | --- | --- | --- |
 | `wp-block-column--column*` | `core/column` Width Settings (`src/components/WidthControl.js`) | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
 | `wp-block-columns--constrained`, `is-style-bootstrap` | `core/columns` Constrain toggle + parent class updates | `build/frontend-styles.css` (`src/styles/components/_columns.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
-| `cover-negative-margin-left/right` | `core/cover` Bleed dropdown | `build/frontend-styles.css` (`src/assets/scss/cover-block.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
+| `cover-negative-margin-left/right` | `core/cover` Bleed dropdown | `build/frontend-styles.css` (`src/assets/scss/_cover-block.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
+| `fs-cover-embed-background` | `core/cover` embed mode | Inline style on injected iframe (`inc/render-filters/cover.php`) | Render filter injects iframe when `useEmbedBackground` and valid YouTube/Vimeo URL are present |
 | `alert-*` | `fs-blocks/alert` style selector | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | Explicit `fs-blocks/alert` route + manifest-backed token detection |
 | `border-*`, `rounded-*` | `fs-blocks/dynamic-picture-block` controls | `build/frontend-styles.css` (`src/styles/components/_framework-compat.scss`) | Manifest-backed detection via `fs_core_enhancements_is_frontend_style_token()` |
 | Spacing/display/flex/gap/position/z-index/blend | Token fields + spacing controls | `build/utilities.css` | Manifest-backed detection via `fs_core_enhancements_is_utility_token()` |
@@ -57,4 +62,5 @@ If a class appears in the editor but not on frontend:
 1. Confirm the class family exists in `data/class-families.json` and is mapped to the expected matcher function.
 2. Confirm utilities mode is not `off` when using utility-style classes.
 3. Confirm rendered markup contains the expected class token.
-4. Confirm the page theme calls `wp_footer()` (late style printing still depends on core hooks).
+4. Confirm frontend asset handles are registered before `render_block` detection needs them; registration belongs on `init`, not `wp_enqueue_scripts`.
+5. Confirm the page theme calls `wp_footer()` (late style printing still depends on core hooks).

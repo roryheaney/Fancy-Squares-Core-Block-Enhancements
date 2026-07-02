@@ -6,7 +6,11 @@
 	"category": "layout",
 	"icon": "admin-page",
 	"description": "Interactivity API-driven tabbed content container.",
-	"keywords": [ "tabs", "navigation", "interactivity" ],
+	"keywords": [
+		"tabs",
+		"navigation",
+		"interactivity"
+	],
 	"supports": {
 		"html": false,
 		"anchor": true,
@@ -15,10 +19,6 @@
 	},
 	"attributes": {
 		"blockId": {
-			"type": "string",
-			"default": ""
-		},
-		"activeTab": {
 			"type": "string",
 			"default": ""
 		},

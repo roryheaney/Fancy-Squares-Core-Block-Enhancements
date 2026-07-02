@@ -1,14 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { runFirstPaintParityChecks } from './lib/regression-first-paint-checks.mjs';
+import { runPerformanceGuardChecks } from './lib/regression-performance-guard-checks.mjs';
 import { runSourceChecks } from './lib/regression-quality-source-checks.mjs';
+import { runColumnsPresetChecks } from './lib/regression-columns-preset-checks.mjs';
 
 const root = process.cwd();
 const failures = [];
 const warnings = [];
 
 const SOURCE_EXTENSIONS = new Set( [ '.js', '.jsx', '.php', '.scss', '.mjs' ] );
-const EXCLUDED_TOP_LEVEL_DIRS = new Set( [ 'node_modules', 'build', '.git' ] );
+const EXCLUDED_TOP_LEVEL_DIRS = new Set( [
+	'node_modules',
+	'build',
+	'.git',
+	'.kilo',
+] );
 const EXCLUDED_PATH_PREFIXES = [
 	'docs/',
 	'src/config/generated/',
@@ -196,6 +204,56 @@ const getAllSourceFiles = () => {
 };
 
 const runCoreChecks = () => {
+	runFirstPaintParityChecks( { root, addFailure } );
+	runPerformanceGuardChecks( { root, addFailure } );
+	runColumnsPresetChecks( { root, addFailure } );
+
+	const accordionItemEditPath =
+		'src/blocks/accordion-item-interactive/edit.js';
+	const accordionItemEditAbsPath = path.resolve(
+		root,
+		accordionItemEditPath
+	);
+	if ( ! fs.existsSync( accordionItemEditAbsPath ) ) {
+		addFailure( `${ accordionItemEditPath }: file missing` );
+	} else {
+		const accordionItemEditContent = fs.readFileSync(
+			accordionItemEditAbsPath,
+			'utf8'
+		);
+		const keydownHandlerMatch = accordionItemEditContent.match(
+			/const\s+handleTriggerKeyDown\s*=\s*\(\s*event\s*\)\s*=>\s*\{([\s\S]*?)^\s*\};/m
+		);
+
+		if ( ! keydownHandlerMatch ) {
+			addFailure(
+				`${ accordionItemEditPath }: handleTriggerKeyDown handler missing`
+			);
+		} else {
+			const handlerBody = keydownHandlerMatch[1];
+			const richTextSpacePredicateMatch = accordionItemEditContent.match(
+				/const\s+isRichTextTitleSpaceKeyDown\s*=\s*\(\s*event\s*\)\s*=>\s*event\.key\s*===\s*' '\s*&&\s*event\.target\.closest\(\s*'\.block-editor-rich-text__editable'\s*\)\s*;/
+			);
+			const richTextSpaceGuardMatch = handlerBody.match(
+				/if\s*\(\s*isRichTextTitleSpaceKeyDown\(\s*event\s*\)\s*\)\s*\{\s*return;\s*\}/
+			);
+			const triggerSpaceHandlerIndex = handlerBody.indexOf(
+				"event.key === 'Enter' || event.key === ' '"
+			);
+
+			if (
+				! richTextSpacePredicateMatch ||
+				! richTextSpaceGuardMatch ||
+				triggerSpaceHandlerIndex < 0 ||
+				richTextSpaceGuardMatch.index > triggerSpaceHandlerIndex
+			) {
+				addFailure(
+					`${ accordionItemEditPath }: handleTriggerKeyDown must return before handling Space from the RichText title editor`
+				);
+			}
+		}
+	}
+
 	const manifest = readJson( 'data/class-families.json' );
 	if ( manifest ) {
 		const families = Array.isArray( manifest.families ) ? manifest.families : [];

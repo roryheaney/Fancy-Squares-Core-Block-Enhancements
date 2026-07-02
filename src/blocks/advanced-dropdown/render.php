@@ -105,6 +105,10 @@ $initial_context = [
 	'leftMobileBehavior' => $left_mobile_behavior,
 	'isMobileViewport' => false,
 ];
+$initial_resolved_item_id =
+	$default_first_item_visible && '' !== $default_item_id
+		? $default_item_id
+		: '';
 $is_left_layout = 'left' === $top_level_layout;
 $left_instructions_id = $block_id . '-left-instructions';
 
@@ -151,11 +155,13 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 					$panel_id = $block_id . '-panel-' . $item['id'];
 					$toggle_id = $block_id . '-toggle-' . $item['id'];
 					$has_panel = ! empty( $item['hasPanel'] );
+					$is_initial_active =
+						$has_panel && $item['id'] === $initial_resolved_item_id;
 					$link_target = ! empty( $item['opensInNewTab'] ) ? '_blank' : '_self';
 					$link_rel = $ensure_safe_rel( $item['rel'], ! empty( $item['opensInNewTab'] ) );
 					?>
 					<li
-						class="fs-advanced-dropdown__item<?php echo $has_panel ? ' has-dropdown' : ''; ?>"
+						class="fs-advanced-dropdown__item<?php echo $has_panel ? ' has-dropdown' : ''; ?><?php echo $is_initial_active ? ' is-open' : ''; ?>"
 						data-fs-item-id="<?php echo esc_attr( $item['id'] ); ?>"
 						<?php if ( $has_panel ) : ?>
 							data-wp-context='<?php echo wp_json_encode( [ 'itemId' => $item['id'] ] ); ?>'
@@ -187,7 +193,7 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 								<button
 									id="<?php echo esc_attr( $toggle_id ); ?>"
 									type="button"
-									class="fs-advanced-dropdown__toggle"
+									class="fs-advanced-dropdown__toggle<?php echo $is_initial_active ? ' is-active' : ''; ?>"
 									data-wp-on--click="actions.toggleItem"
 									data-wp-on--focus="actions.openItemOnFocus"
 									data-wp-on--keydown="actions.handleToggleKeyDown"
@@ -195,7 +201,7 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 									data-wp-bind--aria-expanded="state.ariaExpanded"
 									aria-controls="<?php echo esc_attr( $panel_id ); ?>"
 									aria-describedby="<?php echo esc_attr( $left_instructions_id ); ?>"
-									aria-expanded="false"
+									aria-expanded="<?php echo $is_initial_active ? 'true' : 'false'; ?>"
 								>
 									<span class="fs-advanced-dropdown__toggle-icon" aria-hidden="true"></span>
 									<span class="screen-reader-text">
@@ -220,13 +226,15 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 					$panel_id = $block_id . '-panel-' . $item['id'];
 					$toggle_id = $block_id . '-toggle-' . $item['id'];
 					$has_panel = ! empty( $item['hasPanel'] );
+					$is_initial_active =
+						$has_panel && $item['id'] === $initial_resolved_item_id;
 					if ( ! $has_panel ) {
 						continue;
 					}
 					?>
 					<div
 						id="<?php echo esc_attr( $panel_id ); ?>"
-						class="fs-advanced-dropdown__panel"
+						class="fs-advanced-dropdown__panel<?php echo $is_initial_active ? ' is-open' : ''; ?>"
 						data-fs-item-id="<?php echo esc_attr( $item['id'] ); ?>"
 						data-wp-context='<?php echo wp_json_encode( [ 'itemId' => $item['id'] ] ); ?>'
 						data-wp-class--is-open="state.isActive"
@@ -234,7 +242,7 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 						data-wp-on--keydown="actions.handleItemKeyDown"
 						role="region"
 						aria-labelledby="<?php echo esc_attr( $toggle_id ); ?>"
-						hidden
+						<?php echo $is_initial_active ? '' : 'hidden'; ?>
 					>
 						<div class="fs-advanced-dropdown__panel-content">
 							<?php echo $item['content']; ?>
@@ -249,11 +257,13 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 				<?php
 				$panel_id = $block_id . '-panel-' . $item['id'];
 				$has_panel = ! empty( $item['hasPanel'] );
+				$is_initial_active =
+					$has_panel && $item['id'] === $initial_resolved_item_id;
 				$link_target = ! empty( $item['opensInNewTab'] ) ? '_blank' : '_self';
 				$link_rel = $ensure_safe_rel( $item['rel'], ! empty( $item['opensInNewTab'] ) );
 				?>
 				<li
-					class="fs-advanced-dropdown__item<?php echo $has_panel ? ' has-dropdown' : ''; ?>"
+					class="fs-advanced-dropdown__item<?php echo $has_panel ? ' has-dropdown' : ''; ?><?php echo $is_initial_active ? ' is-open' : ''; ?>"
 					data-fs-item-id="<?php echo esc_attr( $item['id'] ); ?>"
 					<?php if ( $has_panel ) : ?>
 						data-wp-context='<?php echo wp_json_encode( [ 'itemId' => $item['id'] ] ); ?>'
@@ -285,14 +295,14 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 						<?php if ( $has_panel ) : ?>
 							<button
 								type="button"
-								class="fs-advanced-dropdown__toggle"
+								class="fs-advanced-dropdown__toggle<?php echo $is_initial_active ? ' is-active' : ''; ?>"
 								data-wp-on--click="actions.toggleItem"
 								data-wp-on--focus="actions.openItemOnFocus"
 								data-wp-on--keydown="actions.handleToggleKeyDown"
 								data-wp-class--is-active="state.isActive"
 								data-wp-bind--aria-expanded="state.ariaExpanded"
 								aria-controls="<?php echo esc_attr( $panel_id ); ?>"
-								aria-expanded="false"
+								aria-expanded="<?php echo $is_initial_active ? 'true' : 'false'; ?>"
 							>
 								<span class="fs-advanced-dropdown__toggle-icon" aria-hidden="true"></span>
 								<span class="screen-reader-text">
@@ -311,10 +321,10 @@ $ensure_safe_rel = static function( $rel, $opens_in_new_tab ) {
 					<?php if ( $has_panel ) : ?>
 						<div
 							id="<?php echo esc_attr( $panel_id ); ?>"
-							class="fs-advanced-dropdown__panel"
+							class="fs-advanced-dropdown__panel<?php echo $is_initial_active ? ' is-open' : ''; ?>"
 							data-wp-class--is-open="state.isActive"
 							data-wp-bind--hidden="state.isHidden"
-							hidden
+							<?php echo $is_initial_active ? '' : 'hidden'; ?>
 						>
 							<div class="fs-advanced-dropdown__panel-content">
 								<?php echo $item['content']; ?>

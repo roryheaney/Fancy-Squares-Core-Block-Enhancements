@@ -7,25 +7,83 @@
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
+const MODAL_TRANSITION_MS = 150;
+const FOCUSABLE_SELECTOR =
+	'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+const hideModalElement = ( modal ) => {
+	modal.classList.remove( 'show' );
+	const backdrop = modal.querySelector( '.fs-modal-backdrop' );
+	if ( backdrop ) {
+		backdrop.classList.remove( 'show' );
+	}
+};
+
+const showModalElement = ( modal, onShown ) => {
+	window.requestAnimationFrame( () => {
+		modal.style.display = 'block';
+		void modal.offsetHeight;
+
+		window.requestAnimationFrame( () => {
+			modal.classList.add( 'show' );
+			const backdrop = modal.querySelector( '.fs-modal-backdrop' );
+			if ( backdrop ) {
+				backdrop.classList.add( 'show' );
+			}
+
+			if ( typeof onShown === 'function' ) {
+				setTimeout( onShown, MODAL_TRANSITION_MS );
+			}
+		} );
+	} );
+};
+
+const restoreFocus = ( element ) => {
+	if (
+		element &&
+		element.nodeType === 1 &&
+		typeof element.focus === 'function' &&
+		document.contains( element )
+	) {
+		element.focus();
+		return true;
+	}
+
+	return false;
+};
+
+const focusFirstInModal = ( modal ) => {
+	const firstFocusable = modal.querySelector( FOCUSABLE_SELECTOR );
+	if ( firstFocusable ) {
+		firstFocusable.focus();
+		return true;
+	}
+
+	return false;
+};
+
 const { state, actions } = store( 'fancySquaresModal', {
 	state: {
-		// Global state - only one modal open at a time
+		// Global state - supports nested modal opening with stack restoration
 		currentModalId: null,
-		previousFocus: null,
+		modalStack: [],
 	},
 	actions: {
 		openModal() {
 			const context = getContext();
-			const { ref } = getElement();
-
-			// Store the element that triggered the modal (button)
-			state.previousFocus = ref;
+			if (
+				! context.modalId ||
+				state.currentModalId === context.modalId
+			) {
+				return;
+			}
 
 			// Find modal element by ID from context
 			const modal = document.getElementById( context.modalId );
 			if ( ! modal ) {
 				return;
 			}
+			const { ref } = getElement();
 
 			// Dispatch preventable "show" event
 			const showEvent = new CustomEvent( 'show.fs.modal', {
@@ -42,49 +100,40 @@ const { state, actions } = store( 'fancySquaresModal', {
 				return;
 			}
 
+			const currentModal = state.currentModalId
+				? document.getElementById( state.currentModalId )
+				: null;
+			if ( currentModal ) {
+				hideModalElement( currentModal );
+				currentModal.style.display = 'none';
+			}
+
+			const modalStack = [ ...state.modalStack ];
+			modalStack.push( {
+				modalId: context.modalId,
+				trigger: ref || null,
+			} );
+			state.modalStack = modalStack;
+
 			// Set current modal ID (triggers state.isOpen computed property)
 			state.currentModalId = context.modalId;
 
 			// Add body class to prevent scrolling
 			document.body.classList.add( 'fs-modal-open' );
 
-			// Bootstrap 5 animation sequence - manual DOM manipulation for precise timing
-			window.requestAnimationFrame( () => {
-				// Display modal
-				modal.style.display = 'block';
-				void modal.offsetHeight; // Force reflow
+			showModalElement( modal, () => {
+				focusFirstInModal( modal );
 
-				// Add .show class for fade-in transition
-				window.requestAnimationFrame( () => {
-					modal.classList.add( 'show' );
-					const backdrop =
-						modal.querySelector( '.fs-modal-backdrop' );
-					if ( backdrop ) {
-						backdrop.classList.add( 'show' );
-					}
-
-					// Focus management and "shown" event after animation completes
-					setTimeout( () => {
-						// Focus first focusable element in modal
-						const firstFocusable = modal.querySelector(
-							'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-						);
-						if ( firstFocusable ) {
-							firstFocusable.focus();
-						}
-
-						// Dispatch "shown" event (informational, not cancelable)
-						modal.dispatchEvent(
-							new CustomEvent( 'shown.fs.modal', {
-								bubbles: true,
-								detail: {
-									modalId: context.modalId,
-									trigger: ref,
-								},
-							} )
-						);
-					}, 150 ); // Bootstrap 5 transition duration
-				} );
+				// Dispatch "shown" event (informational, not cancelable)
+				modal.dispatchEvent(
+					new CustomEvent( 'shown.fs.modal', {
+						bubbles: true,
+						detail: {
+							modalId: context.modalId,
+							trigger: ref,
+						},
+					} )
+				);
 			} );
 		},
 
@@ -112,28 +161,47 @@ const { state, actions } = store( 'fancySquaresModal', {
 			}
 
 			// Remove .show class for fade-out transition
-			modal.classList.remove( 'show' );
-			const backdrop = modal.querySelector( '.fs-modal-backdrop' );
-			if ( backdrop ) {
-				backdrop.classList.remove( 'show' );
-			}
+			hideModalElement( modal );
 
 			// Wait for transition to complete, then hide modal
 			setTimeout( () => {
 				modal.style.display = 'none';
-				state.currentModalId = null;
-				document.body.classList.remove( 'fs-modal-open' );
 
-				// Restore focus to the button that opened the modal
-				if (
-					state.previousFocus &&
-					state.previousFocus.nodeType === 1 &&
-					typeof state.previousFocus.focus === 'function' &&
-					document.contains( state.previousFocus )
-				) {
-					state.previousFocus.focus();
+				const modalStack = [ ...state.modalStack ];
+				const closingEntry = modalStack.pop() || null;
+				state.modalStack = modalStack;
+
+				const previousEntry = modalStack.length
+					? modalStack[ modalStack.length - 1 ]
+					: null;
+
+				if ( previousEntry && previousEntry.modalId ) {
+					const previousModal = document.getElementById(
+						previousEntry.modalId
+					);
+					if ( previousModal ) {
+						state.currentModalId = previousEntry.modalId;
+						showModalElement( previousModal, () => {
+							const focusTarget = closingEntry?.trigger || null;
+							if (
+								! focusTarget ||
+								! previousModal.contains( focusTarget ) ||
+								! restoreFocus( focusTarget )
+							) {
+								focusFirstInModal( previousModal );
+							}
+						} );
+					} else {
+						state.modalStack = [];
+						state.currentModalId = null;
+						document.body.classList.remove( 'fs-modal-open' );
+						restoreFocus( previousEntry.trigger );
+					}
+				} else {
+					state.currentModalId = null;
+					document.body.classList.remove( 'fs-modal-open' );
+					restoreFocus( closingEntry?.trigger || null );
 				}
-				state.previousFocus = null;
 
 				// Dispatch "hidden" event (informational, not cancelable)
 				modal.dispatchEvent(
@@ -144,11 +212,14 @@ const { state, actions } = store( 'fancySquaresModal', {
 						},
 					} )
 				);
-			}, 150 ); // Bootstrap 5 transition duration
+			}, MODAL_TRANSITION_MS );
 		},
 
 		handleBackdropClick() {
 			const context = getContext();
+			if ( state.currentModalId !== context.modalId ) {
+				return;
+			}
 
 			if ( ! context.staticBackdrop ) {
 				// Normal backdrop - close modal
@@ -168,6 +239,9 @@ const { state, actions } = store( 'fancySquaresModal', {
 
 		handleKeydown( event ) {
 			const context = getContext();
+			if ( state.currentModalId !== context.modalId ) {
+				return;
+			}
 
 			// Close on Escape key (if enabled)
 			if ( event.key === 'Escape' && context.closeOnEscape ) {
@@ -183,9 +257,8 @@ const { state, actions } = store( 'fancySquaresModal', {
 					return;
 				}
 
-				const focusableElements = modal.querySelectorAll(
-					'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-				);
+				const focusableElements =
+					modal.querySelectorAll( FOCUSABLE_SELECTOR );
 
 				if ( focusableElements.length === 0 ) {
 					return;

@@ -14,6 +14,9 @@ $stack_context = function_exists( 'fs_showcase_context_stack_peek' )
 $items_data = is_array( $stack_context ) && isset( $stack_context['itemsData'] )
 	? $stack_context['itemsData']
 	: [];
+$active_item_id = is_array( $stack_context ) && isset( $stack_context['activeItemId'] )
+	? sanitize_html_class( (string) $stack_context['activeItemId'] )
+	: '';
 
 $transition_type = isset( $attributes['transitionType'] )
 	? sanitize_key( $attributes['transitionType'] )
@@ -21,14 +24,10 @@ $transition_type = isset( $attributes['transitionType'] )
 $transition_duration = isset( $attributes['transitionDuration'] )
 	? (int) $attributes['transitionDuration']
 	: 300;
-$additional_classes = [];
-if ( ! empty( $attributes['additionalClasses'] ) && is_array( $attributes['additionalClasses'] ) ) {
-	foreach ( $attributes['additionalClasses'] as $class_name ) {
-		if ( is_string( $class_name ) && '' !== $class_name ) {
-			$additional_classes[] = sanitize_html_class( $class_name );
-		}
-	}
-}
+$classes = fs_core_enhancements_get_sanitized_classes(
+	[ 'fs-showcase-gallery' ],
+	$attributes
+);
 
 $items_list = [];
 foreach ( $items_data as $item_id => $media_data ) {
@@ -62,15 +61,7 @@ foreach ( $items_data as $item_id => $media_data ) {
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	[
-		'class' => implode(
-			' ',
-			array_filter(
-				array_merge(
-					[ 'fs-showcase-gallery' ],
-					$additional_classes
-				)
-			)
-		),
+		'class' => implode( ' ', $classes ),
 		'data-transition' => $transition_type,
 		'data-transition-duration' => $transition_duration,
 		'style' => sprintf(
@@ -91,8 +82,9 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		</div>
 	<?php else : ?>
 		<?php foreach ( $items_list as $media ) : ?>
+			<?php $is_initial_active = $media['itemId'] === $active_item_id; ?>
 			<div
-				class="showcase-gallery__media-wrapper"
+				class="showcase-gallery__media-wrapper<?php echo $is_initial_active ? ' is-active' : ''; ?>"
 				<?php
 				echo wp_interactivity_data_wp_context(
 					[

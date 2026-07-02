@@ -63,6 +63,5 @@
 			"size": "clamp(4rem, 8vw, 7rem)"
 		}
 	},
-	"halfGap": "12px",
 	"containerPaddingX": "0"
 }

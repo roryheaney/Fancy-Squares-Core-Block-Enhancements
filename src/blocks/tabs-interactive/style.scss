@@ -13,6 +13,10 @@
 		margin-bottom: 1.5rem;
 	}
 
+	.fs-tabs__panels {
+		position: relative;
+	}
+
 	// Hide tabs on mobile when responsive mode is enabled
 	&.fs-tabs--responsive .fs-tabs__tablist {
 		display: none; // Mobile: hidden by default
@@ -207,7 +211,6 @@
 
 		// Keep flex layout on desktop even with responsive mode
 		&.fs-tabs--responsive {
-
 			@media (min-width: map.get($grid-breakpoints, md)) {
 				display: flex;
 				flex-direction: row;
@@ -259,4 +262,3 @@
 		}
 	}
 }
-

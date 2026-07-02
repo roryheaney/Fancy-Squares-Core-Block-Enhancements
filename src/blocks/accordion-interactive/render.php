@@ -22,15 +22,7 @@ if ( '' === $block_id ) {
 $active_item = '';
 
 $classes = [ 'fs-accordion', 'wp-block-fs-blocks-accordion-interactive' ];
-
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = array_merge( $classes, $attributes['additionalClasses'] );
-}
-
-$classes = array_map( 'sanitize_html_class', $classes );
+$classes = fs_core_enhancements_get_sanitized_classes( $classes, $attributes );
 
 $wrapper_attributes = get_block_wrapper_attributes( [ 'class' => implode( ' ', $classes ) ] );
 

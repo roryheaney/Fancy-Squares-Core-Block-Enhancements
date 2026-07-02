@@ -9,7 +9,7 @@ The **Visibility / Position Classes** panel exposes curated utility-style tokens
 ### Width Settings (`core/column`)
 
 - Width classes emit tokens like `wp-block-column--column-6` or `wp-block-column--column-md-4`.
-- `Auto` emits the `auto` token.
+- `Auto` stores `auto` in the width attribute and does not emit a width class.
 - `Inherit` clears the width attribute.
 
 Breakpoints:
@@ -23,6 +23,23 @@ Breakpoints:
 
 When any child column has custom width values, parent `core/columns` is auto-updated with `is-style-bootstrap`. When no widths are set, that class is removed.
 
+### Columns Layout Presets (`core/columns`)
+
+The **Columns Layout Presets** panel applies common responsive layouts to the current child columns. Choose a preset and select **Apply layout preset** to set each child column's Width Settings once.
+
+Preset applications update child column Width Settings once. Individual child columns remain editable afterward.
+
+Presets:
+
+- `1 mobile / 2 md+`: sets Base to 12 columns and Md+ to 6 columns.
+- `1 mobile / 3 md+`: sets Base to 12 columns and Md+ to 4 columns.
+- `1 mobile / 4 md+`: sets Base to 12 columns and Md+ to 3 columns.
+- `1 mobile / 2 md / 4 lg+`: sets Base to 12 columns, Md to 6 columns, and Lg+ to 3 columns.
+
+Applying a preset clears non-declared breakpoint width values so the selected layout carries upward.
+
+**Reset columns** clears all width attributes on every child column. Reset removes applied widths so columns revert to default equal-width behavior. After reset, the parent `is-style-bootstrap` class is removed automatically when no child widths remain custom.
+
 ### Spacing controls
 
 Padding, margin, and negative margin panels appear only for blocks configured in `BLOCK_CONFIG`.
@@ -34,6 +51,7 @@ Padding, margin, and negative margin panels appear only for blocks configured in
 
 - List Settings: adds list semantics to `core/columns` and `core/column`
 - Media Settings: lazy video loading, custom play overlay, forced image lazy-loading opt-out
+- Cover embed background: for `core/cover`, enable **Use embed background** and paste a YouTube/Vimeo URL to replace native cover media
 - Modal Settings: converts `core/button` into a modal trigger
 
 ### RichText span format
@@ -63,6 +81,7 @@ Custom blocks (`fs-blocks/*`) are disabled by default and can be enabled in sett
 
 - `generateClassName()` composes token, spacing, and width classes.
 - `core/image` and cover background images are forced to `loading="lazy"` + `decoding="async"` unless `disableForcedLazyLoading` is set.
+- `core/cover` embed mode (`useEmbedBackground`) supports YouTube and Vimeo only, normalizes YouTube to `youtube-nocookie.com`, and enforces autoplay/loop/muted non-interactive iframe background behavior.
 - Carousel uses Swiper assets only when carousel blocks render.
 - Frontend style/runtime bundles load conditionally based on rendered content.
 

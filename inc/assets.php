@@ -39,19 +39,6 @@ function fs_core_enhancements_editor_assets() {
 		$asset['version'],
 		true
 	);
-
-	$enabled_blocks = function_exists( 'fs_core_enhancements_get_enabled_blocks' )
-		? fs_core_enhancements_get_enabled_blocks()
-		: [];
-	wp_add_inline_script(
-		'fs-core-enhancements',
-		'window.fsCoreEnhancements = window.fsCoreEnhancements || {};' .
-			'window.fsCoreEnhancements.enabledBlocks = ' .
-			wp_json_encode( $enabled_blocks ) .
-			';',
-		'before'
-	);
-
 }
 add_action( 'enqueue_block_editor_assets', 'fs_core_enhancements_editor_assets' );
 
@@ -185,7 +172,7 @@ function fs_core_enhancements_register_frontend_assets() {
 		);
 	}
 }
-add_action( 'wp_enqueue_scripts', 'fs_core_enhancements_register_frontend_assets' );
+add_action( 'init', 'fs_core_enhancements_register_frontend_assets' );
 
 /**
  * Conditionally enqueue the frontend stylesheet bundle.
@@ -266,26 +253,48 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] )
 		? $block['attrs']
 		: [];
-
-	$needs_frontend_style = fs_core_enhancements_block_needs_frontend_style(
-		$block_name,
-		$attrs
-	) || fs_core_enhancements_block_content_needs_frontend_style(
-		$block_name,
-		$block_content
+	$frontend_style_enqueued = wp_style_is(
+		'fs-core-enhancements-frontend-style',
+		'enqueued'
 	);
-	if ( $needs_frontend_style ) {
-		fs_core_enhancements_enqueue_frontend_style();
+	$utilities_enqueued = wp_style_is( 'fs-core-enhancements-utilities', 'enqueued' );
+	$frontend_runtime_enqueued = wp_script_is(
+		'fs-core-enhancements-frontend',
+		'enqueued'
+	);
+	$swiper_assets_enqueued =
+		wp_style_is( 'fs-core-enhancements-swiper', 'enqueued' ) &&
+		wp_script_is( 'fs-core-enhancements-swiper', 'enqueued' );
+
+	if ( ! $frontend_style_enqueued ) {
+		$needs_frontend_style = fs_core_enhancements_block_needs_frontend_style(
+			$block_name,
+			$attrs
+		) || fs_core_enhancements_block_content_needs_frontend_style(
+			$block_name,
+			$block_content
+		);
+		if ( $needs_frontend_style ) {
+			fs_core_enhancements_enqueue_frontend_style();
+		}
 	}
 
-	$needs_utilities = fs_core_enhancements_block_needs_utilities( $attrs )
-		|| fs_core_enhancements_block_content_needs_utilities( $block_content );
-	if ( $needs_utilities ) {
-		fs_core_enhancements_enqueue_utilities_style();
+	if ( ! $utilities_enqueued ) {
+		$needs_utilities = fs_core_enhancements_block_needs_utilities( $attrs )
+			|| fs_core_enhancements_block_content_needs_utilities( $block_content );
+		if ( $needs_utilities ) {
+			fs_core_enhancements_enqueue_utilities_style();
+		}
 	}
 
 	if ( 'fs-blocks/carousel' === $block_name ) {
-		fs_core_enhancements_enqueue_frontend_runtime( true );
+		if ( ! $frontend_runtime_enqueued || ! $swiper_assets_enqueued ) {
+			fs_core_enhancements_enqueue_frontend_runtime( true );
+		}
+		return $block_content;
+	}
+
+	if ( $frontend_runtime_enqueued ) {
 		return $block_content;
 	}
 
@@ -297,7 +306,7 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 	}
 
 	if ( 'core/cover' === $block_name ) {
-		if ( ! empty( $attrs['lazyLoadVideo'] ) ) {
+		if ( ! empty( $attrs['lazyLoadVideo'] ) && empty( $attrs['useEmbedBackground'] ) ) {
 			fs_core_enhancements_enqueue_frontend_runtime();
 		}
 		return $block_content;

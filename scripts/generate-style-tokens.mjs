@@ -180,7 +180,6 @@ const toThemeOverride = ( themeJson ) => {
 		containerMaxWidths: framework.containerMaxWidths,
 		spacingScale,
 		spacingScaleMeta,
-		halfGap: framework.halfGap,
 		containerPaddingX: framework.containerPaddingX,
 	};
 };
@@ -299,7 +298,6 @@ const lines = [
 	`$framework-grid-breakpoints: ${ toSassMap( mergedTokens.gridBreakpoints ) } !default;`,
 	`$framework-container-max-widths: ${ toSassMap( mergedTokens.containerMaxWidths ) } !default;`,
 	`$framework-spacing-scale: ${ toSassMap( mergedTokens.spacingScale ) } !default;`,
-	`$framework-half-gap: ${ toSassValue( mergedTokens.halfGap ) } !default;`,
 	`$framework-container-padding-x: ${ toSassValue( mergedTokens.containerPaddingX ) } !default;`,
 	'',
 ];

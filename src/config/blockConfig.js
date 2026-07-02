@@ -15,6 +15,14 @@ const SHARED_SPACING_CONFIG = {
 	allowedPositiveMarginControls: ALL_SPACING_SIDES,
 };
 
+const FS_SHARED_CLASS_OPTIONS = [ 'display', 'position', 'zindex' ];
+
+const createFsSharedConfig = ( overrides = {} ) => ( {
+	classOptions: [ ...FS_SHARED_CLASS_OPTIONS ],
+	...SHARED_SPACING_CONFIG,
+	...overrides,
+} );
+
 export const ALLOWED_BLOCKS = [
 	'core/heading',
 	'core/paragraph',
@@ -109,40 +117,20 @@ export const BLOCK_CONFIG = {
 	'core/group': {
 		classOptions: [ 'display', 'position', 'zindex', 'gapSpacing' ],
 	},
-	'fs-blocks/tabs-interactive': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		...SHARED_SPACING_CONFIG,
-	},
-	'fs-blocks/advanced-dropdown': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		...SHARED_SPACING_CONFIG,
-	},
-	'fs-blocks/accordion-interactive': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		...SHARED_SPACING_CONFIG,
-	},
-	'fs-blocks/content-showcase': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		...SHARED_SPACING_CONFIG,
-	},
-	'fs-blocks/showcase-gallery': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		...SHARED_SPACING_CONFIG,
-	},
-	'fs-blocks/carousel': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		...SHARED_SPACING_CONFIG,
-	},
-	'fs-blocks/alert': {
+	'fs-blocks/tabs-interactive': createFsSharedConfig(),
+	'fs-blocks/advanced-dropdown': createFsSharedConfig(),
+	'fs-blocks/accordion-interactive': createFsSharedConfig(),
+	'fs-blocks/content-showcase': createFsSharedConfig(),
+	'fs-blocks/showcase-gallery': createFsSharedConfig(),
+	'fs-blocks/carousel': createFsSharedConfig(),
+	'fs-blocks/alert': createFsSharedConfig( {
 		classOptions: [ 'display' ],
-		...SHARED_SPACING_CONFIG,
-	},
-	'fs-blocks/index-block': {
+	} ),
+	'fs-blocks/index-block': createFsSharedConfig( {
 		classOptions: [ 'position', 'zindex' ],
-		...SHARED_SPACING_CONFIG,
 		allowedNegativeMarginControls: EDGE_SPACING_SIDES,
-	},
-	'fs-blocks/content-wrapper': {
+	} ),
+	'fs-blocks/content-wrapper': createFsSharedConfig( {
 		classOptions: [
 			'display',
 			'order',
@@ -150,7 +138,6 @@ export const BLOCK_CONFIG = {
 			'position',
 			'zindex',
 		],
-		...SHARED_SPACING_CONFIG,
 		allowedNegativeMarginControls: ALL_SPACING_SIDES,
-	},
+	} ),
 };

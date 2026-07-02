@@ -29,17 +29,7 @@ if ( $layout_type ) {
 if ( $hide_gallery ) {
 	$classes[] = 'fs-content-showcase--hide-gallery-mobile';
 }
-
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	foreach ( $attributes['additionalClasses'] as $class_name ) {
-		if ( is_string( $class_name ) && '' !== $class_name ) {
-			$classes[] = sanitize_html_class( $class_name );
-		}
-	}
-}
+$classes = fs_core_enhancements_get_sanitized_classes( $classes, $attributes );
 
 $accordion_data = function_exists( 'fs_showcase_context_stack_peek' )
 	? fs_showcase_context_stack_peek()
@@ -73,7 +63,7 @@ $initial_context = [
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	[
-		'class' => implode( ' ', array_filter( $classes ) ),
+		'class' => implode( ' ', $classes ),
 	]
 );
 ?>

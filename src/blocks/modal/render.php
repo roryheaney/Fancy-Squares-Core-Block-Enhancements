@@ -24,15 +24,7 @@ $title = isset( $attributes['title'] ) ? $attributes['title'] : __( 'Modal Title
 
 // Build wrapper classes
 $classes = [ 'fs-modal', 'fade', 'wp-block-fs-blocks-modal' ];
-
-if (
-	! empty( $attributes['additionalClasses'] ) &&
-	is_array( $attributes['additionalClasses'] )
-) {
-	$classes = array_merge( $classes, $attributes['additionalClasses'] );
-}
-
-$classes = array_map( 'sanitize_html_class', $classes );
+$classes = fs_core_enhancements_get_sanitized_classes( $classes, $attributes );
 
 // Build dialog classes with fs- prefix
 $dialog_classes = [ 'fs-modal-dialog' ];

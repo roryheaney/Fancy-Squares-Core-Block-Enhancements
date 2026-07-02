@@ -67,6 +67,16 @@ const withCustomAttributes = ( settings, name ) => {
 				default: false,
 			};
 		}
+		if ( name === 'core/cover' ) {
+			nextAttributes.useEmbedBackground = {
+				type: 'boolean',
+				default: false,
+			};
+			nextAttributes.embedBackgroundUrl = {
+				type: 'string',
+				default: '',
+			};
+		}
 		if ( name === 'core/video' ) {
 			nextAttributes.useCustomPlayButton = {
 				type: 'boolean',

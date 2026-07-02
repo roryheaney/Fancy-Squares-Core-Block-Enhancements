@@ -37,7 +37,7 @@ $column-breakpoints: (
 
 @mixin render-column-enhancements() {
 
-	.wp-block-column {
+	.wp-block-columns > .wp-block-column {
 
 		@each $prefix, $breakpoint in $column-breakpoints {
 

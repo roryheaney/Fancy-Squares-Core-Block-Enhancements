@@ -39,7 +39,7 @@
 				"data/bootstrap-classes/bleed-cover-options.js"
 			],
 			"styleSources": [
-				"src/assets/scss/cover-block.scss"
+				"src/assets/scss/_cover-block.scss"
 			],
 			"runtimeMatcherFunction": "fs_core_enhancements_is_frontend_style_token"
 		},

@@ -14,9 +14,9 @@ Core blocks are extended through `registerBlockExtension()`.
 - Class generation: `generateClassName()` in `src/utils/helpers.js`
 - Inspector panels: `src/components/BlockEdit.js`
 
-### 2) Custom blocks (`fs-blocks/*`) via direct block edit wiring
+### 2) Custom blocks (`fs-blocks/*`)
 
-Custom block edit files render `<BlockEdit {...props} />` directly and sync generated classes to attributes for server rendering.
+Custom blocks with extension controls render `<BlockEdit {...props} />` in `edit.js` and sync generated classes to attributes for server rendering. Child blocks and purpose-built blocks may use direct editor controls instead.
 
 Typical custom block flow:
 
@@ -52,14 +52,19 @@ Typical custom block flow:
 ## Width Settings
 
 - UI: `src/components/WidthControl.js`, `src/components/WidthControls.js`
+- Parent preset UI: `src/inspector-controls/columns-layout-presets-control.js`
+- Preset mapping: `src/inspector-controls/columns-layout-presets.js`
 - Class generation: `src/utils/helpers.js`
 - Parent class update (`is-style-bootstrap`): `src/extensions/core/block-enhancements.js`
+- Regression checks: `scripts/lib/regression-columns-preset-checks.mjs`
 
 ## Maintenance and Regression Workflow
 
 - For every feature/update, run `npm run regression:gate` before finalizing.
 - Policy and required evidence format: `docs/plugin/maintenance-regression-policy.md`.
 - The regression quality gate evaluates plugin code quality as a whole (`*.js`, `*.jsx`, `*.php`, `*.scss`, `*.mjs`), not only changed files, with exclusions documented in the maintenance policy.
+- The core regression checks enforce first-paint parity invariants for interactive server render output via `scripts/lib/regression-first-paint-checks.mjs`.
+- The core regression checks enforce interaction performance guard invariants for tabs/dropdown frontend behavior via `scripts/lib/regression-performance-guard-checks.mjs`.
 
 ## Guardrails
 

@@ -136,6 +136,7 @@ export default function MediaControls( { BlockEdit, ...props } ) {
 	const { attributes, setAttributes, clientId, name, isSelected } = props;
 	const {
 		lazyLoadVideo,
+		supportReducedMotion = true,
 		useCustomPlayButton,
 		disableForcedLazyLoading,
 		useEmbedBackground,
@@ -148,6 +149,10 @@ export default function MediaControls( { BlockEdit, ...props } ) {
 	const isCoverEmbedMode = isCoverBlock && !! useEmbedBackground;
 	const showVideoLazyToggle =
 		isVideoBlock || ( isCoverBlock && ! isCoverEmbedMode );
+	const showReducedMotionToggle =
+		isCoverBlock &&
+		! isCoverEmbedMode &&
+		attributes.backgroundType === 'video';
 	const showForcedLazyOptOutToggle =
 		isImageBlock || ( isCoverBlock && ! isCoverEmbedMode );
 
@@ -181,6 +186,7 @@ export default function MediaControls( { BlockEdit, ...props } ) {
 
 	const hasEnabledSetting =
 		( showVideoLazyToggle && !! lazyLoadVideo ) ||
+		( showReducedMotionToggle && supportReducedMotion ) ||
 		( isVideoBlock && !! useCustomPlayButton ) ||
 		( showForcedLazyOptOutToggle && !! disableForcedLazyLoading ) ||
 		( isCoverBlock && !! useEmbedBackground );
@@ -294,6 +300,18 @@ export default function MediaControls( { BlockEdit, ...props } ) {
 								} )
 							}
 							help="Delay loading the video until it becomes visible."
+						/>
+					) }
+
+					{ showReducedMotionToggle && (
+						<ToggleControl
+							__nextHasNoMarginBottom
+							label="Support reduced motion"
+							checked={ supportReducedMotion }
+							onChange={ ( value ) =>
+								setAttributes( { supportReducedMotion: value } )
+							}
+							help="Show the existing poster instead of autoplaying when visitors prefer reduced motion. Disable for this Cover only; pause/play controls remain available."
 						/>
 					) }
 

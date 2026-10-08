@@ -6,6 +6,27 @@
 .wp-block-cover {
 
 	/* ─────────── Common base styles ─────────── */
+	> .fs-cover-video-toggle {
+		position: absolute;
+		inset-block-end: 1rem;
+		inset-inline-end: 1rem;
+		z-index: 2;
+		min-height: 44px;
+		padding: 0.5rem 1rem;
+		border: 2px solid #fff;
+		border-radius: 0.25rem;
+		background: #000;
+		color: #fff;
+		font: inherit;
+		cursor: pointer;
+
+		&:focus-visible {
+			outline: 3px solid #fff;
+			outline-offset: 3px;
+			box-shadow: 0 0 0 6px #000;
+		}
+	}
+
 	&.cover-negative-margin-right,
 	&.cover-negative-margin-left {
 		background-color: #000;

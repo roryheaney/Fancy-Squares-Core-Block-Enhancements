@@ -6,8 +6,14 @@ import {
 	InspectorControls,
 	MediaUpload,
 	MediaUploadCheck,
+	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, Button } from '@wordpress/components';
+import {
+	PanelBody,
+	Button,
+	TextControl,
+	ColorPalette,
+} from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { useEnsureUniqueAttributeId } from '../../utils/block-id';
@@ -16,15 +22,69 @@ const isRichTextTitleSpaceKeyDown = ( event ) =>
 	event.key === ' ' &&
 	event.target.closest( '.block-editor-rich-text__editable' );
 
+const getPillForegroundColor = ( color ) => {
+	const hex = color?.replace( '#', '' );
+
+	if ( ! hex || ! [ 3, 6 ].includes( hex.length ) ) {
+		return '#000000';
+	}
+
+	const full =
+		hex.length === 3
+			? hex
+					.split( '' )
+					.map( ( char ) => char + char )
+					.join( '' )
+			: hex;
+
+	const r = parseInt( full.slice( 0, 2 ), 16 );
+	const g = parseInt( full.slice( 2, 4 ), 16 );
+	const b = parseInt( full.slice( 4, 6 ), 16 );
+	const yiq = ( r * 299 + g * 587 + b * 114 ) / 1000;
+
+	return yiq >= 128 ? '#000000' : '#ffffff';
+};
+
 export default function Edit( {
 	clientId,
 	attributes,
 	setAttributes,
 	context,
 } ) {
-	const { title, itemId, showcaseMedia, showcaseMediaId, showcaseMediaType } =
-		attributes;
+	const {
+		title,
+		itemId,
+		showcaseMedia,
+		showcaseMediaId,
+		showcaseMediaType,
+		pills = [],
+	} = attributes;
 	const previewMediaType = showcaseMediaType || showcaseMedia?.type || '';
+	const [ themePalette = [] ] = useSettings( 'color.palette' );
+
+	const setPills = ( nextPills ) => setAttributes( { pills: nextPills } );
+
+	const addPill = () =>
+		setPills( [ ...pills, { text: '', bg: '', fg: '' } ] );
+
+	const removePill = ( index ) =>
+		setPills( pills.filter( ( pill, i ) => i !== index ) );
+
+	const updatePill = ( index, changes ) =>
+		setPills(
+			pills.map( ( pill, i ) =>
+				i === index ? { ...pill, ...changes } : pill
+			)
+		);
+
+	const handlePillColorChange = ( index, color ) => {
+		if ( ! color ) {
+			updatePill( index, { bg: '', fg: '' } );
+			return;
+		}
+
+		updatePill( index, { bg: color, fg: getPillForegroundColor( color ) } );
+	};
 
 	useEnsureUniqueAttributeId( {
 		clientId,
@@ -116,6 +176,53 @@ export default function Edit( {
 
 	return (
 		<>
+			<InspectorControls>
+				<PanelBody
+					title={ __( 'Pills', 'fancy-squares-core-enhancements' ) }
+					initialOpen={ true }
+				>
+					{ pills.map( ( pill, index ) => (
+						<div key={ index } style={ { marginBottom: '1rem' } }>
+							<TextControl
+								__nextHasNoMarginBottom
+								label={ __(
+									'Pill Text',
+									'fancy-squares-core-enhancements'
+								) }
+								value={ pill.text }
+								onChange={ ( text ) =>
+									updatePill( index, { text } )
+								}
+							/>
+							<ColorPalette
+								colors={ themePalette }
+								value={ pill.bg }
+								onChange={ ( color ) =>
+									handlePillColorChange( index, color )
+								}
+								label={ __(
+									'Pill Background Color',
+									'fancy-squares-core-enhancements'
+								) }
+							/>
+							<Button
+								variant="tertiary"
+								isDestructive
+								onClick={ () => removePill( index ) }
+								style={ { marginTop: '0.5rem' } }
+							>
+								{ __(
+									'Remove Pill',
+									'fancy-squares-core-enhancements'
+								) }
+							</Button>
+						</div>
+					) ) }
+					<Button variant="secondary" onClick={ addPill }>
+						{ __( 'Add Pill', 'fancy-squares-core-enhancements' ) }
+					</Button>
+				</PanelBody>
+			</InspectorControls>
 			{ isInsideShowcase && (
 				<InspectorControls>
 					<PanelBody
@@ -217,6 +324,30 @@ export default function Edit( {
 							allowedFormats={ [] }
 							onClick={ ( e ) => e.stopPropagation() }
 						/>
+						{ pills.some( ( pill ) => pill.text?.trim() ) && (
+							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+							<span
+								className="fs-accordion__pills"
+								onClick={ ( e ) => e.stopPropagation() }
+							>
+								{ pills
+									.filter(
+										( pill ) => pill.text?.trim() && pill.bg
+									)
+									.map( ( pill, index ) => (
+										<span
+											key={ index }
+											className="fs-accordion__pill"
+											style={ {
+												backgroundColor: pill.bg,
+												color: pill.fg || '#000000',
+											} }
+										>
+											{ pill.text }
+										</span>
+									) ) }
+							</span>
+						) }
 					</div>
 				</h3>
 				<div

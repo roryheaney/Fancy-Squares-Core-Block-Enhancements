@@ -8,7 +8,12 @@ import {
 const COLLAPSE_TRANSITION_FALLBACK_MS = 450;
 
 const runTransitionWithFallback = ( element, onDone ) => {
-	if ( ! element ) {
+	// No transitionend fires without animation; finalize state/events immediately.
+	// Read the preference per interaction so future toggles follow live changes.
+	if (
+		! element ||
+		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
+	) {
 		onDone();
 		return;
 	}

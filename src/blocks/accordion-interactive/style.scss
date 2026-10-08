@@ -12,6 +12,10 @@
 			height: 0;
 			overflow: hidden;
 			transition: height 0.35s ease;
+
+			@media ( prefers-reduced-motion: reduce ) {
+				transition: none;
+			}
 		}
 
 		&.collapse.show {
@@ -20,6 +24,10 @@
 	}
 
 	&__trigger {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.75rem;
 		width: 100%;
 		text-align: left;
 		background: none;
@@ -33,10 +41,27 @@
 		}
 	}
 
-	// Disable pointer events during transitions to prevent race conditions
+	&__pills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-left: auto;
+	}
+
+	&__pill {
+		border-radius: 999px;
+		padding: 0.25rem 0.75rem;
+		font-size: 0.625rem;
+		font-weight: 600;
+		white-space: nowrap;
+		line-height: 1.4;
+	}
+
+	// Show busy cursor during transitions; keep triggers hoverable so hover
+	// styles don't blink. The store (view.js) already ignores clicks while any
+	// content is collapsing, so pointer-events must stay untouched.
 	// Check if ANY item in accordion has .collapsing class
 	&:has(.fs-accordion__content.collapsing) .fs-accordion__trigger {
-		pointer-events: none;
 		cursor: wait;
 	}
 

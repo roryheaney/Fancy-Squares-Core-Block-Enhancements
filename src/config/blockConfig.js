@@ -1,4 +1,4 @@
-const SELECT_NONE_OPTION = [ { label: 'Select one', value: 'none' } ];
+// const SELECT_NONE_OPTION = [ { label: 'Select one', value: 'none' } ];
 const ALL_SPACING_SIDES = [
 	'all',
 	'horizontal',
@@ -37,85 +37,88 @@ export const ALLOWED_BLOCKS = [
 
 export const BLOCK_CONFIG = {
 	'core/heading': {
-		classOptions: [ 'display', 'position', 'zindex', 'blendMode' ],
-		dropdown: {
-			attributeKey: 'headingDropdownValue',
-			label: 'Heading Option',
-			default: 'none',
-			options: SELECT_NONE_OPTION,
-		},
+		// classOptions: [ 'display', 'position', 'zindex', 'blendMode' ],
+		// dropdown: {
+		// 	attributeKey: 'headingDropdownValue',
+		// 	label: 'Heading Option',
+		// 	default: 'none',
+		options: SELECT_NONE_OPTION,
+		// },
 	},
 	'core/paragraph': {
-		classOptions: [ 'display', 'position', 'zindex' ],
+		// classOptions: [ 'display', 'position', 'zindex' ],
 		allowedPaddingControls: [ 'top', 'bottom' ],
 		allowedPositiveMarginControls: [ 'all', 'vertical' ],
 		allowedNegativeMarginControls: EDGE_SPACING_SIDES,
-		dropdown: {
-			attributeKey: 'paragraphDropdownValue',
-			label: 'Paragraph Option',
-			default: 'none',
-			options: SELECT_NONE_OPTION,
-		},
+		// dropdown: {
+		// 	attributeKey: 'paragraphDropdownValue',
+		// 	label: 'Paragraph Option',
+		// 	default: 'none',
+		options: SELECT_NONE_OPTION,
+		// },
 	},
 	'core/list': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		dropdown: {
-			attributeKey: 'listDropdownValue',
-			label: 'List Option',
-			default: 'none',
-			options: SELECT_NONE_OPTION,
-		},
+		// classOptions: [ 'display', 'position', 'zindex' ],
+		// dropdown: {
+		// 	attributeKey: 'listDropdownValue',
+		// 	label: 'List Option',
+		// 	default: 'none',
+		options: SELECT_NONE_OPTION,
+		// },
 	},
 	'core/list-item': {
-		classOptions: [ 'display', 'position', 'zindex' ],
-		dropdown: {
-			attributeKey: 'listItemDropdownValue',
-			label: 'List Item Option',
-			default: 'none',
-			options: SELECT_NONE_OPTION,
-		},
+		// classOptions: [ 'display', 'position', 'zindex' ],
+		// dropdown: {
+		// 	attributeKey: 'listItemDropdownValue',
+		// 	label: 'List Item Option',
+		// 	default: 'none',
+		options: SELECT_NONE_OPTION,
+		// },
 	},
 	'core/buttons': {
-		classOptions: [ 'display', 'margin', 'position', 'zindex' ],
-		dropdown: {
-			attributeKey: 'buttonDropdownValue',
-			label: 'Button Option',
-			default: 'none',
-			options: SELECT_NONE_OPTION,
-		},
+		// classOptions: [ 'display', 'margin', 'position', 'zindex' ],
+		// dropdown: {
+		// 	attributeKey: 'buttonDropdownValue',
+		// 	label: 'Button Option',
+		// 	default: 'none',
+		options: SELECT_NONE_OPTION,
+		// },
 	},
 	'core/columns': {
-		classOptions: [
-			'display',
-			'position',
-			'zindex',
-			'alignItems',
-			'justifyContent',
-		],
+		// classOptions: [
+		// 	'display',
+		// 	'position',
+		// 	'zindex',
+		// 	'alignItems',
+		// 	'justifyContent',
+		// ],
 		hasConstrainToggle: true,
 	},
 	'core/column': {
-		classOptions: [
-			'display',
-			'position',
-			'zindex',
-			'selfAlignment',
-			'order',
-		],
+		// classOptions: [
+		// 	'display',
+		// 	'position',
+		// 	'zindex',
+		// 	'selfAlignment',
+		// 	'order',
+		// ],
 		hasWidthControls: true,
 		allowedPaddingControls: ALL_SPACING_SIDES,
 	},
 	'core/cover': {
-		classOptions: [ 'display', 'position', 'zindex', 'bleedCoverOptions' ],
+		// classOptions: [ 'display', 'position', 'zindex', 'bleedCoverOptions' ],
 		dropdown: {
-			attributeKey: 'bleedCover',
-			label: 'Bleed Options',
+			attributeKey: 'customCoverClass',
+			label: 'Modifier Classes',
 			default: '',
-			options: [ { label: 'None', value: '' } ],
+			options: [
+				{ label: 'None', value: '' },
+				{ label: 'Featured', value: 'wp-block-cover--featured' },
+			],
 		},
 	},
 	'core/group': {
-		classOptions: [ 'display', 'position', 'zindex', 'gapSpacing' ],
+		allowedPositiveMarginControls: [ 'bottom' ],
 	},
 	'fs-blocks/tabs-interactive': createFsSharedConfig(),
 	'fs-blocks/advanced-dropdown': createFsSharedConfig(),
@@ -124,20 +127,20 @@ export const BLOCK_CONFIG = {
 	'fs-blocks/showcase-gallery': createFsSharedConfig(),
 	'fs-blocks/carousel': createFsSharedConfig(),
 	'fs-blocks/alert': createFsSharedConfig( {
-		classOptions: [ 'display' ],
+		// classOptions: [ 'display' ],
 	} ),
 	'fs-blocks/index-block': createFsSharedConfig( {
-		classOptions: [ 'position', 'zindex' ],
+		// classOptions: [ 'position', 'zindex' ],
 		allowedNegativeMarginControls: EDGE_SPACING_SIDES,
 	} ),
 	'fs-blocks/content-wrapper': createFsSharedConfig( {
-		classOptions: [
-			'display',
-			'order',
-			'selfAlignment',
-			'position',
-			'zindex',
-		],
+		// classOptions: [
+		// 	'display',
+		// 	'order',
+		// 	'selfAlignment',
+		// 	'position',
+		// 	'zindex',
+		// ],
 		allowedNegativeMarginControls: ALL_SPACING_SIDES,
 	} ),
 };

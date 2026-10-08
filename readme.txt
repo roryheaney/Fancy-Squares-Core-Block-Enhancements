@@ -4,7 +4,7 @@ Tags: gutenberg, blocks, interactivity, editor
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.2.24
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,12 @@ Yes. Custom blocks are available and can be enabled from Settings > Fancy Square
 No. Frontend runtime and styles are conditionally loaded based on rendered block features and classes.
 
 == Changelog ==
+= 1.3.0 =
+* Reduce motion for custom blocks
+* Prune unused tokens and Settings
+* Add reduce motion option for cover block videos
+* Update dependencies
+* Add pills for Accordions
 
 = 1.2.0 =
 * Added Columns Layout Presets panel to core/columns with responsive presets (1 mobile / 2 md+, 1 mobile / 3 md+, 1 mobile / 4 md+, 1 mobile / 2 md / 4 lg+).

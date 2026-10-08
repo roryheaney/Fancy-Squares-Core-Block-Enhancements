@@ -42,8 +42,8 @@
 	},
 	"scripts": {
 		"tokens": "node scripts/generate-style-tokens.mjs",
-		"tokens:site": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/performa-marketing/theme.json",
-		"tokens:ci": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/performa-marketing/theme.json --require-theme-source",
+		"tokens:site": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/<your-theme>/theme.json",
+		"tokens:ci": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/<your-theme>/theme.json --require-theme-source",
 		"build": "npm run tokens:site && rimraf build && wp-scripts build --source-path=src --experimental-modules && npm run prune:style-stubs && npm run audit:class-coverage",
 		"build:ci": "npm run tokens:ci && rimraf build && wp-scripts build --source-path=src --experimental-modules && npm run prune:style-stubs && npm run audit:class-coverage",
 		"start": "npm run tokens:site && wp-scripts start --source-path=src --experimental-modules",

@@ -1,6 +1,6 @@
 {
 	"name": "fancy-squares-core-enhancements",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"description": "Extends core blocks with custom classes and dropdowns",
 	"author": "Rory Heaney",
 	"license": "GPL-2.0-or-later",
@@ -37,12 +37,13 @@
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^30.10.0",
+		"pkg": "^5.8.1",
 		"rimraf": "^6.0.1"
 	},
 	"scripts": {
 		"tokens": "node scripts/generate-style-tokens.mjs",
-		"tokens:site": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/full-site-editing-build/theme.json",
-		"tokens:ci": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/full-site-editing-build/theme.json --require-theme-source",
+		"tokens:site": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/<your-theme>/theme.json",
+		"tokens:ci": "node scripts/generate-style-tokens.mjs --theme-json-path=../../themes/<your-theme>/theme.json --require-theme-source",
 		"build": "npm run tokens:site && rimraf build && wp-scripts build --source-path=src --experimental-modules && npm run prune:style-stubs && npm run audit:class-coverage",
 		"build:ci": "npm run tokens:ci && rimraf build && wp-scripts build --source-path=src --experimental-modules && npm run prune:style-stubs && npm run audit:class-coverage",
 		"start": "npm run tokens:site && wp-scripts start --source-path=src --experimental-modules",

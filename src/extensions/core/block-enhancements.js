@@ -68,6 +68,10 @@ const withCustomAttributes = ( settings, name ) => {
 			};
 		}
 		if ( name === 'core/cover' ) {
+			nextAttributes.supportReducedMotion = {
+				type: 'boolean',
+				default: true,
+			};
 			nextAttributes.useEmbedBackground = {
 				type: 'boolean',
 				default: false,

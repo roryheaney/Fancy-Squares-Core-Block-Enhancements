@@ -26,6 +26,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"pills": {
+			"type": "array",
+			"default": []
+		},
 		"showcaseMedia": {
 			"type": "object",
 			"default": {}

@@ -75,13 +75,91 @@ const initCarousel = () => {
 		return;
 	}
 
+	const motionPreference = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	);
+
 	carousels.forEach( ( el ) => {
 		const config = parseConfig( el );
-		const swiper = new window.Swiper( el, config );
+		const speed = config.speed ?? window.Swiper.defaults.speed;
+		const waitForTransition = config.autoplay?.waitForTransition ?? true;
+		// Suppress autoplay before initialization, keeping its configured delay.
+		const swiper = new window.Swiper( el, {
+			...config,
+			speed: motionPreference.matches ? 0 : speed,
+			autoplay: config.autoplay
+				? {
+						...config.autoplay,
+						enabled: ! motionPreference.matches,
+						// Instant transitions have no transitionend event to await.
+						waitForTransition: motionPreference.matches
+							? false
+							: waitForTransition,
+				  }
+				: false,
+		} );
 
-		let isPaused = false;
+		let isPaused = motionPreference.matches;
+		const playPauseButton = el.querySelector( '.swiper__button-control' );
+		const pauseLabel = playPauseButton?.dataset.labelPause || 'Pause';
+		const playLabel =
+			playPauseButton?.dataset.labelPlay ||
+			'Carousel is paused, click to play';
+		const labelSpans = playPauseButton?.querySelectorAll(
+			'.swiper__button-control-state'
+		);
+		const playSpan = labelSpans?.[ 0 ];
+		const pauseSpan = labelSpans?.[ 1 ];
+		const updateControl = () => {
+			playPauseButton?.setAttribute(
+				'aria-label',
+				isPaused ? playLabel : pauseLabel
+			);
+			playSpan?.classList.toggle( 'd-none', ! isPaused );
+			pauseSpan?.classList.toggle( 'd-none', isPaused );
+		};
+		const revealControl = () => {
+			if ( config.autoplay && playPauseButton ) {
+				// Keep an explicit restart available, even if the editor hid it.
+				playPauseButton.classList.remove( 'd-none' );
+				el.querySelector( '.swiper-pause-pagination' ).classList.remove(
+					'd-none'
+				);
+			}
+		};
+		const handleMotionChange = () => {
+			const nextSpeed = motionPreference.matches ? 0 : speed;
+			swiper.params.speed = nextSpeed;
+			swiper.originalParams.speed = nextSpeed;
+			if ( config.autoplay ) {
+				swiper.params.autoplay.waitForTransition =
+					motionPreference.matches ? false : waitForTransition;
+				if ( motionPreference.matches ) {
+					isPaused = true;
+					swiper.autoplay.stop();
+					revealControl();
+					updateControl();
+				}
+			}
+			// Restoring normal motion must not resume a user/preference pause.
+		};
+		motionPreference.addEventListener( 'change', handleMotionChange );
+		swiper.on( 'destroy', () =>
+			motionPreference.removeEventListener( 'change', handleMotionChange )
+		);
+		if ( motionPreference.matches ) {
+			revealControl();
+		}
+		updateControl();
 
 		if ( config.autoplay && swiper?.autoplay ) {
+			// Swiper's A11y module sets this only at initialization.
+			swiper.on( 'autoplayStart', () =>
+				swiper.wrapperEl.setAttribute( 'aria-live', 'off' )
+			);
+			swiper.on( 'autoplayStop', () =>
+				swiper.wrapperEl.setAttribute( 'aria-live', 'polite' )
+			);
 			el.addEventListener( 'mouseenter', () => {
 				if ( ! isPaused ) {
 					swiper.autoplay.stop();
@@ -94,43 +172,18 @@ const initCarousel = () => {
 			} );
 		}
 
-		const playPauseButton = el.querySelector( '.swiper__button-control' );
-		if ( playPauseButton && swiper?.autoplay ) {
-			const pauseLabel =
-				playPauseButton.dataset.labelPause ||
-				playPauseButton.getAttribute( 'aria-label' ) ||
-				'Pause';
-			const playLabel =
-				playPauseButton.dataset.labelPlay ||
-				'Carousel is paused, click to play';
-			const labelSpans = playPauseButton.querySelectorAll( 'span' );
-			const pauseSpan = labelSpans[ 0 ];
-			const playSpan = labelSpans[ 1 ];
-
+		if ( config.autoplay && playPauseButton && swiper?.autoplay ) {
 			playPauseButton.addEventListener( 'click', ( event ) => {
 				event.preventDefault();
 
 				if ( ! isPaused ) {
 					swiper.autoplay.stop();
-					playPauseButton.setAttribute( 'aria-label', playLabel );
-					if ( pauseSpan ) {
-						pauseSpan.classList.add( 'd-none' );
-					}
-					if ( playSpan ) {
-						playSpan.classList.remove( 'd-none' );
-					}
 					isPaused = true;
 				} else {
 					swiper.autoplay.start();
-					playPauseButton.setAttribute( 'aria-label', pauseLabel );
-					if ( pauseSpan ) {
-						pauseSpan.classList.remove( 'd-none' );
-					}
-					if ( playSpan ) {
-						playSpan.classList.add( 'd-none' );
-					}
 					isPaused = false;
 				}
+				updateControl();
 			} );
 		}
 	} );

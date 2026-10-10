@@ -15,6 +15,39 @@ $showcase_media_id = ! empty( $attributes['showcaseMediaId'] )
 	? (int) $attributes['showcaseMediaId']
 	: 0;
 
+$pills = isset( $attributes['pills'] ) && is_array( $attributes['pills'] )
+	? $attributes['pills']
+	: [];
+
+$pills_markup = '';
+$pills_html   = [];
+
+foreach ( $pills as $pill ) {
+	if ( ! is_array( $pill ) ) {
+		continue;
+	}
+
+	$text = isset( $pill['text'] ) ? trim( (string) $pill['text'] ) : '';
+	$bg   = isset( $pill['bg'] ) ? sanitize_hex_color( $pill['bg'] ) : '';
+	$fg   = isset( $pill['fg'] ) ? sanitize_hex_color( $pill['fg'] ) : '';
+
+	if ( '' === $text || empty( $bg ) ) {
+		continue;
+	}
+
+	$style = 'background-color:' . $bg . ';color:' . ( ! empty( $fg ) ? $fg : '#000000' ) . ';';
+
+	$pills_html[] = sprintf(
+		'<span class="fs-accordion__pill" style="%s">%s</span>',
+		esc_attr( $style ),
+		esc_html( $text )
+	);
+}
+
+if ( ! empty( $pills_html ) ) {
+	$pills_markup = '<span class="fs-accordion__pills">' . implode( '', $pills_html ) . '</span>';
+}
+
 if ( '' === $item_id ) {
 	$item_id = wp_unique_id( 'accordion-item-' );
 }
@@ -85,6 +118,7 @@ if ( $showcase_media_id ) {
 			data-wp-on--keydown="actions.handleKeydown"
 		>
 			<span><?php echo wp_kses_post( $title ); ?></span>
+			<?php echo $pills_markup; ?>
 		</button>
 	</h3>
 

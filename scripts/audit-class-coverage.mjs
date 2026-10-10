@@ -1,8 +1,48 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { getTokenBreakpointSuffix } from '../src/config/option-coverage.mjs';
 
 const root = process.cwd();
 const failures = [];
+
+const generatedTokensPath = 'src/config/generated/framework-tokens.js';
+
+const readThemeBreakpointKeys = () => {
+	const absPath = path.resolve( root, generatedTokensPath );
+	if ( ! fs.existsSync( absPath ) ) {
+		return null;
+	}
+
+	const content = fs.readFileSync( absPath, 'utf8' );
+	const match = content.match(
+		/export\s+const\s+frameworkBreakpointKeys\s*=\s*(\[[^\]]*\])/
+	);
+
+	if ( ! match ) {
+		return null;
+	}
+
+	try {
+		const parsed = JSON.parse( match[ 1 ] );
+		return Array.isArray( parsed ) ? parsed.filter( Boolean ) : null;
+	} catch ( error ) {
+		return null;
+	}
+};
+
+const themeBreakpointKeys = readThemeBreakpointKeys();
+
+if ( ! themeBreakpointKeys ) {
+	console.error(
+		`[coverage] Failed: could not read frameworkBreakpointKeys from ${ generatedTokensPath }. Run npm run tokens:site first.`
+	);
+	process.exit( 1 );
+}
+
+const themeResponsiveKeys = themeBreakpointKeys.filter(
+	( key ) => key !== 'xs'
+);
+
 
 const tokenSourceFiles = [
 	'data/bootstrap-classes/display-options.js',
@@ -336,7 +376,16 @@ if ( existingAssetsMatcherPaths.length === 0 ) {
 	}
 }
 
+let skippedUnavailableBreakpoints = 0;
+
 for ( const [ token, sourceSet ] of tokenSourceMap.entries() ) {
+	const suffix = getTokenBreakpointSuffix( token, themeResponsiveKeys );
+
+	if ( suffix && ! themeResponsiveKeys.includes( suffix ) ) {
+		skippedUnavailableBreakpoints += 1;
+		continue;
+	}
+
 	const expectedBundle = getExpectedBundle( token );
 	const sources = [ ...sourceSet ];
 
@@ -417,5 +466,13 @@ if ( failures.length > 0 ) {
 }
 
 console.log(
-	`[coverage] OK: ${ tokenSourceMap.size } token(s) validated with manifest-backed family routing.`
+	`[coverage] OK: ${
+		tokenSourceMap.size - skippedUnavailableBreakpoints
+	} token(s) validated with manifest-backed family routing.`
 );
+
+if ( skippedUnavailableBreakpoints > 0 ) {
+	console.log(
+		`[coverage] Skipped ${ skippedUnavailableBreakpoints } unavailable-breakpoint token(s) — not exposed for this theme.`
+	);
+}

@@ -1,43 +1,81 @@
 import { bleedCoverOptions } from './framework-option-sets';
+import { RESPONSIVE_BREAKPOINT_KEYS } from './breakpoints';
+import { filterTokenOptions } from './option-coverage.mjs';
 
 let classOptionsMapPromise = null;
 
 const getClassOptionsMap = ( optionsModule ) => ( {
 	display: {
-		options: optionsModule.displayOptions || [],
+		options: filterTokenOptions(
+			optionsModule.displayOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	margin: {
-		options: optionsModule.marginOptions || [],
+		options: filterTokenOptions(
+			optionsModule.marginOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	padding: {
-		options: optionsModule.paddingOptions || [],
+		options: filterTokenOptions(
+			optionsModule.paddingOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	position: {
-		options: optionsModule.positionOptions || [],
+		options: filterTokenOptions(
+			optionsModule.positionOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	zindex: {
-		options: optionsModule.zindexOptions || [],
+		options: filterTokenOptions(
+			optionsModule.zindexOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	blendMode: {
-		options: optionsModule.blendModeOptions || [],
+		options: filterTokenOptions(
+			optionsModule.blendModeOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	alignItems: {
-		options: optionsModule.alignItemsOptions || [],
+		options: filterTokenOptions(
+			optionsModule.alignItemsOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	selfAlignment: {
-		options: optionsModule.selfAlignmentOptions || [],
+		options: filterTokenOptions(
+			optionsModule.selfAlignmentOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	justifyContent: {
-		options: optionsModule.justifyContentOptions || [],
+		options: filterTokenOptions(
+			optionsModule.justifyContentOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	order: {
-		options: optionsModule.orderOptions || [],
+		options: filterTokenOptions(
+			optionsModule.orderOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	gapSpacing: {
-		options: optionsModule.gapOptions || [],
+		options: filterTokenOptions(
+			optionsModule.gapOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 	bleedCoverOptions: {
-		options: bleedCoverOptions || [],
+		options: filterTokenOptions(
+			bleedCoverOptions,
+			RESPONSIVE_BREAKPOINT_KEYS
+		),
 	},
 } );
 

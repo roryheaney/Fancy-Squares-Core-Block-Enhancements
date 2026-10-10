@@ -14,7 +14,7 @@ WordPress plugin that extends core blocks with token-driven classes and responsi
 src/
   blocks/          # 15 custom blocks (accordion, tabs, carousel, modal, alert, ...)
   components/      # BlockEdit, TokenFields, SpacingControls, WidthControls
-  config/          # blockConfig, breakpoints, constants, framework-option-sets
+  config/          # blockConfig, breakpoints, constants, framework-option-sets, option-coverage.mjs
     generated/     # GENERATED — never hand-edit
   entries/         # editor/index.js, frontend/index.js, styles/*.scss
   extensions/      # core/ block-enhancements.js, register-extensions.js

@@ -1,9 +1,10 @@
-import {
-	store,
-	getContext,
-	getElement,
-	withSyncEvent,
-} from '@wordpress/interactivity';
+import * as interactivity from '@wordpress/interactivity';
+
+const { store, getContext, getElement } = interactivity;
+// Before WordPress 6.8, event actions are synchronous without this wrapper.
+const withSyncEvent =
+	Reflect.get( interactivity, 'withSyncEvent' ) ||
+	( ( callback ) => callback );
 
 const COLLAPSE_TRANSITION_FALLBACK_MS = 450;
 
@@ -12,6 +13,7 @@ const runTransitionWithFallback = ( element, onDone ) => {
 	// Read the preference per interaction so future toggles follow live changes.
 	if (
 		! element ||
+		document.documentElement.classList.contains( 'fs-motion-paused' ) ||
 		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
 	) {
 		onDone();
@@ -32,10 +34,19 @@ const runTransitionWithFallback = ( element, onDone ) => {
 		}
 
 		element.removeEventListener( 'transitionend', complete );
+		document.removeEventListener( 'fs:motionchange', handleMotionChange );
 		onDone();
+	};
+	const handleMotionChange = () => {
+		if (
+			document.documentElement.classList.contains( 'fs-motion-paused' )
+		) {
+			complete();
+		}
 	};
 
 	element.addEventListener( 'transitionend', complete, { once: true } );
+	document.addEventListener( 'fs:motionchange', handleMotionChange );
 	fallbackId = window.setTimeout( complete, COLLAPSE_TRANSITION_FALLBACK_MS );
 };
 
@@ -43,6 +54,9 @@ store( 'fancySquaresAccordionInteractive', {
 	state: {
 		get isActive() {
 			const context = getContext();
+			if ( context.allowMultipleOpen ) {
+				return context.activeItems.includes( context.itemId );
+			}
 			return context.activeItem === context.itemId;
 		},
 	},
@@ -61,8 +75,13 @@ store( 'fancySquaresAccordionInteractive', {
 				return;
 			}
 
+			if ( content.classList.contains( 'collapsing' ) ) {
+				return;
+			}
+
+			const context = getContext();
 			const accordion = ref.closest( '.fs-accordion' );
-			if ( accordion ) {
+			if ( accordion && ! context.allowMultipleOpen ) {
 				const allItems = accordion.querySelectorAll(
 					'.fs-accordion__content'
 				);
@@ -76,9 +95,11 @@ store( 'fancySquaresAccordionInteractive', {
 				}
 			}
 
-			const context = getContext();
+			const isActive = context.allowMultipleOpen
+				? context.activeItems.includes( context.itemId )
+				: context.activeItem === context.itemId;
 
-			if ( context.activeItem === context.itemId ) {
+			if ( isActive ) {
 				const hideEvent = new CustomEvent( 'hide.fs.accordion', {
 					bubbles: true,
 					cancelable: true,
@@ -103,7 +124,13 @@ store( 'fancySquaresAccordionInteractive', {
 				runTransitionWithFallback( content, () => {
 					content.classList.remove( 'collapsing' );
 					content.classList.add( 'collapse' );
-					context.activeItem = '';
+					if ( context.allowMultipleOpen ) {
+						context.activeItems = context.activeItems.filter(
+							( id ) => id !== context.itemId
+						);
+					} else {
+						context.activeItem = '';
+					}
 
 					content.dispatchEvent(
 						new CustomEvent( 'hidden.fs.accordion', {
@@ -120,8 +147,23 @@ store( 'fancySquaresAccordionInteractive', {
 				return;
 			}
 
+			// Check cancellation before closing another item in single-open mode.
+			const showEvent = new CustomEvent( 'show.fs.accordion', {
+				bubbles: true,
+				cancelable: true,
+				detail: {
+					itemId: context.itemId,
+					element: content,
+					trigger: ref,
+				},
+			} );
+
+			if ( ! content.dispatchEvent( showEvent ) ) {
+				return;
+			}
+
 			const previousItemId = context.activeItem;
-			if ( previousItemId ) {
+			if ( ! context.allowMultipleOpen && previousItemId ) {
 				const accordionRoot = ref.closest( '.fs-accordion' );
 				const previousItem = accordionRoot?.querySelector(
 					`[data-item-id="${ previousItemId }"]`
@@ -171,21 +213,14 @@ store( 'fancySquaresAccordionInteractive', {
 				}
 			}
 
-			const showEvent = new CustomEvent( 'show.fs.accordion', {
-				bubbles: true,
-				cancelable: true,
-				detail: {
-					itemId: context.itemId,
-					element: content,
-					trigger: ref,
-				},
-			} );
-
-			if ( ! content.dispatchEvent( showEvent ) ) {
-				return;
+			if ( context.allowMultipleOpen ) {
+				context.activeItems = [
+					...context.activeItems,
+					context.itemId,
+				];
+			} else {
+				context.activeItem = context.itemId;
 			}
-
-			context.activeItem = context.itemId;
 			content.classList.remove( 'collapse' );
 			content.classList.add( 'collapsing' );
 			content.style.height = '0px';

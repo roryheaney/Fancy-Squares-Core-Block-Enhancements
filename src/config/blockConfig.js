@@ -1,4 +1,3 @@
-// const SELECT_NONE_OPTION = [ { label: 'Select one', value: 'none' } ];
 const ALL_SPACING_SIDES = [
 	'all',
 	'horizontal',
@@ -42,7 +41,7 @@ export const BLOCK_CONFIG = {
 		// 	attributeKey: 'headingDropdownValue',
 		// 	label: 'Heading Option',
 		// 	default: 'none',
-		options: SELECT_NONE_OPTION,
+		// 	options: SELECT_NONE_OPTION,
 		// },
 	},
 	'core/paragraph': {
@@ -54,7 +53,7 @@ export const BLOCK_CONFIG = {
 		// 	attributeKey: 'paragraphDropdownValue',
 		// 	label: 'Paragraph Option',
 		// 	default: 'none',
-		options: SELECT_NONE_OPTION,
+		// 	options: SELECT_NONE_OPTION,
 		// },
 	},
 	'core/list': {
@@ -63,7 +62,7 @@ export const BLOCK_CONFIG = {
 		// 	attributeKey: 'listDropdownValue',
 		// 	label: 'List Option',
 		// 	default: 'none',
-		options: SELECT_NONE_OPTION,
+		// 	options: SELECT_NONE_OPTION,
 		// },
 	},
 	'core/list-item': {
@@ -72,7 +71,7 @@ export const BLOCK_CONFIG = {
 		// 	attributeKey: 'listItemDropdownValue',
 		// 	label: 'List Item Option',
 		// 	default: 'none',
-		options: SELECT_NONE_OPTION,
+		// 	options: SELECT_NONE_OPTION,
 		// },
 	},
 	'core/buttons': {
@@ -81,7 +80,7 @@ export const BLOCK_CONFIG = {
 		// 	attributeKey: 'buttonDropdownValue',
 		// 	label: 'Button Option',
 		// 	default: 'none',
-		options: SELECT_NONE_OPTION,
+		// 	options: SELECT_NONE_OPTION,
 		// },
 	},
 	'core/columns': {

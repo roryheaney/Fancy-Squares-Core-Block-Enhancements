@@ -1,7 +1,10 @@
-export default function lazyLoadVideos() {
-	const lazyVideos = document.querySelectorAll(
-		'video[data-fs-lazy-video][data-src]'
-	);
+const initialized = new WeakSet();
+
+export default function lazyLoadVideos( root = document ) {
+	const lazyVideos = [
+		...root.querySelectorAll( 'video[data-fs-lazy-video][data-src]' ),
+	].filter( ( video ) => ! initialized.has( video ) );
+	lazyVideos.forEach( ( video ) => initialized.add( video ) );
 
 	if ( lazyVideos.length === 0 ) {
 		return;
@@ -10,7 +13,7 @@ export default function lazyLoadVideos() {
 	if ( 'IntersectionObserver' in window ) {
 		const options = {
 			root: null,
-			rootMargin: '200px',
+			rootMargin: '75px',
 			threshold: 0,
 		};
 		const observer = new window.IntersectionObserver( ( entries ) => {

@@ -3,7 +3,7 @@
 ## Main Scripts
 
 - `npm run tokens`: generate token artifacts using source fallback order.
-- `npm run tokens:site`: generate tokens from `../../themes/full-site-editing-build/theme.json`.
+- `npm run tokens:site`: generate tokens from `../../themes/performa-marketing/theme.json`.
 - `npm run tokens:ci`: site-token generation with CI failure if missing source.
 - `npm run build`: run `tokens:site`, compile assets, remove style-entry JS stubs, run class coverage audit.
 - `npm run build:ci`: CI-safe build/token pipeline.

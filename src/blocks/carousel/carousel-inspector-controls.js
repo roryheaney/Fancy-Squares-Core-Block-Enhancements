@@ -142,7 +142,7 @@ const CarouselInspectorControls = function ( {
 							setAttributes( { delay: value } )
 						}
 						min={ 500 }
-						max={ 9999 }
+						max={ 10000 }
 						step={ 500 }
 					/>
 				) }

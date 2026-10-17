@@ -10,37 +10,83 @@ export default function initCoverVideoControls() {
 
 		// Autoplay may still be waiting for a lazy source or media readiness.
 		let playing = ! video.paused || video.autoplay;
-		const updateLabel = () => {
-			button.textContent = playing
-				? button.dataset.pauseLabel
-				: button.dataset.playLabel;
+		let playRequest = 0;
+		let initialLoading = video.readyState < 3;
+		const updateControl = () => {
+			button.classList.toggle( 'is-loading', initialLoading && playing );
+			button.classList.toggle( 'is-playing', playing );
+			button.setAttribute(
+				'aria-label',
+				playing ? button.dataset.pauseLabel : button.dataset.playLabel
+			);
 		};
 		const syncPlayback = () => {
 			playing = ! video.paused && ! video.ended;
-			updateLabel();
+			updateControl();
 		};
 		const pauseVideo = () => {
 			// A later lazy-load must not override a pause or reduced-motion request.
+			playRequest++;
+			initialLoading = false;
 			video.autoplay = false;
 			video.pause();
 			syncPlayback();
 		};
+		const playVideo = () => {
+			const request = ++playRequest;
+			playing = true;
+			updateControl();
+			video.play().catch( () => {
+				// A canceled request must not clear a newer Play request's state.
+				if ( request === playRequest ) {
+					pauseVideo();
+				}
+			} );
+		};
 
-		video.addEventListener( 'play', syncPlayback );
-		video.addEventListener( 'pause', syncPlayback );
-		video.addEventListener( 'ended', syncPlayback );
-		video.addEventListener( 'error', syncPlayback );
-		button.addEventListener( 'click', () => {
-			if ( playing ) {
+		video.addEventListener( 'play', () => {
+			if ( video.paused ) {
+				return;
+			}
+			playing = true;
+			updateControl();
+		} );
+		video.addEventListener( 'playing', () => {
+			initialLoading = false;
+			syncPlayback();
+		} );
+		video.addEventListener( 'canplay', () => {
+			initialLoading = false;
+			updateControl();
+			// Native lazy autoplay has no promise to report policy rejection.
+			if ( playing && video.paused ) {
+				playVideo();
+			}
+		} );
+		video.addEventListener( 'pause', () => {
+			if ( video.paused ) {
 				pauseVideo();
+			}
+		} );
+		video.addEventListener( 'ended', pauseVideo );
+		video.addEventListener( 'error', pauseVideo );
+		button.addEventListener( 'click', () => {
+			// Loading feedback is initial-only, never a response to a user toggle.
+			initialLoading = false;
+			if ( playing ) {
+				document.documentElement.classList.add( 'fs-motion-paused' );
+				pauseVideo();
+				document.dispatchEvent( new Event( 'fs:motionchange' ) );
 				return;
 			}
 
+			document.documentElement.classList.remove( 'fs-motion-paused' );
+			document.dispatchEvent( new Event( 'fs:motionchange' ) );
 			if ( video.dataset.src ) {
 				video.src = video.dataset.src;
 				video.removeAttribute( 'data-src' );
 			}
-			video.play().catch( syncPlayback );
+			playVideo();
 		} );
 
 		if ( video.dataset.fsReducedMotion === 'true' ) {
@@ -55,7 +101,7 @@ export default function initCoverVideoControls() {
 				playing = true;
 				// Lazy videos start when their source is hydrated, not before it.
 				if ( ! video.dataset.src ) {
-					video.play().catch( syncPlayback );
+					playVideo();
 				}
 			}
 
@@ -67,7 +113,7 @@ export default function initCoverVideoControls() {
 			} );
 		}
 
-		updateLabel();
+		updateControl();
 		button.hidden = false;
 	} );
 }

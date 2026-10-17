@@ -9,6 +9,7 @@
  *
  * @param array  $attributes Block attributes.
  * @param string $content    Inner blocks content.
+ * @param WP_Block $block    Block instance.
  */
 
 defined('ABSPATH') || exit;
@@ -90,8 +91,7 @@ if (! empty($attributes['autoplay'])) {
 	$delay = max(500, (int) $attributes['delay']);
 	$swiper_data['autoplay'] = [
 		'delay' => $delay,
-		'pauseOnMouseEnter' => true,
-		'disableOnInteraction' => false,
+		'disableOnInteraction' => true,
 	];
 }
 
@@ -115,7 +115,8 @@ if (! empty($attributes['autoHeight'])) {
 }
 
 $pause_pagination_classes = ['swiper-pause-pagination'];
-$show_play_pause = ! empty($attributes['showPlayPauseButton']) && ! empty($attributes['autoplay']);
+$has_play_pause = ! empty($attributes['autoplay']) && count($block->inner_blocks) > 1;
+$show_play_pause = ! empty($attributes['showPlayPauseButton']) && $has_play_pause;
 if (
 	! $show_play_pause &&
 	empty($attributes['pagination']) &&
@@ -159,42 +160,49 @@ $pause_label = __('Carousel is playing, click to pause', 'fancy-squares-core-enh
 		<?php echo $content; ?>
 	</div>
 
+	<?php if (! empty($attributes['navigation'])) : ?>
+		<button class="swiper-button-prev" aria-label="<?php esc_attr_e('Previous slide', 'fancy-squares-core-enhancements'); ?>"></button>
+		<button class="swiper-button-next" aria-label="<?php esc_attr_e('Next slide', 'fancy-squares-core-enhancements'); ?>"></button>
+	<?php endif; ?>
+
 	<div class="<?php echo esc_attr(implode(' ', $pause_pagination_classes)); ?>">
 		<div class="swiper-pause-pagination__inner-container">
-			<?php if (! empty($attributes['navigation'])) : ?>
-				<button class="swiper-button-prev" aria-label="<?php esc_attr_e('Previous slide', 'fancy-squares-core-enhancements'); ?>"></button>
-				<button class="swiper-button-next" aria-label="<?php esc_attr_e('Next slide', 'fancy-squares-core-enhancements'); ?>"></button>
-			<?php endif; ?>
-
-			<?php if (! empty($attributes['autoplay'])) : ?>
-				<?php // Keep the control available for reduced-motion visitors; JS reveals it when needed. ?>
-				<button
-					type="button"
-					class="swiper__button-control<?php echo $show_play_pause ? '' : ' d-none'; ?>"
-					aria-label="<?php echo esc_attr($pause_label); ?>"
-					data-label-play="<?php echo esc_attr($play_label); ?>"
-					data-label-pause="<?php echo esc_attr($pause_label); ?>">
 
 
-					<svg class="swiper__button-control-state d-none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-						width="24" height="24" viewBox="0 0 24 24"
-						fill="currentColor" role="img" aria-label="Play">
-						<path d="M6 3 L21 12 L6 21 Z" />
-					</svg>
 
-					<svg class="swiper__button-control-state" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-						width="24" height="24" viewBox="0 0 24 24"
-						fill="currentColor" role="img" aria-label="Pause">
-						<rect x="5" y="3" width="5" height="18" />
-						<rect x="14" y="3" width="5" height="18" />
-					</svg>
+			<div class="wp-block-group is-content-justification-center is-layout-flex wp-block-group-is-layout-flex" style="justify-content: center;">
+				<?php if ($has_play_pause) : ?>
+					<?php // Keep the control available for reduced-motion visitors; JS reveals it when needed.
+					?>
+					<button
+						type="button"
+						class="swiper__button-control<?php echo $show_play_pause ? '' : ' d-none'; ?>"
+						aria-label="<?php echo esc_attr($pause_label); ?>"
+						data-label-play="<?php echo esc_attr($play_label); ?>"
+						data-label-pause="<?php echo esc_attr($pause_label); ?>">
 
-				</button>
-			<?php endif; ?>
 
-			<?php if (! empty($attributes['pagination'])) : ?>
-				<div class="swiper-pagination"></div>
-			<?php endif; ?>
+						<svg class="swiper__button-control-state d-none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+							width="24" height="24" viewBox="0 0 24 24"
+							fill="currentColor" role="img" aria-label="Play">
+							<path d="M6 3 L21 12 L6 21 Z" />
+						</svg>
+
+						<svg class="swiper__button-control-state" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+							width="24" height="24" viewBox="0 0 24 24"
+							fill="currentColor" role="img" aria-label="Pause">
+							<rect x="5" y="3" width="5" height="18" />
+							<rect x="14" y="3" width="5" height="18" />
+						</svg>
+
+					</button>
+				<?php endif; ?>
+
+				<?php if (! empty($attributes['pagination'])) : ?>
+					<div class="swiper-pagination"></div>
+				<?php endif; ?>
+			</div>
+
 		</div>
 	</div>
 </<?php echo esc_attr($element_tag); ?>>

@@ -1,5 +1,7 @@
-export default function initCustomPlayButtons() {
-	const buttons = document.querySelectorAll( '.fs-video-overlay button' );
+const initialized = new WeakSet();
+
+export default function initCustomPlayButtons( root = document ) {
+	const buttons = root.querySelectorAll( '.fs-video-overlay button' );
 	if ( ! buttons.length ) {
 		return;
 	}
@@ -18,6 +20,10 @@ export default function initCustomPlayButtons() {
 	//      })();
 	// };
 	buttons.forEach( ( button ) => {
+		if ( initialized.has( button ) ) {
+			return;
+		}
+		initialized.add( button );
 		button.addEventListener( 'click', () => {
 			const overlay = button.closest( '.fs-video-overlay' );
 			if ( ! overlay ) {

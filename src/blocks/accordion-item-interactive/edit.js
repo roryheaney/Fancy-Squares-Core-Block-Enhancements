@@ -94,7 +94,13 @@ export default function Edit( {
 	} );
 
 	const activeItem = context[ 'fs-blocks/accordion-interactive/activeItem' ];
-	const isActiveItem = activeItem === ( itemId || clientId );
+	const activeItems =
+		context[ 'fs-blocks/accordion-interactive/activeItems' ] || [];
+	const allowMultipleOpen =
+		context[ 'fs-blocks/accordion-interactive/allowMultipleOpen' ];
+	const isActiveItem = allowMultipleOpen
+		? activeItems.includes( itemId || clientId )
+		: activeItem === ( itemId || clientId );
 	const isInsideShowcase =
 		context?.[ 'fs-blocks/content-showcase/isShowcase' ] || false;
 
@@ -143,7 +149,7 @@ export default function Edit( {
 		} );
 	};
 
-	// Handle clicks on the trigger for editor UI only (not persisted to post_content)
+	// Frontend initialization ignores these editor preview attributes.
 	const handleTriggerClick = ( e ) => {
 		// Don't toggle if clicking on the title (RichText)
 		if ( e.target.closest( '.block-editor-rich-text__editable' ) ) {
@@ -155,12 +161,18 @@ export default function Edit( {
 		}
 
 		const currentItemId = itemId || clientId;
-		const newActiveItem = isActiveItem ? '' : currentItemId;
-
-		// This updates editor UI state only - not saved to database
-		updateBlockAttributes( parentClientId, {
-			activeItem: newActiveItem,
-		} );
+		updateBlockAttributes(
+			parentClientId,
+			allowMultipleOpen
+				? {
+						activeItems: isActiveItem
+							? activeItems.filter(
+									( id ) => id !== currentItemId
+							  )
+							: [ ...activeItems, currentItemId ],
+				  }
+				: { activeItem: isActiveItem ? '' : currentItemId }
+		);
 	};
 
 	const handleTriggerKeyDown = ( event ) => {
@@ -309,6 +321,7 @@ export default function Edit( {
 						onKeyDown={ handleTriggerKeyDown }
 						style={ { cursor: 'pointer' } }
 						role="button"
+						aria-expanded={ isActiveItem }
 						tabIndex={ 0 }
 					>
 						<RichText

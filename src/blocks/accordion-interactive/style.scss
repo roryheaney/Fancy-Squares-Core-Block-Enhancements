@@ -13,6 +13,10 @@
 			overflow: hidden;
 			transition: height 0.35s ease;
 
+			html.fs-motion-paused & {
+				transition: none;
+			}
+
 			@media ( prefers-reduced-motion: reduce ) {
 				transition: none;
 			}
@@ -58,8 +62,8 @@
 	}
 
 	// Show busy cursor during transitions; keep triggers hoverable so hover
-	// styles don't blink. The store (view.js) already ignores clicks while any
-	// content is collapsing, so pointer-events must stay untouched.
+	// styles don't blink. The store (view.js) guards transitions; in multiple-open
+	// mode, unrelated items remain usable, so pointer-events must stay untouched.
 	// Check if ANY item in accordion has .collapsing class
 	&:has(.fs-accordion__content.collapsing) .fs-accordion__trigger {
 		cursor: wait;

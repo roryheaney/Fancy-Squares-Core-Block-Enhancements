@@ -26,6 +26,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"pills": {
+			"type": "array",
+			"default": []
+		},
 		"showcaseMedia": {
 			"type": "object",
 			"default": {}
@@ -41,6 +45,8 @@
 	},
 	"usesContext": [
 		"fs-blocks/accordion-interactive/activeItem",
+		"fs-blocks/accordion-interactive/activeItems",
+		"fs-blocks/accordion-interactive/allowMultipleOpen",
 		"fs-blocks/content-showcase/isShowcase"
 	],
 	"editorScript": "file:./index.js",

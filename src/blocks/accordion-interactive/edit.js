@@ -17,7 +17,13 @@ import { BLOCK_CONFIG } from '../../config/blockConfig';
 
 export default function Edit( props ) {
 	const { clientId, attributes, setAttributes, name } = props;
-	const { activeItem, openFirstItem, additionalClasses } = attributes;
+	const {
+		activeItem,
+		activeItems,
+		allowMultipleOpen,
+		openFirstItem,
+		additionalClasses,
+	} = attributes;
 
 	const { childBlocks } = useSelect(
 		( select ) => ( {
@@ -46,8 +52,8 @@ export default function Edit( props ) {
 	const hasInitializedRef = useRef( false );
 	useEffect( () => {
 		if ( items.length === 0 ) {
-			if ( activeItem ) {
-				setAttributes( { activeItem: '' } );
+			if ( activeItem || activeItems.length ) {
+				setAttributes( { activeItem: '', activeItems: [] } );
 			}
 			return;
 		}
@@ -59,9 +65,13 @@ export default function Edit( props ) {
 			const shouldOpenFirst = openFirstItem && items.length > 0;
 			const targetActiveItem = shouldOpenFirst ? items[ 0 ].itemId : '';
 
-			if ( activeItem !== targetActiveItem ) {
-				setAttributes( { activeItem: targetActiveItem } );
-			}
+			setAttributes( {
+				activeItem: allowMultipleOpen ? '' : targetActiveItem,
+				activeItems:
+					allowMultipleOpen && targetActiveItem
+						? [ targetActiveItem ]
+						: [],
+			} );
 		} else {
 			// After initialization, validate activeItem still exists
 			const itemExists = items.some(
@@ -70,8 +80,21 @@ export default function Edit( props ) {
 			if ( activeItem && ! itemExists ) {
 				setAttributes( { activeItem: '' } );
 			}
+			const validActiveItems = activeItems.filter( ( id ) =>
+				items.some( ( item ) => item.itemId === id )
+			);
+			if ( validActiveItems.length !== activeItems.length ) {
+				setAttributes( { activeItems: validActiveItems } );
+			}
 		}
-	}, [ activeItem, openFirstItem, setAttributes, items ] );
+	}, [
+		activeItem,
+		activeItems,
+		allowMultipleOpen,
+		openFirstItem,
+		setAttributes,
+		items,
+	] );
 
 	// Sync generated classes to additionalClasses for frontend rendering
 	const generatedClassName = useMemo(
@@ -109,6 +132,33 @@ export default function Edit( props ) {
 					) }
 					initialOpen={ true }
 				>
+					<ToggleControl
+						__nextHasNoMarginBottom
+						label={ __(
+							'Allow multiple items open',
+							'fancy-squares-core-enhancements'
+						) }
+						help={ __(
+							'Opening an item will not close other items. Click an open item to close it.',
+							'fancy-squares-core-enhancements'
+						) }
+						checked={ allowMultipleOpen }
+						onChange={ ( value ) => {
+							const retainedItem = value
+								? activeItem
+								: items.find( ( item ) =>
+										activeItems.includes( item.itemId )
+								  )?.itemId || '';
+							setAttributes( {
+								allowMultipleOpen: value,
+								activeItem: value ? '' : retainedItem,
+								activeItems:
+									value && retainedItem
+										? [ retainedItem ]
+										: [],
+							} );
+						} }
+					/>
 					<ToggleControl
 						__nextHasNoMarginBottom
 						label={ __(

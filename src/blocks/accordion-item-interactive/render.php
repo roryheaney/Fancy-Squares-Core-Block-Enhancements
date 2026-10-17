@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Render callback for the Accordion Item Interactive block.
  *
@@ -7,16 +8,49 @@
  * @param WP_Block $block      Block instance.
  */
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
-$item_id = isset( $attributes['itemId'] ) ? sanitize_html_class( $attributes['itemId'] ) : '';
-$title   = isset( $attributes['title'] ) ? $attributes['title'] : '';
-$showcase_media_id = ! empty( $attributes['showcaseMediaId'] )
+$item_id = isset($attributes['itemId']) ? sanitize_html_class($attributes['itemId']) : '';
+$title   = isset($attributes['title']) ? $attributes['title'] : '';
+$showcase_media_id = ! empty($attributes['showcaseMediaId'])
 	? (int) $attributes['showcaseMediaId']
 	: 0;
 
-if ( '' === $item_id ) {
-	$item_id = wp_unique_id( 'accordion-item-' );
+$pills = isset($attributes['pills']) && is_array($attributes['pills'])
+	? $attributes['pills']
+	: [];
+
+$pills_markup = '';
+$pills_html   = [];
+
+foreach ($pills as $pill) {
+	if (! is_array($pill)) {
+		continue;
+	}
+
+	$text = isset($pill['text']) ? trim((string) $pill['text']) : '';
+	$bg   = isset($pill['bg']) ? sanitize_hex_color($pill['bg']) : '';
+	$fg   = isset($pill['fg']) ? sanitize_hex_color($pill['fg']) : '';
+
+	if ('' === $text || empty($bg)) {
+		continue;
+	}
+
+	$style = 'background-color:' . $bg . ';color:' . (! empty($fg) ? $fg : '#000000') . ';';
+
+	$pills_html[] = sprintf(
+		'<span class="fs-accordion__pill" style="%s">%s</span>',
+		esc_attr($style),
+		esc_html($text)
+	);
+}
+
+if (! empty($pills_html)) {
+	$pills_markup = '<span class="fs-accordion__pills">' . implode('', $pills_html) . '</span>';
+}
+
+if ('' === $item_id) {
+	$item_id = wp_unique_id('accordion-item-');
 }
 
 $trigger_id = 'fs-accordion-trigger-' . $item_id;
@@ -31,23 +65,25 @@ $item_context = [
 ];
 
 $showcase_media_markup = '';
-if ( $showcase_media_id ) {
-	$media_type = wp_attachment_is( 'video', $showcase_media_id )
+if ($showcase_media_id) {
+	$media_type = wp_attachment_is('video', $showcase_media_id)
 		? 'video'
 		: 'image';
 	ob_start();
-	?>
+?>
 	<div class="fs-accordion-item__showcase-media">
-		<?php if ( 'video' === $media_type ) : ?>
+		<?php if ('video' === $media_type) : ?>
 			<video
 				class="fs-accordion-item__showcase-video"
 				data-fs-lazy-video="true"
-				data-src="<?php echo esc_url( wp_get_attachment_url( $showcase_media_id ) ); ?>"
+				data-src="<?php echo esc_url(wp_get_attachment_url($showcase_media_id)); ?>"
 				autoplay
 				muted
 				loop
 				playsinline
-			></video>
+				controlsList="nodownload"
+				disablePictureInPicture
+				oncontextmenu="return false;"></video>
 		<?php else : ?>
 			<?php
 			echo wp_get_attachment_image(
@@ -62,7 +98,7 @@ if ( $showcase_media_id ) {
 			?>
 		<?php endif; ?>
 	</div>
-	<?php
+<?php
 	$showcase_media_markup = ob_get_clean();
 }
 
@@ -70,33 +106,31 @@ if ( $showcase_media_id ) {
 <div
 	<?php echo $wrapper_attributes; ?>
 	data-wp-interactive="fancySquaresAccordionInteractive"
-	<?php echo wp_interactivity_data_wp_context( $item_context ); ?>
-	data-wp-class--is-active="state.isActive"
->
+	<?php echo wp_interactivity_data_wp_context($item_context); ?>
+	data-wp-class--is-active="state.isActive">
 	<h3 class="fs-accordion__header">
 		<button
-			id="<?php echo esc_attr( $trigger_id ); ?>"
+			id="<?php echo esc_attr($trigger_id); ?>"
 			type="button"
 			class="fs-accordion__trigger"
-			aria-controls="<?php echo esc_attr( $content_id ); ?>"
+			aria-controls="<?php echo esc_attr($content_id); ?>"
 			aria-expanded="false"
 			data-wp-bind--aria-expanded="state.isActive"
 			data-wp-on--click="actions.toggleItem"
-			data-wp-on--keydown="actions.handleKeydown"
-		>
-			<span><?php echo wp_kses_post( $title ); ?></span>
+			data-wp-on--keydown="actions.handleKeydown">
+			<span><?php echo wp_kses_post($title); ?></span>
+			<?php echo $pills_markup; ?>
 		</button>
 	</h3>
 
 	<div
-		id="<?php echo esc_attr( $content_id ); ?>"
+		id="<?php echo esc_attr($content_id); ?>"
 		class="fs-accordion__content collapse"
 		role="region"
-		aria-labelledby="<?php echo esc_attr( $trigger_id ); ?>"
+		aria-labelledby="<?php echo esc_attr($trigger_id); ?>"
 		aria-hidden="true"
 		data-wp-bind--aria-hidden="!state.isActive"
-		data-item-id="<?php echo esc_attr( $item_id ); ?>"
-	>
+		data-item-id="<?php echo esc_attr($item_id); ?>">
 		<div class="fs-accordion__body">
 			<?php echo $showcase_media_markup; ?>
 			<?php echo $content; ?>

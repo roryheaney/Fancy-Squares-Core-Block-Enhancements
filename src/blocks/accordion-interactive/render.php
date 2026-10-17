@@ -29,6 +29,8 @@ $wrapper_attributes = get_block_wrapper_attributes( [ 'class' => implode( ' ', $
 $initial_context = [
 	'blockId'    => $block_id,
 	'activeItem' => $active_item,
+	'allowMultipleOpen' => ! empty( $attributes['allowMultipleOpen'] ),
+	'activeItems' => [],
 ];
 
 // Define derived state for isActive (computed from context)
@@ -37,6 +39,9 @@ wp_interactivity_state( 'fancySquaresAccordionInteractive', [
 		$context = wp_interactivity_get_context();
 		$active_item = $context['activeItem'] ?? '';
 		$item_id = $context['itemId'] ?? '';
+		if ( ! empty( $context['allowMultipleOpen'] ) ) {
+			return in_array( $item_id, $context['activeItems'] ?? [], true );
+		}
 		return $active_item === $item_id;
 	},
 ] );

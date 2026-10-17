@@ -32,13 +32,23 @@
 			"type": "boolean",
 			"default": false
 		},
+		"allowMultipleOpen": {
+			"type": "boolean",
+			"default": false
+		},
+		"activeItems": {
+			"type": "array",
+			"default": []
+		},
 		"additionalClasses": {
 			"type": "array",
 			"default": []
 		}
 	},
 	"providesContext": {
-		"fs-blocks/accordion-interactive/activeItem": "activeItem"
+		"fs-blocks/accordion-interactive/activeItem": "activeItem",
+		"fs-blocks/accordion-interactive/activeItems": "activeItems",
+		"fs-blocks/accordion-interactive/allowMultipleOpen": "allowMultipleOpen"
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

@@ -1,5 +1,21 @@
 # Release Notes
 
+## Unreleased
+
+### Added
+
+- FS Accordion (Interactive) items now support pill badges in the title bar: per-item sidebar list with pill text and a theme-palette background color; text color is auto-contrasted and persisted.
+
+### Added
+
+- Responsive utility coverage: editor option lists are filtered against the theme's generated breakpoints, so only classes with compiled CSS are offered.
+- Breakpoint-aware `audit:class-coverage`: tokens outside the theme's breakpoints are skipped with a summary line instead of failing the gate; unavailable tokens remaining on saved content are documented as preserved no-ops.
+- New `src/config/option-coverage.mjs` shared rule module (suffix detection + option filtering) used by both editor loaders and the audit.
+
+### Fixed
+
+- `npm run build` no longer fails with 66 `missing-css-emitter` errors when the theme defines fewer breakpoints than the built-in Bootstrap-style supersets.
+
 ## 1.2.0 - 2026-06-30
 
 ### Added

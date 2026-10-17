@@ -2,6 +2,18 @@
 
 Local implementation notes for `fs-blocks/accordion-interactive`.
 
+## Settings
+
+- **Allow multiple items open** (default off): opening an item leaves other
+  items open. Click an open item's trigger to close only that item.
+- **Open First Item** opens only the first item on page load in either mode.
+- Editor preview IDs do not determine frontend initial state.
+- In multiple-open mode, separate items may transition concurrently. Repeated
+  clicks on a transitioning item are ignored until its transition finishes.
+- Content Showcase keeps its existing single-media selection: its configured
+  event (default `shown.fs.accordion`) selects the item's media when present.
+  Closing an item does not change gallery selection.
+
 ## Event Contract
 
 The block dispatches these CustomEvents from the content element:

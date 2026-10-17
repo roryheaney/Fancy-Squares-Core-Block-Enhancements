@@ -70,11 +70,28 @@ Produces a space-separated class string. Emission order:
 - Dynamic `import('../../data/bootstrap-classes/index.js')`.
 - Maps raw module exports to `{ display, margin, padding, position, zindex, blendMode, alignItems, selfAlignment, justifyContent, order, gapSpacing, bleedCoverOptions }` shape, each with `{ options: [] }`.
 - Note: 11 of 12 keys read from the dynamically imported module (`optionsModule.*Options`). `bleedCoverOptions` is the exception — it's imported statically from `./framework-option-sets` (which resolves against generated `frameworkOptionSets` with fallback to `data/bootstrap-classes/bleed-cover-options.js`).
+- **Breakpoint filtering**: every option array passes through `filterTokenOptions( options, RESPONSIVE_BREAKPOINT_KEYS )` before caching — entries lacking non-empty-string `label`/`value` are dropped, and responsive variants whose suffix isn't in the theme's breakpoints are dropped (silent no-ops prevented). Base tokens and theme-available variants pass through unchanged, order preserved.
 - Cached via promise singleton (`classOptionsMapPromise`).
 
 **`src/formats/span-format.js`** — `loadSpanClassOptions()`:
-- Same dynamic import pattern.
+- Same dynamic import pattern + same `filterTokenOptions` filtering.
 - Extracts subset: `{ displayOptions, marginOptions, paddingOptions, positionOptions }`.
+
+## Option coverage rule module (`src/config/option-coverage.mjs`)
+
+Pure, zero-import ESM module so both editor bundles and Node scripts (`.mjs`) can use it. **Do not import `src/**/*.js` from Node scripts** — the package has no `"type": "module"`, so Node parses `.js` as CJS; use explicit `.mjs` extensions.
+
+**Exports**:
+- `DEFAULT_RESPONSIVE_SUFFIXES = ['sm', 'md', 'lg', 'xl', 'xxl']`
+- `getTokenBreakpointSuffix( token, allowedKeys )` — returns the token's breakpoint suffix or `null`. Checks BOTH positions: segment 1 (prefix-style: `d-xl-none`, `p-lg-4`, `order-xl-*`, `d-xxl-table-row`) and the second-to-last segment (property-style: `align-items-xl-start`, `justify-content-md-between`, `align-self-sm-center`). Returns null for base tokens (`d-inline-grid`, `p-3`, `shadow-lg`, `mt-n3`).
+- `filterTokenOptions( options, allowedKeys )` — drops entries lacking non-empty-string `label` and `value`; drops responsive variants whose suffix ∉ `allowedKeys`; preserves order. Legacy saved content is safe: `getDisplayValues`/`getValuesFromDisplay` (src/utils/helpers.js) pass values missing from `options` through unchanged.
+
+## Breakpoint-aware coverage audit (`scripts/audit-class-coverage.mjs`)
+
+- Reads `frameworkBreakpointKeys` from `src/config/generated/framework-tokens.js` **as text** (regex + `JSON.parse`); missing/malformed artifact → hard fail `invalid-generated-tokens` with an actionable message (run `npm run tokens:site`).
+- Responsive keys = artifact keys minus `xs` (generator never emits xs media queries).
+- Token loop: suffix non-null and ∉ theme responsive keys → counted and **skipped** (static superset entries the editor no longer offers for this theme — cannot reach rendered HTML); one summary line printed (`[coverage] Skipped N unavailable-breakpoint token(s) — not exposed for this theme.`). Base tokens and available variants must still have CSS (unchanged hard-fail behavior).
+- This is why the audit can pass on a theme with fewer breakpoints than the built-in Bootstrap-style supersets (e.g. this site: xs/sm/md/lg → 265 validated, 66 skipped).
 
 ## Span format system (`src/formats/span-format.js`)
 

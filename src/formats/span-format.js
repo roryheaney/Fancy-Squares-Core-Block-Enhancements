@@ -10,6 +10,8 @@ import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import SpanFormatModal from './span-format-modal';
+import { RESPONSIVE_BREAKPOINT_KEYS } from '../config/breakpoints';
+import { filterTokenOptions } from '../config/option-coverage.mjs';
 import '../assets/scss/_span-format.scss';
 
 let spanClassOptionsPromise = null;
@@ -19,10 +21,22 @@ const loadSpanClassOptions = async () => {
 		spanClassOptionsPromise = import(
 			'../../data/bootstrap-classes/index.js'
 		).then( ( optionsModule ) => ( {
-			displayOptions: optionsModule.displayOptions || [],
-			marginOptions: optionsModule.marginOptions || [],
-			paddingOptions: optionsModule.paddingOptions || [],
-			positionOptions: optionsModule.positionOptions || [],
+			displayOptions: filterTokenOptions(
+				optionsModule.displayOptions,
+				RESPONSIVE_BREAKPOINT_KEYS
+			),
+			marginOptions: filterTokenOptions(
+				optionsModule.marginOptions,
+				RESPONSIVE_BREAKPOINT_KEYS
+			),
+			paddingOptions: filterTokenOptions(
+				optionsModule.paddingOptions,
+				RESPONSIVE_BREAKPOINT_KEYS
+			),
+			positionOptions: filterTokenOptions(
+				optionsModule.positionOptions,
+				RESPONSIVE_BREAKPOINT_KEYS
+			),
 		} ) );
 	}
 

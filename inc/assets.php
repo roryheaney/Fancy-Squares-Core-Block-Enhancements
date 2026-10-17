@@ -253,6 +253,9 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] )
 		? $block['attrs']
 		: [];
+	$has_cover_video = 'core/cover' === $block_name
+		&& empty( $attrs['useEmbedBackground'] )
+		&& null !== fs_core_enhancements_get_cover_background_video( $block_content );
 	$frontend_style_enqueued = wp_style_is(
 		'fs-core-enhancements-frontend-style',
 		'enqueued'
@@ -267,7 +270,7 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 		wp_script_is( 'fs-core-enhancements-swiper', 'enqueued' );
 
 	if ( ! $frontend_style_enqueued ) {
-		$needs_frontend_style = fs_core_enhancements_block_needs_frontend_style(
+		$needs_frontend_style = $has_cover_video || fs_core_enhancements_block_needs_frontend_style(
 			$block_name,
 			$attrs
 		) || fs_core_enhancements_block_content_needs_frontend_style(
@@ -306,7 +309,7 @@ function fs_core_enhancements_maybe_enqueue_frontend_runtime( $block_content, $b
 	}
 
 	if ( 'core/cover' === $block_name ) {
-		if ( ! empty( $attrs['lazyLoadVideo'] ) && empty( $attrs['useEmbedBackground'] ) ) {
+		if ( $has_cover_video || ( ! empty( $attrs['lazyLoadVideo'] ) && empty( $attrs['useEmbedBackground'] ) ) ) {
 			fs_core_enhancements_enqueue_frontend_runtime();
 		}
 		return $block_content;

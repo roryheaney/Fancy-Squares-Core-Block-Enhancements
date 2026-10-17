@@ -54,9 +54,6 @@ function fs_accordion_interactive_render_block($block_content, $block) {
 		return $block_content;
 	}
 
-	// Bookmark the first item position
-	$processor->set_bookmark('first-item');
-
 	// Find and modify the button within this item
 	if ($processor->next_tag(['tag_name' => 'button', 'class_name' => 'fs-accordion__trigger'])) {
 		$processor->set_attribute('aria-expanded', 'true');
@@ -73,12 +70,15 @@ function fs_accordion_interactive_render_block($block_content, $block) {
 		$context_json = $processor->get_attribute('data-wp-context');
 		$context = $context_json ? json_decode($context_json, true) : [];
 		$context['activeItem'] = $first_item_id;
+		if ( ! empty( $context['allowMultipleOpen'] ) ) {
+			$context['activeItem'] = '';
+			$context['activeItems'] = [ $first_item_id ];
+		}
 		$processor->set_attribute('data-wp-context', wp_json_encode($context));
 	}
 
 	// Clean up bookmarks
 	$processor->release_bookmark('accordion-wrapper');
-	$processor->release_bookmark('first-item');
 
 	return $processor->get_updated_html();
 }
